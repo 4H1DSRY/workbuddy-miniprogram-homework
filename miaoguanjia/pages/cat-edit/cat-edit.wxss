@@ -29,7 +29,7 @@
   display: block;
   text-align: center;
   font-size: 21rpx;
-  color: var(--c-text-5);
+  color: var(--c-ink-3);
   margin: 14rpx 0 8rpx;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .ph {
-  color: var(--c-ink-5);
+  color: var(--c-ink-4);
   font-size: 26rpx;
 }
 
@@ -80,7 +80,7 @@
 }
 
 .f-arrow {
-  color: var(--c-ink-6);
+  color: var(--c-ink-4);
   font-size: 30rpx;
   margin-left: 10rpx;
 }
@@ -94,7 +94,7 @@
 
 .f-unit {
   font-size: 24rpx;
-  color: var(--c-text-4);
+  color: var(--c-ink-3);
   margin-left: 8rpx;
 }
 
@@ -157,6 +157,6 @@
 .footer {
   text-align: center;
   font-size: 21rpx;
-  color: var(--c-line-2);
+  color: var(--c-ink-3);
   margin-top: 30rpx;
 }

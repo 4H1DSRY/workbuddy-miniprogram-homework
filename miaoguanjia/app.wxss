@@ -25,10 +25,22 @@ page {
   --c-ink-5: #B8B0A6;       /* 最弱、占位 */
   --c-ink-6: #C9C2B8;       /* 近乎消失的注脚 */
 
-  /* 朱：全站唯一的强调色，只用于「现在要看的那个数」与「提醒」 */
+  /* 朱 = 紧急 / 就医。
+     语义收窄（2026-10-21）：朱只留给「需要立刻处理」的事；
+     「焦点 / 展示」交给墨阶，不再靠朱来强调。新功能的三态提示统一用下面这组，
+     不要另造颜色。 */
   --c-vermilion: #B5442F;
   --c-vermilion-deep: #9C3927;
   --c-vermilion-tint: #F3E7E2;
+
+  /* 三态语义：底色 + 前景成对使用。
+     对比度已核（前景在各自底色上均 >4.5:1），不要单用某一个。 */
+  --c-alert-fg: #B5442F;   /* 紧急 / 就医 5.17:1 */
+  --c-alert-bg: #F3E7E2;
+  --c-caution-fg: #8F5418; /* 关注 / 观察 5.74:1 */
+  --c-caution-bg: #F7EADB;
+  --c-safe-fg: #4A443F;    /* 正常 9.04:1 */
+  --c-safe-bg: #F0EBE2;
 
   /* 线：只做分隔，不做装饰 */
   --c-rule: #E6E0D6;
@@ -103,7 +115,7 @@ textarea {
 
 .section-title .more {
   font-size: 22rpx;
-  color: var(--c-ink-5);
+  color: var(--c-ink-3);
   letter-spacing: 0.06em;
   /* 热区扩展：文字只有约 36rpx 高，用伪元素撑到 88rpx，不占布局 */
   position: relative;
@@ -121,7 +133,7 @@ textarea {
 }
 
 .muted {
-  color: var(--c-ink-4);
+  color: var(--c-ink-3);
 }
 
 .pill {
@@ -144,8 +156,9 @@ textarea {
   opacity: 0.72;
 }
 
-/* 发丝分隔线，宋体页面里比 border 更轻 */
+/* 发丝分隔线，宋体页面里比 border 更轻。
+   用 1rpx 而不是 1px：1px 在 3x 屏上会渲染成 3 物理像素，且不随屏宽缩放。 */
 .hairline {
-  height: 1px;
+  height: 1rpx;
   background: var(--c-rule);
 }

@@ -18,7 +18,7 @@
 
 .date {
   font-size: 20rpx;
-  color: var(--c-ink-4);
+  color: var(--c-ink-3);
   letter-spacing: 0.18em;
 }
 
@@ -30,7 +30,7 @@
 
 .sw {
   font-size: 22rpx;
-  color: var(--c-ink-5);
+  color: var(--c-ink-3);
   letter-spacing: 0.06em;
   margin-left: 18rpx;
   /* 热区扩展：左右各外扩 9rpx（吃掉 18rpx 间距的一半），相邻两个刚好相接不重叠 */
@@ -54,7 +54,7 @@
 
 .sw-add {
   font-size: 26rpx;
-  color: var(--c-ink-5);
+  color: var(--c-ink-3);
   margin-left: 18rpx;
   line-height: 1;
   position: relative;
@@ -85,7 +85,7 @@
 
 .sub {
   font-size: 24rpx;
-  color: var(--c-ink-4);
+  color: var(--c-ink-3);
   letter-spacing: 0.08em;
   margin-top: 14rpx;
 }
@@ -122,7 +122,7 @@
 
 .unit {
   font-size: 24rpx;
-  color: var(--c-ink-4);
+  color: var(--c-ink-3);
   letter-spacing: 0.06em;
   margin-left: 10rpx;
 }
@@ -172,7 +172,7 @@
 
 .ring-cap {
   font-size: 20rpx;
-  color: var(--c-ink-5);
+  color: var(--c-ink-3);
   letter-spacing: 0.08em;
   margin-top: 12rpx;
 }
@@ -200,7 +200,7 @@
 
 .bar-track {
   flex: 1;
-  height: 1px;
+  height: 2rpx;
   background: var(--c-rule-strong);
   margin: 0 24rpx;
   position: relative;
@@ -210,7 +210,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  height: 1px;
+  height: 2rpx;
   background: var(--c-ink);
 }
 
@@ -223,7 +223,7 @@
   width: 170rpx;
   text-align: right;
   font-size: 24rpx;
-  color: var(--c-ink-4);
+  color: var(--c-ink-3);
   letter-spacing: 0.02em;
   flex-shrink: 0;
 }
@@ -262,7 +262,7 @@
   padding-top: 20rpx;
   border-top: 1rpx solid var(--c-rule);
   font-size: 24rpx;
-  color: var(--c-ink-4);
+  color: var(--c-ink-3);
   letter-spacing: 0.04em;
   /* 热区扩展：整行加高到 88rpx，但用伪元素，不改变现有排布与一屏高度 */
   position: relative;
@@ -302,7 +302,7 @@
 
 .empty-sub {
   font-size: 24rpx;
-  color: var(--c-ink-4);
+  color: var(--c-ink-3);
   margin-top: 18rpx;
   text-align: center;
   letter-spacing: 0.04em;

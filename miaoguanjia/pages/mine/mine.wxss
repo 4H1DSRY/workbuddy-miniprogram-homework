@@ -2,7 +2,9 @@
   display: flex;
   align-items: center;
   margin-top: 12rpx;
-  background: linear-gradient(140deg, var(--c-paper) 0%, var(--c-paper)6EE 100%);
+  /* 原 background 写的是 linear-gradient(140deg, var(--c-paper) 0%, var(--c-paper)6EE 100%)，
+     其中 var(--c-paper)6EE 不是合法颜色，整条声明被静默丢弃。
+     两端同色的渐变本身也没有视觉效果，.card 已给底色，故删除。 */
 }
 
 .profile-ico {
@@ -41,7 +43,7 @@
 .profile-sub {
   display: block;
   font-size: 22rpx;
-  color: var(--c-text-4);
+  color: var(--c-ink-3);
   margin-top: 8rpx;
 }
 
@@ -78,7 +80,7 @@
 
 .stat-label {
   font-size: 21rpx;
-  color: var(--c-text-4);
+  color: var(--c-ink-3);
   margin-top: 6rpx;
 }
 
@@ -146,7 +148,7 @@
 .row-sub {
   display: block;
   font-size: 22rpx;
-  color: var(--c-text-4);
+  color: var(--c-ink-3);
   margin-top: 6rpx;
   overflow: hidden;
   white-space: nowrap;
@@ -155,7 +157,7 @@
 
 .row-arrow {
   font-size: 34rpx;
-  color: var(--c-ink-6);
+  color: var(--c-ink-4);
   margin-left: 12rpx;
 }
 
@@ -176,7 +178,7 @@
 .footer {
   text-align: center;
   font-size: 22rpx;
-  color: var(--c-ink-4);
+  color: var(--c-ink-3);
   margin-top: 44rpx;
   letter-spacing: 0.06em;
 }

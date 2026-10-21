@@ -53,7 +53,7 @@ const PALETTE = {
 
   /* ---- canvas 图表专用 ---- */
   chartGrid: '#EDE7DD',
-  chartLabel: '#8C8178',
+  chartLabel: '#7A7168',
   chartInk: '#1E1B19'
 }
 
