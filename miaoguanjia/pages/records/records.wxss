@@ -58,6 +58,18 @@
   border-radius: 4rpx;
   background: var(--c-paper);
   margin-right: 18rpx;
+  /* 热区：视觉保持 68rpx，点击层撑到 88rpx */
+  position: relative;
+}
+
+.cat-chip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 88rpx;
+  transform: translateY(-50%);
 }
 
 .cat-chip.on {
@@ -153,6 +165,18 @@
   padding: 12rpx 26rpx;
   margin-right: 16rpx;
   flex-shrink: 0;
+  /* 热区：视觉保持 63rpx 细胶囊，点击层靠伪元素撑到 88rpx */
+  position: relative;
+}
+
+.filter::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 88rpx;
+  transform: translateY(-50%);
 }
 
 .filter.on {
@@ -312,7 +336,7 @@
   background: var(--c-brand);
   color: var(--c-paper);
   font-size: 26rpx;
-  padding: 18rpx 48rpx;
+  padding: 25rpx 48rpx;
   border-radius: 4rpx;
 }
 

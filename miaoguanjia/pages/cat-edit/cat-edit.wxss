@@ -110,6 +110,18 @@
   color: var(--c-text-3);
   padding: 10rpx 30rpx;
   border-radius: 4rpx;
+  /* 热区：视觉保持 59rpx 的细胶囊，点击层撑到 88rpx */
+  position: relative;
+}
+
+.seg-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 88rpx;
+  transform: translateY(-50%);
 }
 
 .seg-item.on {
@@ -135,7 +147,11 @@
   text-align: center;
   font-size: 26rpx;
   color: var(--c-vermilion);
-  padding: 20rpx 0;
+  padding: 24rpx 0;
+}
+
+.save-btn.is-busy {
+  opacity: .6;
 }
 
 .footer {

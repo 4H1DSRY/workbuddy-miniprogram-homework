@@ -99,7 +99,7 @@
     </view>
   </view>
 
-  <view class="save-btn" bindtap="onSave">保存档案</view>
+  <view class="save-btn {{submitting ? 'is-busy' : ''}}" bindtap="onSave">{{submitting ? '保存中…' : '保存档案'}}</view>
   <view class="del-btn" wx:if="{{isEdit}}" bindtap="onDelete">删除这只猫</view>
 
   <view class="footer">资料仅保存在本机，换手机不会同步</view>

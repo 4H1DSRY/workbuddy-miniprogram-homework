@@ -33,6 +33,18 @@
   color: var(--c-ink-5);
   letter-spacing: 0.06em;
   margin-left: 18rpx;
+  /* 热区扩展：左右各外扩 9rpx（吃掉 18rpx 间距的一半），相邻两个刚好相接不重叠 */
+  position: relative;
+}
+
+.sw::after {
+  content: "";
+  position: absolute;
+  left: -9rpx;
+  right: -9rpx;
+  top: 50%;
+  height: 88rpx;
+  transform: translateY(-50%);
 }
 
 .sw.on {
@@ -45,6 +57,17 @@
   color: var(--c-ink-5);
   margin-left: 18rpx;
   line-height: 1;
+  position: relative;
+}
+
+.sw-add::after {
+  content: "";
+  position: absolute;
+  left: -9rpx;
+  right: -9rpx;
+  top: 50%;
+  height: 88rpx;
+  transform: translateY(-50%);
 }
 
 .hairline {
@@ -241,6 +264,18 @@
   font-size: 24rpx;
   color: var(--c-ink-4);
   letter-spacing: 0.04em;
+  /* 热区扩展：整行加高到 88rpx，但用伪元素，不改变现有排布与一屏高度 */
+  position: relative;
+}
+
+.foot::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 88rpx;
+  transform: translateY(-50%);
 }
 
 .foot .n {
@@ -275,7 +310,7 @@
 
 .empty-btn {
   margin-top: 56rpx;
-  padding: 20rpx 52rpx;
+  padding: 25rpx 52rpx;
   border: 1rpx solid var(--c-ink);
   font-size: 24rpx;
   color: var(--c-ink);

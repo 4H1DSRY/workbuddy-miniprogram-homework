@@ -11,6 +11,7 @@ Page({
   data: {
     isEdit: false,
     id: '',
+    submitting: false,
     breeds: BREEDS,
     breedIndex: 0,
     todayStr: '',
@@ -135,18 +136,31 @@ Page({
   },
 
   onSave() {
+    // 防重复：600ms 的返回延迟内容易被连点，导致 addCat 执行多次
+    if (this.data.submitting) return
+
     const checked = store.validateCat(this.data.form)
     if (!checked.ok) {
+      // 校验失败不上锁，否则用户改完字段也无法再次提交
       wx.showToast({ title: checked.msg, icon: 'none' })
       return
     }
+
+    this.setData({ submitting: true })
     const payload = checked.value
 
-    if (this.data.isEdit) {
-      store.updateCat(this.data.id, payload)
-    } else {
-      const cat = store.addCat(payload)
-      if (app.globalData) app.globalData.currentCatId = cat.id
+    try {
+      if (this.data.isEdit) {
+        store.updateCat(this.data.id, payload)
+      } else {
+        const cat = store.addCat(payload)
+        if (app.globalData) app.globalData.currentCatId = cat.id
+      }
+    } catch (err) {
+      // 写库异常必须解锁，否则页面卡死
+      this.setData({ submitting: false })
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' })
+      return
     }
 
     wx.showToast({ title: this.data.isEdit ? '已保存' : '已添加', icon: 'success' })
