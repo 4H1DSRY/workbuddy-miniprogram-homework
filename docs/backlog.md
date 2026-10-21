@@ -13,7 +13,7 @@
 | 编号 | 条目 | 优先级 | 验收标准 | 依赖 | 来源 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
 | E1 | `package.json` + `npm test` 一条命令跑完整条校验链 | P1 | `npm test` 退出码 0，输出含 check 与 simulate 两段；任一段失败则退出码非 0 | — | 需求 | ✅ |
-| E2 | GitHub Actions：push 时自动跑 L1 + L2 | P1 | push 后 Actions 绿；故意改坏一个 WXML 闭合标签能让它变红 | E1 | 需求 | ⬜ |
+| E2 | GitHub Actions：push 时自动跑 L1 + L2 | P1 | push 后 Actions 绿；故意改坏一个 WXML 闭合标签能让它变红 | E1 | 需求 | ✅ 绿已实测（16s / 6s）；红态未单独发坏 commit，但本地已验 `check.js` 退出码为 1，CI 判据即此退出码 |
 | E3 | 归置 20 个散落脚本 | P2 | 项目根无 `*.py`；`tools/` 分 assets / capture / legacy；`tools/README.md` 说明每个脚本用途与运行目录 | — | 实测 | ✅ |
 | E4 | CHANGELOG + 语义化版本 | P2 | 版本号与 commit 对应；每次功能变更有一条记录 | — | 需求 | ✅ |
 | E5 | `check.js` 扩展：检测未被引用的 WXSS 类名 | P3 | 报告零误报；据此删掉至少 5 个死类后 `npm test` 仍绿 | E1 | 推断 | ⬜ |
