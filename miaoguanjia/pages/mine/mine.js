@@ -41,7 +41,8 @@ Page({
     patch[key] = e.detail.value
     store.saveSettings(patch)
     this.refresh()
-    wx.showToast({ title: e.detail.value ? '已开启' : '已关闭', icon: 'none' })
+    // 不弹「已开启 / 已关闭」：开关本身有位移动画，行内状态文案（已连接 / 已断开）也会同步更新，
+    // 再弹一次 toast 等于同一件事说三遍，还会打断连续拨动多个开关的操作。
   },
 
   onTimeChange(e) {
