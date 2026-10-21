@@ -38,18 +38,14 @@ const PALETTE = {
   /* 白色（canvas 里画端点用） */
   white: '#FFFFFF',
 
-  /* ---- 兼容名 ---- */
-  brand: '#B5442F',
-  brandDeep: '#9C3927',
-  brandTint: '#F3E7E2',
-  text: '#1E1B19',
-  text2: '#4A443F',
-  text3: '#7A7168',
-  text4: '#8C8178',
-  text5: '#B8B0A6',
-  line: '#E6E0D6',
-  lineSoft: '#F0EBE2',
-  line2: '#DED8CC',
+  /* ---- 三态语义（与 app.wxss 的 --c-alert-* / --c-caution-* / --c-safe-* 一一对应）----
+     前景与底色成对使用，不要单取一个。 */
+  alertFg: '#B5442F',
+  alertBg: '#F3E7E2',
+  cautionFg: '#8F5418',
+  cautionBg: '#F7EADB',
+  safeFg: '#4A443F',
+  safeBg: '#F0EBE2',
 
   /* ---- canvas 图表专用 ---- */
   chartGrid: '#EDE7DD',

@@ -7,10 +7,9 @@
  *   —— 宋体字面小、重心偏上，故最小字号不得低于 20rpx(10px)，
  *      正文层用 24rpx(12px)，且行高放到 1.62。
  *
- * 命名分两段：
- *   1. 语义名（--c-ink / --c-vermilion / --c-rule）：新页面用这一套。
- *   2. 兼容名（--c-brand / --c-text / --c-line）：历史页面还在引用，
- *      在这里做同值映射，避免逐文件改一遍。
+ * 命名只有一套语义名：--c-ink（墨阶）/ --c-vermilion（朱）/ --c-rule（线）。
+ * 2026-10-21 已移除 --c-text-* / --c-line-* / --c-brand-* 这组兼容别名，
+ * 全站统一引用语义名，改配色只需改这一处。
  * ------------------------------------------------------------------ */
 page {
   /* 纸 */
@@ -46,19 +45,6 @@ page {
   --c-rule: #E6E0D6;
   --c-rule-soft: #F0EBE2;
   --c-rule-strong: #DED8CC;
-
-  /* ---- 兼容映射（历史页面在用）---- */
-  --c-brand: #B5442F;
-  --c-brand-deep: #9C3927;
-  --c-brand-tint: #F3E7E2;
-  --c-text: #1E1B19;
-  --c-text-2: #4A443F;
-  --c-text-3: #7A7168;
-  --c-text-4: #8C8178;
-  --c-text-5: #B8B0A6;
-  --c-line: #E6E0D6;
-  --c-line-soft: #F0EBE2;
-  --c-line-2: #DED8CC;
 }
 
 page {

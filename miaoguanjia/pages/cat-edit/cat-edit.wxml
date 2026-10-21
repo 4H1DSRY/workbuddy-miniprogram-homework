@@ -1,5 +1,8 @@
 <view class="page">
 
+  <!-- 校验失败时在表单顶部告知原因，并配合下方字段标红（指南 2.3） -->
+  <view class="form-error" wx:if="{{errorMsg}}">{{errorMsg}}</view>
+
   <!-- 头像 -->
   <view class="avatar-wrap" bindtap="onPickAvatar">
     <image class="big-avatar" src="{{form.avatar}}" mode="aspectFill" />
@@ -9,7 +12,7 @@
 
   <!-- 基本信息 -->
   <view class="card">
-    <view class="field">
+    <view class="field {{errorField === 'name' ? 'field--error' : ''}}" id="f-name">
       <text class="f-label">名字</text>
       <input
         class="f-input"
@@ -56,7 +59,7 @@
   </view>
 
   <view class="card">
-    <view class="field">
+    <view class="field {{errorField === 'weight' ? 'field--error' : ''}}" id="f-weight">
       <text class="f-label">当前体重</text>
       <view class="f-unit-wrap">
         <input
@@ -71,7 +74,7 @@
       </view>
     </view>
 
-    <view class="field">
+    <view class="field {{errorField === 'foodTarget' ? 'field--error' : ''}}" id="f-foodTarget">
       <text class="f-label">每日进食目标</text>
       <view class="f-unit-wrap">
         <input

@@ -1,4 +1,5 @@
 const store = require('../../utils/store.js')
+const theme = require('../../utils/theme.js')
 const app = getApp()
 
 const BREEDS = ['英国短毛猫', '中华田园猫', '布偶猫', '美国短毛猫', '暹罗猫', '橘猫', '缅因猫', '其他']
@@ -12,6 +13,8 @@ Page({
     isEdit: false,
     id: '',
     submitting: false,
+    errorField: '',
+    errorMsg: '',
     breeds: BREEDS,
     breedIndex: 0,
     todayStr: '',
@@ -74,8 +77,16 @@ Page({
     })
   },
 
+  /** 输入时清掉当前字段的错误提示，避免用户已经改了字红还在 */
+  clearError(field) {
+    if (this.data.errorField === field) {
+      this.setData({ errorField: '', errorMsg: '' })
+    }
+  },
+
   onName(e) {
     this.setData({ 'form.name': e.detail.value })
+    this.clearError('name')
   },
 
   onNote(e) {
@@ -84,10 +95,12 @@ Page({
 
   onWeight(e) {
     this.setData({ 'form.weight': e.detail.value })
+    this.clearError('weight')
   },
 
   onTarget(e) {
     this.setData({ 'form.foodTarget': e.detail.value })
+    this.clearError('foodTarget')
   },
 
   onBreed(e) {
@@ -142,11 +155,13 @@ Page({
     const checked = store.validateCat(this.data.form)
     if (!checked.ok) {
       // 校验失败不上锁，否则用户改完字段也无法再次提交
-      wx.showToast({ title: checked.msg, icon: 'none' })
+      // 错误定位：顶部公告条 + 该字段标红 + 滚动到该字段（指南 2.3）
+      this.setData({ errorField: checked.field, errorMsg: checked.msg })
+      wx.pageScrollTo({ selector: '#f-' + checked.field, duration: 200, offsetTop: -24 })
       return
     }
 
-    this.setData({ submitting: true })
+    this.setData({ submitting: true, errorField: '', errorMsg: '' })
     const payload = checked.value
 
     try {
@@ -175,7 +190,7 @@ Page({
       title: '删除档案',
       content: '删除后这只猫的记录也会一起清除，且无法恢复。',
       confirmText: '删除',
-      confirmColor: '#C96A6A',
+      confirmColor: theme.PALETTE.vermilion,
       success(res) {
         if (!res.confirm) return
         store.removeCat(that.data.id)

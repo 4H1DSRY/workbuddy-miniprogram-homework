@@ -1,4 +1,5 @@
 const store = require('../../utils/store.js')
+const theme = require('../../utils/theme.js')
 const app = getApp()
 
 Page({
@@ -72,7 +73,7 @@ Page({
       title: '重置演示数据',
       content: '将清空本机所有猫咪与记录，并恢复初始的三只猫。确定继续吗？',
       confirmText: '重置',
-      confirmColor: '#E8763F',
+      confirmColor: theme.PALETTE.vermilion,
       success(res) {
         if (!res.confirm) return
         store.resetAll()

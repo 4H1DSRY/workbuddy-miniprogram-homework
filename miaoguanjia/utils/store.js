@@ -2,6 +2,7 @@
  * 喵管家 - 本地数据层
  * 全部数据落在 wx.setStorageSync，无任何网络请求，保证 Console 干净。
  */
+const theme = require('./theme.js')
 
 const CATS_KEY = 'mgj_cats'
 const RECORDS_KEY = 'mgj_records'
@@ -309,18 +310,19 @@ function removeCat(id) {
 /* ------------------------- 记录 ------------------------- */
 
 /* icon 是自绘的 1.5px 描边图标路径，不再是 emoji：
-   emoji 是系统预置的形，在 iOS 与 Android 上长得完全不同，设计上不可控。 */
+   emoji 是系统预置的形，在 iOS 与 Android 上长得完全不同，设计上不可控。
+   颜色统一从 theme.js 取，不在数据层再抄一份字面量。 */
 const TYPE_META = {
-  feed: { label: '投食', icon: '/images/icons/feed.png', unit: 'g', color: '#C9C2B8' },
-  water: { label: '饮水', icon: '/images/icons/water.png', unit: 'ml', color: '#C9C2B8' },
-  play: { label: '陪玩', icon: '/images/icons/play.png', unit: '分钟', color: '#C9C2B8' },
-  weight: { label: '称重', icon: '/images/icons/weight.png', unit: 'kg', color: '#B5442F' },
-  vaccine: { label: '疫苗', icon: '/images/icons/vaccine.png', unit: '', color: '#C9C2B8' },
-  deworm: { label: '驱虫', icon: '/images/icons/deworm.png', unit: '', color: '#C9C2B8' }
+  feed: { label: '投食', icon: '/images/icons/feed.png', unit: 'g', color: theme.PALETTE.ink6 },
+  water: { label: '饮水', icon: '/images/icons/water.png', unit: 'ml', color: theme.PALETTE.ink6 },
+  play: { label: '陪玩', icon: '/images/icons/play.png', unit: '分钟', color: theme.PALETTE.ink6 },
+  weight: { label: '称重', icon: '/images/icons/weight.png', unit: 'kg', color: theme.PALETTE.vermilion },
+  vaccine: { label: '疫苗', icon: '/images/icons/vaccine.png', unit: '', color: theme.PALETTE.ink6 },
+  deworm: { label: '驱虫', icon: '/images/icons/deworm.png', unit: '', color: theme.PALETTE.ink6 }
 }
 
 function typeMeta(type) {
-  return TYPE_META[type] || { label: '记录', icon: '/images/icons/feed.png', unit: '', color: '#C9C2B8' }
+  return TYPE_META[type] || { label: '记录', icon: '/images/icons/feed.png', unit: '', color: theme.PALETTE.ink6 }
 }
 
 function getRecords(catId) {

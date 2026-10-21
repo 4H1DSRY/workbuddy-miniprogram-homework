@@ -125,17 +125,18 @@ wxssFiles.forEach((f) => {
 // 4. theme.js 的 PALETTE 必须与 app.wxss 同名 token 取值一致
 {
   const themeSrc = fs.readFileSync('utils/theme.js', 'utf8')
-  // 全量 25 组（chart* 三个是 canvas 专用，不映射到 CSS 变量，故不在此列）
-  // 语义名在前，兼容名在后；两套都必须与 app.wxss 同值
+  // chart* 三个是 canvas 专用，不映射到 CSS 变量，故不在此列。
+  // 2026-10-21 起兼容名（brand* / text* / line*）已从 CSS 与 JS 两侧同时移除，
+  // 全站只保留语义名；三态色为新增，同样要求两侧同值。
   const pairs = [
     ['bg', 'bg'], ['paper', 'paper'],
     ['ink', 'ink'], ['ink2', 'ink-2'], ['ink3', 'ink-3'],
     ['ink4', 'ink-4'], ['ink5', 'ink-5'], ['ink6', 'ink-6'],
     ['vermilion', 'vermilion'], ['vermilionDeep', 'vermilion-deep'], ['vermilionTint', 'vermilion-tint'],
     ['rule', 'rule'], ['ruleSoft', 'rule-soft'], ['ruleStrong', 'rule-strong'],
-    ['brand', 'brand'], ['brandDeep', 'brand-deep'], ['brandTint', 'brand-tint'],
-    ['text', 'text'], ['text2', 'text-2'], ['text3', 'text-3'], ['text4', 'text-4'], ['text5', 'text-5'],
-    ['line', 'line'], ['lineSoft', 'line-soft'], ['line2', 'line-2']
+    ['alertFg', 'alert-fg'], ['alertBg', 'alert-bg'],
+    ['cautionFg', 'caution-fg'], ['cautionBg', 'caution-bg'],
+    ['safeFg', 'safe-fg'], ['safeBg', 'safe-bg']
   ]
   pairs.forEach(([jsKey, cssKey]) => {
     const jsMatch = themeSrc.match(new RegExp(jsKey + ":\\s*'(#[0-9A-Fa-f]{6})'"))

@@ -49,7 +49,7 @@
 
 .profile-pill {
   font-size: 20rpx;
-  color: var(--c-brand-deep);
+  color: var(--c-vermilion-deep);
   background: var(--c-vermilion-tint);
   border-radius: 4rpx;
   padding: 6rpx 18rpx;
@@ -74,7 +74,7 @@
 .stat-num {
   font-size: 40rpx;
   font-weight: 700;
-  color: var(--c-text);
+  color: var(--c-ink);
   line-height: 1.2;
 }
 
@@ -87,7 +87,7 @@
 .stat-line {
   width: 1rpx;
   height: 48rpx;
-  background: var(--c-line);
+  background: var(--c-rule);
 }
 
 /* 通用列表 */
@@ -99,7 +99,7 @@
   display: flex;
   align-items: center;
   padding: 24rpx 0;
-  border-bottom: 1rpx solid var(--c-line-soft);
+  border-bottom: 1rpx solid var(--c-rule-soft);
 }
 
 .row.last {
@@ -110,7 +110,7 @@
   width: 84rpx;
   height: 84rpx;
   border-radius: 8rpx;
-  background: var(--c-line);
+  background: var(--c-rule);
   flex-shrink: 0;
 }
 
@@ -141,7 +141,7 @@
 .row-title {
   display: block;
   font-size: 28rpx;
-  color: var(--c-text);
+  color: var(--c-ink);
   font-weight: 500;
 }
 

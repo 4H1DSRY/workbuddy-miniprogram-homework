@@ -177,7 +177,7 @@ Page({
 
         const series = that.data.series || []
         if (series.length < 2) {
-          ctx.fillStyle = PALETTE.line2
+          ctx.fillStyle = PALETTE.ruleStrong
           ctx.font = '12px sans-serif'
           ctx.textAlign = 'center'
           ctx.fillText('暂无足够数据', W / 2, H / 2 + 4)
@@ -220,7 +220,7 @@ Page({
         ctx.beginPath()
         ctx.moveTo(xAt(0), yAt(vals[0]))
         for (let i = 1; i < series.length; i++) ctx.lineTo(xAt(i), yAt(vals[i]))
-        ctx.strokeStyle = PALETTE.brand
+        ctx.strokeStyle = PALETTE.vermilion
         ctx.lineWidth = 2
         ctx.lineJoin = 'round'
         ctx.lineCap = 'round'
@@ -232,7 +232,7 @@ Page({
           ctx.arc(xAt(i), yAt(vals[i]), isLast ? 4 : 2.6, 0, Math.PI * 2)
           ctx.fillStyle = PALETTE.white
           ctx.fill()
-          ctx.strokeStyle = PALETTE.brand
+          ctx.strokeStyle = PALETTE.vermilion
           ctx.lineWidth = isLast ? 2.5 : 1.5
           ctx.stroke()
         }
