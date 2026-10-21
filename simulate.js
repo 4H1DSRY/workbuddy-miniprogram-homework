@@ -27,6 +27,11 @@ global.wx = {
   switchTab: (o) => log('[switchTab]', o.url),
   setNavigationBarTitle: (o) => log('[title]', o.title),
   stopPullDownRefresh: () => {},
+  // 表单校验失败会滚到出错字段，桩里要记录，否则 onSave 直接 TypeError
+  pageScrollTo: (o) => {
+    global.__lastScroll = o && o.selector
+    log('[pageScrollTo]', o && o.selector)
+  },
   getWindowInfo: () => ({ pixelRatio: 2 }),
   nextTick: (fn) => fn(),
   createSelectorQuery: () => {
@@ -255,6 +260,24 @@ eq('页面保存走数据层校验：空名字不落库', (function () {
   p.setData({ 'form.weight': '4.0', 'form.foodTarget': 180 })
   p.onSave()
   return store.getCats().length === before
+})(), true)
+
+eq('校验失败：错误落到 name 字段并请求滚动定位', (function () {
+  global.__lastScroll = null
+  const p = loadPage('pages/cat-edit/cat-edit.js')
+  p.onLoad({})
+  p.setData({ 'form.weight': '4.0', 'form.foodTarget': 180 })
+  p.onSave()
+  return p.data.errorField === 'name' && p.data.errorMsg !== '' && global.__lastScroll === '#f-name'
+})(), true)
+
+eq('校验失败后改该字段会自动清错', (function () {
+  const p = loadPage('pages/cat-edit/cat-edit.js')
+  p.onLoad({})
+  p.setData({ 'form.weight': '4.0', 'form.foodTarget': 180 })
+  p.onSave()
+  p.onName({ detail: { value: '奶糖' } })
+  return p.data.errorField === ''
 })(), true)
 
 /* ---------------- 结果 ---------------- */
