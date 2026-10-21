@@ -1,6 +1,8 @@
 const fs = require('fs')
 const path = require('path')
-const ROOT = 'D:/Claw/workbuddy-course/homework-4/miaoguanjia'
+// 相对定位：脚本放在项目根，小程序包固定在 ./miaoguanjia
+// 不要写死绝对路径，否则换机器 / 迁移目录会直接崩
+const ROOT = path.join(__dirname, 'miaoguanjia')
 process.chdir(ROOT)
 
 const errs = []
@@ -103,7 +105,12 @@ wxssFiles.forEach((f) => {
 })
 
 // 3. token 化过的色值不应再以裸色值出现（白/黑除外）
-const TOKENIZED = ['FF7A45', 'E8763F', 'FFF0E6', 'FFF8F3', '2E2A27', '6E645C', '8C8178', 'A2968B', 'B3A79C', 'F3E8DE', 'F6EBE1', 'C9BCB0']
+// 曾经作为 token 存在、因此不该再以裸色值出现的颜色。
+// 前半是旧橙配色（历史遗留），后半是现行纸墨朱。
+const TOKENIZED = [
+  'FF7A45', 'E8763F', 'FFF0E6', 'FFF8F3', '2E2A27', '6E645C', 'A2968B', 'B3A79C', 'F3E8DE', 'F6EBE1', 'C9BCB0',
+  'B5442F', '9C3927', 'F3E7E2', 'FAF8F4', '1E1B19', '4A443F', '7A7168', '8C8178', 'B8B0A6', 'C9C2B8', 'E6E0D6', 'F0EBE2', 'DED8CC'
+]
 wxssFiles.forEach((f) => {
   const css = fs.readFileSync(f, 'utf8').replace(/--c-[a-z0-9-]+\s*:\s*#[0-9A-Fa-f]{6}/g, '')
   const re = /#([0-9A-Fa-f]{6})\b/g
@@ -118,9 +125,18 @@ wxssFiles.forEach((f) => {
 // 4. theme.js 的 PALETTE 必须与 app.wxss 同名 token 取值一致
 {
   const themeSrc = fs.readFileSync('utils/theme.js', 'utf8')
-  const pairs = [['brand', 'brand'], ['brandDeep', 'brand-deep'], ['brandTint', 'brand-tint'],
-    ['bg', 'bg'], ['text', 'text'], ['text2', 'text-2'], ['text3', 'text-3'],
-    ['text4', 'text-4'], ['text5', 'text-5'], ['line', 'line'], ['lineSoft', 'line-soft'], ['line2', 'line-2']]
+  // 全量 25 组（chart* 三个是 canvas 专用，不映射到 CSS 变量，故不在此列）
+  // 语义名在前，兼容名在后；两套都必须与 app.wxss 同值
+  const pairs = [
+    ['bg', 'bg'], ['paper', 'paper'],
+    ['ink', 'ink'], ['ink2', 'ink-2'], ['ink3', 'ink-3'],
+    ['ink4', 'ink-4'], ['ink5', 'ink-5'], ['ink6', 'ink-6'],
+    ['vermilion', 'vermilion'], ['vermilionDeep', 'vermilion-deep'], ['vermilionTint', 'vermilion-tint'],
+    ['rule', 'rule'], ['ruleSoft', 'rule-soft'], ['ruleStrong', 'rule-strong'],
+    ['brand', 'brand'], ['brandDeep', 'brand-deep'], ['brandTint', 'brand-tint'],
+    ['text', 'text'], ['text2', 'text-2'], ['text3', 'text-3'], ['text4', 'text-4'], ['text5', 'text-5'],
+    ['line', 'line'], ['lineSoft', 'line-soft'], ['line2', 'line-2']
+  ]
   pairs.forEach(([jsKey, cssKey]) => {
     const jsMatch = themeSrc.match(new RegExp(jsKey + ":\\s*'(#[0-9A-Fa-f]{6})'"))
     const cssMatch = appWxss.match(new RegExp('--c-' + cssKey + '\\s*:\\s*(#[0-9A-Fa-f]{6})'))
@@ -133,3 +149,6 @@ wxssFiles.forEach((f) => {
 }
 
 console.log(errs.length ? errs.join('\n') : 'ALL CHECKS PASSED')
+// 退出码是守门人的意义所在：CI（.github/workflows）靠它判定成败。
+// 没有这行，npm test 永远返回 0，检查等于没做。
+process.exit(errs.length ? 1 : 0)

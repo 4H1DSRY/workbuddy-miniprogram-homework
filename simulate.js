@@ -3,7 +3,8 @@
  * 只验证逻辑与数据结构，不渲染视图（视图渲染需在开发者工具里看）。
  */
 const path = require('path')
-const ROOT = 'D:/Claw/workbuddy-course/homework-4/miaoguanjia'
+// 相对定位：脚本放在项目根，小程序包固定在 ./miaoguanjia
+const ROOT = path.join(__dirname, 'miaoguanjia')
 
 const logs = []
 function log() {

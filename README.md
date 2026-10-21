@@ -1,6 +1,17 @@
 # 喵管家 · 猫咪管理小程序
 
-Homework 4 作业项目。微信**原生**小程序（WXML + WXSS + JS），无云开发、无 npm、无任何网络请求，数据全部落在本机 Storage。
+微信**原生**小程序（WXML + WXSS + JS），无云开发、无运行时依赖、无任何网络请求，数据全部落在本机 Storage。
+
+这个仓库不只是作业存档，是一个持续维护的项目。**按目的选入口**：
+
+| 你想做什么 | 去哪 |
+| --- | --- |
+| 知道「什么算做完」「什么不能破」 | [`PROJECT.md`](PROJECT.md) —— 章程、里程碑、5 条架构不变量、三层验收口径 |
+| 知道「接下来做什么」 | [`docs/backlog.md`](docs/backlog.md) —— 编号条目、优先级、可验收标准 |
+| 知道「已经验证过什么」 | [`docs/验收清单.md`](docs/验收清单.md) —— 逐项证据与截图 |
+| 改完代码快速确认没弄坏 | `npm test`（= 静态校验 + 61 项逻辑断言） |
+| 看版本变化 | [`CHANGELOG.md`](CHANGELOG.md) |
+| 只是想跑起来看看 | 往下读第二节 |
 
 ---
 
@@ -92,16 +103,31 @@ miaoguanjia/
     └── cats/       # 猫咪头像（你替换这里）
 ```
 
-同目录下另有开发辅助文件（不属于小程序包，别上传）：
+同目录下另有工程文件（**不属于小程序包**，只有 `miaoguanjia/` 会被上传）：
 
-- `make_icons.py` — 生成全部线条图标与 tabBar 图标（Pillow，4× 超采样抗锯齿）
-- `make_assets.py` — 生成占位头像
-- `check.js` — 静态校验（JSON 语法、页面文件齐全、WXML 标签配对、事件处理函数存在、图片路径存在、**设计 token 一致性**）
-- `simulate.js` — 打桩 `wx` API，在 Node 里真跑一遍数据层和四个页面逻辑
+| 路径 | 作用 |
+| --- | --- |
+| `PROJECT.md` / `docs/backlog.md` | 项目章程 / 待办条目 |
+| `package.json` | 只有 scripts，无依赖。`npm test` = check + simulate |
+| `check.js` | **L1 静态校验**：JSON 语法、页面文件齐全、WXML 标签配对、事件处理函数存在、图片路径有效、设计 token 双份一致。失败时退出码 1 |
+| `simulate.js` | **L2 逻辑冒烟**：打桩 `wx` API，在 Node 里真跑一遍数据层与四个页面生命周期，61 项断言 |
+| `.github/workflows/verify.yml` | push / PR 时自动跑上面两层 |
+| `tools/assets/` | 图标与占位图生成器（Pillow，4× 超采样） |
+| `tools/capture/` | 开发者工具截图与窗口驱动（Windows，不抢前台焦点） |
+| `tools/legacy/` | 一次性脚本归档，不再维护 |
+| `.workbuddy/memory/` | 项目记忆：约定与踩过的坑 |
+
+脚本用法与「必须先 `cd` 到项目根」这类前提，见 [`tools/README.md`](tools/README.md)。
 
 ---
 
-## 六、已经做过的校验（不是"应该能跑"）
+## 六、怎么验证（不是"应该能跑"）
+
+```bash
+npm test
+```
+
+两层依次跑完打印 `ALL CHECKS PASSED` 与 `全部通过 ✅`；**任何一层失败退出码为 1**，CI 靠这个判定。也可以单独跑 `npm run check` / `npm run simulate`。
 
 | 校验 | 结果 |
 | --- | --- |

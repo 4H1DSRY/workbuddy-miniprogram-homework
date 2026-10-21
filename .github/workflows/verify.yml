@@ -1,0 +1,29 @@
+name: verify
+
+# 项目化的第一道闸门：任何 push 与 PR 都必须过 L1 静态 + L2 逻辑两层。
+# 布局问题（L3 视觉）CI 抓不到，仍需本地跑 tools/capture 截图确认。
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  static-and-logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # L1：JSON 语法、页面文件齐全、WXML 标签配对、事件处理函数存在、
+      #     图片路径有效、设计 token 在 app.wxss 与 theme.js 之间一致
+      - name: L1 静态校验
+        run: node check.js
+
+      # L2：打桩 wx API，真实跑一遍数据层与四个页面生命周期（61 项断言）
+      - name: L2 逻辑冒烟
+        run: node simulate.js
