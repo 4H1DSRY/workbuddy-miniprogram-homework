@@ -1,0 +1,100 @@
+<view class="page">
+
+  <view class="rec-hero">
+    <view>
+      <text class="rec-hero-title">照顾记录</text>
+      <text class="rec-hero-sub">共 {{total}} 条 · 覆盖 {{days}} 天</text>
+    </view>
+    <view class="rec-hero-badge">
+      <text class="rb-num">{{weekCount}}</text>
+      <text class="rb-txt">近七天</text>
+    </view>
+  </view>
+
+  <!-- 猫咪切换 -->
+  <scroll-view class="cat-bar" scroll-x="{{true}}" enable-flex="{{true}}" show-scrollbar="{{false}}">
+    <view class="cat-bar-row">
+      <view
+        class="cat-chip {{item.id === catId ? 'on' : ''}}"
+        wx:for="{{cats}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onSwitchCat"
+      >
+        <image class="chip-avatar" src="{{item.avatar}}" mode="aspectFill" />
+        <text class="chip-name">{{item.name}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 体重趋势 -->
+  <view class="card chart-card">
+    <view class="chart-head">
+      <view>
+        <text class="chart-title">体重趋势</text>
+        <text class="chart-sub">{{chartSub}}</text>
+      </view>
+      <view class="chart-latest">
+        <text class="latest-num">{{latestWeight}}</text>
+        <text class="latest-unit">kg</text>
+      </view>
+    </view>
+    <canvas class="chart" type="2d" id="weightChart"></canvas>
+    <view class="chart-tip" wx:if="{{series.length < 2}}">再记录一次体重，就能画出趋势线</view>
+  </view>
+
+  <!-- 筛选 -->
+  <view class="filters">
+    <view
+      class="filter {{item.key === filter ? 'on' : ''}}"
+      wx:for="{{filters}}"
+      wx:key="key"
+      data-key="{{item.key}}"
+      bindtap="onFilter"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- 时间线 -->
+  <block wx:if="{{groups.length}}">
+    <view class="group" wx:for="{{groups}}" wx:key="key">
+      <view class="group-head">
+        <text class="group-label">{{item.label}}</text>
+        <text class="group-count">{{item.items.length}} 条</text>
+      </view>
+      <view class="card group-card">
+        <view
+          class="tl-item {{ri === item.items.length - 1 ? 'last' : ''}}"
+          wx:for="{{item.items}}"
+          wx:for-item="rec"
+          wx:for-index="ri"
+          wx:key="id"
+        >
+          <view class="tl-left">
+            <text class="tl-time">{{rec.clock}}</text>
+          </view>
+          <view class="tl-axis">
+            <view class="tl-dot" style="background: {{rec.color}};"></view>
+            <view class="tl-line"></view>
+          </view>
+          <view class="tl-body">
+            <view class="tl-top">
+              <view class="tl-head"><image class="tl-ico" src="{{rec.icon}}" mode="aspectFit" /><text class="tl-title">{{rec.label}}</text></view>
+              <text class="tl-value" wx:if="{{rec.valueText}}">{{rec.valueText}}</text>
+            </view>
+            <text class="tl-note">{{rec.note}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view class="card empty" wx:else>
+    <text class="empty-ico">📋</text>
+    <text class="empty-title">这个筛选下还没有记录</text>
+    <text class="empty-sub">回到首页，用快捷操作给猫咪记一笔</text>
+    <view class="empty-btn" bindtap="goHome">去首页投食</view>
+  </view>
+
+  <view class="footer">数据保存在本机 · 清空可在「我的」里操作</view>
+
+</view>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>喵管家 · 字体方案对照</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#E8E6E1; padding:44px 36px 70px; color:#26221E;
+    -webkit-font-smoothing:antialiased;
+  }
+  .head { max-width:1120px; margin:0 auto 34px; }
+  .head h1 { font-size:20px; font-weight:600; letter-spacing:.04em; }
+  .head p { font-size:12.5px; color:#7A726A; margin-top:9px; line-height:1.7; }
+  .head code { font-family:Consolas,monospace; font-size:11.5px; background:#DBD8D2; padding:1px 5px; border-radius:3px; }
+
+  .grid { display:flex; gap:22px; max-width:1120px; margin:0 auto; align-items:flex-start; }
+  .col { flex:1; min-width:0; }
+
+  .tag {
+    display:flex; align-items:baseline; gap:7px; margin-bottom:12px;
+  }
+  .tag b { font-size:15px; font-weight:700; letter-spacing:.04em; }
+  .tag span { font-size:10.5px; color:#8A827A; letter-spacing:.04em; }
+  .tag .pick {
+    margin-left:auto; font-size:9.5px; letter-spacing:.08em; color:#B5442F;
+    border:1px solid #C9A79C; border-radius:2px; padding:1px 5px;
+  }
+
+  .panel {
+    background:#FAF8F4; border-radius:4px; padding:26px 22px 22px;
+    min-height:470px;
+    box-shadow:0 1px 0 rgba(0,0,0,.04), 0 10px 26px rgba(70,56,44,.07);
+  }
+
+  .date { font-size:9px; color:#8C8178; letter-spacing:.14em; }
+  .rule { height:1px; background:#E6E0D6; margin:12px 0 0; }
+
+  .nm { margin-top:24px; line-height:1.1; }
+  .sb { font-size:10.5px; color:#8C8178; margin-top:8px; letter-spacing:.05em; }
+
+  .num-row { display:flex; align-items:baseline; margin-top:22px; }
+  .num { line-height:1; letter-spacing:-.01em; }
+  .unit { font-size:10.5px; color:#8C8178; margin-left:5px; letter-spacing:.06em; }
+  .delta { font-size:10.5px; color:#B5442F; margin-left:9px; }
+
+  .bars { margin-top:22px; border-top:1px solid #E6E0D6; }
+  .bar { display:flex; align-items:center; height:32px; border-bottom:1px solid #F0EBE2; }
+  .bl { width:32px; font-size:11px; color:#4A443F; letter-spacing:.06em; flex-shrink:0; }
+  .bt { flex:1; height:1px; background:#DED8CC; margin:0 10px; position:relative; }
+  .bf { position:absolute; left:0; top:0; height:1px; background:#1E1B19; }
+  .bv { font-size:11px; color:#8C8178; width:70px; text-align:right; font-variant-numeric:tabular-nums; }
+  .bv b { font-weight:500; color:#1E1B19; }
+
+  .acts { display:flex; margin-top:20px; padding-top:14px; border-top:1px solid #E6E0D6; }
+  .acts > div { flex:1; text-align:center; font-size:11px; color:#4A443F; letter-spacing:.10em; }
+
+  /* ===== 字体栈 ===== */
+  .f-sans {
+    font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue",
+                "Noto Sans SC", "Microsoft YaHei", Helvetica, sans-serif;
+  }
+  .f-serif {
+    font-family:"Songti SC", "STSong", "Noto Serif SC", "Noto Serif CJK SC",
+                "Source Han Serif SC", "SimSun", serif;
+  }
+  .f-serif-only { font-family:"Songti SC", "STSong", "Noto Serif SC", "SimSun", serif; }
+
+  /* ===== A 现行 ===== */
+  .A .nm { font-size:31px; font-weight:300; letter-spacing:.10em; }
+  .A .num { font-size:40px; font-weight:300; }
+
+  /* ===== B 宋黑混排 ===== */
+  .B .nm { font-size:33px; font-weight:400; letter-spacing:.12em; }
+  .B .num { font-size:46px; font-weight:400; letter-spacing:.01em; }
+  .B .sb { letter-spacing:.08em; }
+  .B .date { letter-spacing:.18em; }
+
+  /* ===== C 全宋体 ===== */
+  .C .date { letter-spacing:.18em; }
+  .C .nm { font-size:33px; font-weight:400; letter-spacing:.14em; }
+  .C .num { font-size:44px; font-weight:400; letter-spacing:.02em; }
+  .C .bl { letter-spacing:.10em; }
+  .C .bv { font-size:11.5px; }
+  .C .acts > div { letter-spacing:.14em; }
+
+  /* ===== D 细黑大字距 ===== */
+  .D { font-family:"Microsoft YaHei Light","Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif; }
+  .D .nm { font-size:36px; font-weight:300; letter-spacing:.18em; }
+  .D .num { font-size:47px; font-weight:300; letter-spacing:.005em; }
+  .D .sb { letter-spacing:.10em; }
+  .D .date { letter-spacing:.22em; }
+  .D .acts > div { letter-spacing:.16em; }
+  .D .bl { letter-spacing:.10em; }
+
+  /* 说明区 */
+  .notes { max-width:1120px; margin:40px auto 0; }
+  .notes h2 { font-size:12px; font-weight:600; letter-spacing:.14em; color:#6E665E; margin-bottom:14px; }
+  table { width:100%; border-collapse:collapse; font-size:11.5px; line-height:1.6; }
+  th {
+    text-align:left; font-weight:600; color:#4A443F; padding:8px 10px 8px 0;
+    border-bottom:1px solid #C9C4BC; font-size:10.5px; letter-spacing:.08em;
+  }
+  td { padding:9px 10px 9px 0; border-bottom:1px solid #D8D4CC; vertical-align:top; color:#3A3531; }
+  td:first-child { font-weight:600; width:52px; color:#B5442F; }
+  .warn { max-width:1120px; margin:26px auto 0; font-size:11.5px; line-height:1.8; color:#6E665E;
+          border-left:2px solid #B5442F; padding-left:14px; }
+  .warn b { color:#26221E; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>喵管家 · 字体方案对照</h1>
+  <p>
+    同一段内容、同一套配色，只换字体。字号阶梯一并调整：现行版有 6 处字号挤在 10–11px，
+    中间几乎空档；B/C/D 把最小层压到 9px、最大层提到 44–46px，把对比拉开。
+  </p>
+</div>
+
+<div class="grid">
+
+  <!-- A -->
+  <div class="col">
+    <div class="tag"><b>A</b><span>现行 · 黑体</span></div>
+    <div class="panel f-sans A">
+      <div class="date">10月21日 周三</div>
+      <div class="rule"></div>
+      <div class="nm">团子</div>
+      <div class="sb">三岁六个月 · 英国短毛</div>
+      <div class="num-row"><span class="num">4.62</span><span class="unit">KG</span><span class="delta">↑ 0.04</span></div>
+      <div class="bars">
+        <div class="bar"><span class="bl">进食</span><div class="bt"><div class="bf" style="width:84%"></div></div><span class="bv"><b>168</b> / 200 g</span></div>
+        <div class="bar"><span class="bl">饮水</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv"><b>180</b> / 240 ml</span></div>
+        <div class="bar"><span class="bl">心情</span><div class="bt"><div class="bf" style="width:82%"></div></div><span class="bv"><b>82</b></span></div>
+      </div>
+      <div class="acts"><div>投食</div><div>喂水</div><div>逗猫</div><div>称重</div></div>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="col">
+    <div class="tag"><b>B</b><span>宋黑混排</span><span class="pick">推荐</span></div>
+    <div class="panel B">
+      <div class="date f-sans">10月21日 周三</div>
+      <div class="rule"></div>
+      <div class="nm f-serif">团子</div>
+      <div class="sb f-sans">三岁六个月 · 英国短毛</div>
+      <div class="num-row"><span class="num f-serif">4.62</span><span class="unit f-sans">KG</span><span class="delta f-sans">↑ 0.04</span></div>
+      <div class="bars f-sans">
+        <div class="bar"><span class="bl">进食</span><div class="bt"><div class="bf" style="width:84%"></div></div><span class="bv"><b>168</b> / 200 g</span></div>
+        <div class="bar"><span class="bl">饮水</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv"><b>180</b> / 240 ml</span></div>
+        <div class="bar"><span class="bl">心情</span><div class="bt"><div class="bf" style="width:82%"></div></div><span class="bv"><b>82</b></span></div>
+      </div>
+      <div class="acts f-sans"><div>投食</div><div>喂水</div><div>逗猫</div><div>称重</div></div>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="col">
+    <div class="tag"><b>C</b><span>全宋体</span></div>
+    <div class="panel C f-serif-only">
+      <div class="date">10月21日 周三</div>
+      <div class="rule"></div>
+      <div class="nm">团子</div>
+      <div class="sb">三岁六个月 · 英国短毛</div>
+      <div class="num-row"><span class="num">4.62</span><span class="unit">KG</span><span class="delta">↑ 0.04</span></div>
+      <div class="bars">
+        <div class="bar"><span class="bl">进食</span><div class="bt"><div class="bf" style="width:84%"></div></div><span class="bv"><b>168</b> / 200 g</span></div>
+        <div class="bar"><span class="bl">饮水</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv"><b>180</b> / 240 ml</span></div>
+        <div class="bar"><span class="bl">心情</span><div class="bt"><div class="bf" style="width:82%"></div></div><span class="bv"><b>82</b></span></div>
+      </div>
+      <div class="acts"><div>投食</div><div>喂水</div><div>逗猫</div><div>称重</div></div>
+    </div>
+  </div>
+
+  <!-- D -->
+  <div class="col">
+    <div class="tag"><b>D</b><span>细黑 · 大字距</span></div>
+    <div class="panel f-sans D">
+      <div class="date">10月21日 周三</div>
+      <div class="rule"></div>
+      <div class="nm">团子</div>
+      <div class="sb">三岁六个月 · 英国短毛</div>
+      <div class="num-row"><span class="num">4.62</span><span class="unit">KG</span><span class="delta">↑ 0.04</span></div>
+      <div class="bars">
+        <div class="bar"><span class="bl">进食</span><div class="bt"><div class="bf" style="width:84%"></div></div><span class="bv"><b>168</b> / 200 g</span></div>
+        <div class="bar"><span class="bl">饮水</span><div class="bt"><div class="bf" style="width:75%"></div></div><span class="bv"><b>180</b> / 240 ml</span></div>
+        <div class="bar"><span class="bl">心情</span><div class="bt"><div class="bf" style="width:82%"></div></div><span class="bv"><b>82</b></span></div>
+      </div>
+      <div class="acts"><div>投食</div><div>喂水</div><div>逗猫</div><div>称重</div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="notes">
+  <h2>四 条 路 线</h2>
+  <table>
+    <tr><th></th><th>字体族</th><th>字号 · 字重 · 字距</th><th>代价</th></tr>
+    <tr>
+      <td>A</td>
+      <td>苹方 → 雅黑 / Noto Sans</td>
+      <td>名字 31/300 · 数字 40/300</td>
+      <td>就是现在这样。层级靠字重撑，31 与 40 只差 1.29 倍，等于没有主次</td>
+    </tr>
+    <tr>
+      <td>B</td>
+      <td>名字与数字用宋体，其余用黑体</td>
+      <td>名字 33/400 · 数字 44/400 · 字距 0.12em</td>
+      <td>宋体在 Android 上大概率回退成黑体，标题风格会变弱（但不会崩）</td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td>全部宋体</td>
+      <td>名字 33 · 数字 44 · 字距 0.14em</td>
+      <td>11px 的小字用宋体会发糊，横画细到下笔不清；Android 上整体退化风险最大</td>
+    </tr>
+    <tr>
+      <td>D</td>
+      <td>全黑体，靠字重与字距</td>
+      <td>名字 35/200 · 数字 46/200 · 字距 0.16em</td>
+      <td>跨平台最稳；但 200 字重在很多安卓机上没有，会被合成出来，边缘发灰</td>
+    </tr>
+  </table>
+</div>
+
+<div class="warn">
+  <b>先说清楚一件事：这个页面是在 Windows 上渲染的，不等于真机。</b>
+  你看到的宋体是 STSong / 思源宋体，iOS 上会换成 Songti SC（更秀气一些），
+  Android 上则很可能拿不到任何中文衬线字体、直接回退成黑体。
+  所以 B 和 C 的“宋体质感”只在 iPhone 上成立——这也是我给 B 标推荐、而不是 C 的原因：
+  <b>B 把宋体限制在标题与数字上，即使回退，损失的也只是风格而非可读性。</b>
+</div>
+
+</body>
+</html>

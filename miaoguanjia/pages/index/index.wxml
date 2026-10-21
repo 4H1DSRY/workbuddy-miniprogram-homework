@@ -1,0 +1,94 @@
+<view class="page">
+
+  <!-- 顶栏：日期 + 多猫切换。次要功能退到工具层，不参与视线。 -->
+  <view class="topline">
+    <text class="date">{{today}}</text>
+    <view class="switcher">
+      <text
+        class="sw {{item.id === cat.id ? 'on' : ''}}"
+        wx:for="{{cats}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onSwitch"
+      >{{item.name}}</text>
+      <text class="sw-add" bindtap="goAdd">＋</text>
+    </view>
+  </view>
+  <view class="hairline"></view>
+
+  <block wx:if="{{cat.id}}">
+
+    <view class="name">{{cat.name}}</view>
+    <view class="sub">{{cat.ageText}} · {{cat.breed}}</view>
+
+    <image class="photo" src="{{cat.avatar}}" mode="aspectFill" />
+
+    <!-- 唯一的朱色焦点：今日照顾分 -->
+    <view class="weigh">
+      <view class="weigh-main">
+        <text class="num">{{cat.weight}}</text>
+        <text class="unit">KG</text>
+        <text class="delta {{trend.delta >= 0 ? '' : 'down'}}">{{trend.delta >= 0 ? '↑' : '↓'}} {{trend.text}}</text>
+      </view>
+      <view class="ring-wrap">
+        <view class="ring" style="background: {{careRing}};">
+          <view class="ring-hole"><text class="ring-num">{{care}}</text></view>
+        </view>
+        <text class="ring-cap">今日照顾</text>
+      </view>
+    </view>
+
+    <!-- 三条刻度：线长即完成度，右侧写绝对值，同一件事只说一遍 -->
+    <view class="bars">
+      <view class="bar">
+        <text class="bar-label">进食</text>
+        <view class="bar-track"><view class="bar-fill" style="width: {{pct.food}}%;"></view></view>
+        <text class="bar-val">{{pct.foodAbs}} / {{pct.foodTarget}} g</text>
+      </view>
+      <view class="bar">
+        <text class="bar-label">饮水</text>
+        <view class="bar-track"><view class="bar-fill soft" style="width: {{pct.water}}%;"></view></view>
+        <text class="bar-val">{{pct.waterAbs}} / {{pct.waterTarget}} ml</text>
+      </view>
+      <view class="bar">
+        <text class="bar-label">心情</text>
+        <view class="bar-track"><view class="bar-fill" style="width: {{pct.mood}}%;"></view></view>
+        <text class="bar-val">{{pct.mood}}</text>
+      </view>
+    </view>
+
+    <!-- 四个动作：只有线条图标与字，没有色块 -->
+    <view class="acts">
+      <view class="act" hover-class="tap-active" bindtap="onFeed">
+        <image class="act-ico" src="/images/icons/feed.png" mode="aspectFit" />
+        <text class="act-txt">投食</text>
+      </view>
+      <view class="act" hover-class="tap-active" bindtap="onWater">
+        <image class="act-ico" src="/images/icons/water.png" mode="aspectFit" />
+        <text class="act-txt">喂水</text>
+      </view>
+      <view class="act" hover-class="tap-active" bindtap="onPlay">
+        <image class="act-ico" src="/images/icons/play.png" mode="aspectFit" />
+        <text class="act-txt">逗猫</text>
+      </view>
+      <view class="act" hover-class="tap-active" bindtap="onWeigh">
+        <image class="act-ico" src="/images/icons/weight.png" mode="aspectFit" />
+        <text class="act-txt">称重</text>
+      </view>
+    </view>
+
+    <view class="foot" hover-class="tap-active" bindtap="goRecords">
+      <text>今天 · <text class="n">{{todayCount}}</text> 条记录</text>
+      <text class="ar">›</text>
+    </view>
+
+  </block>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:else>
+    <text class="empty-title">还没有猫咪档案</text>
+    <text class="empty-sub">先建一只，喵管家才知道该照顾谁</text>
+    <view class="empty-btn" hover-class="tap-active" bindtap="goAdd">添加第一只猫</view>
+  </view>
+
+</view>

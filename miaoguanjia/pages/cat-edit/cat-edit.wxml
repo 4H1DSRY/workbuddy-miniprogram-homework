@@ -1,0 +1,107 @@
+<view class="page">
+
+  <!-- 头像 -->
+  <view class="avatar-wrap" bindtap="onPickAvatar">
+    <image class="big-avatar" src="{{form.avatar}}" mode="aspectFill" />
+    <view class="avatar-badge">换头像</view>
+  </view>
+  <text class="avatar-tip">建议用自己拍的猫咪照片替换占位图</text>
+
+  <!-- 基本信息 -->
+  <view class="card">
+    <view class="field">
+      <text class="f-label">名字</text>
+      <input
+        class="f-input"
+        value="{{form.name}}"
+        placeholder="给猫咪取个名字"
+        placeholder-class="ph"
+        maxlength="12"
+        bindinput="onName"
+      />
+    </view>
+
+    <picker mode="selector" range="{{breeds}}" value="{{breedIndex}}" bindchange="onBreed">
+      <view class="field">
+        <text class="f-label">品种</text>
+        <view class="f-value">
+          <text>{{form.breed}}</text>
+          <text class="f-arrow">›</text>
+        </view>
+      </view>
+    </picker>
+
+    <view class="field">
+      <text class="f-label">性别</text>
+      <view class="seg">
+        <view class="seg-item {{form.gender === 'male' ? 'on' : ''}}" data-g="male" bindtap="onGender">弟弟</view>
+        <view class="seg-item {{form.gender === 'female' ? 'on' : ''}}" data-g="female" bindtap="onGender">妹妹</view>
+      </view>
+    </view>
+
+    <picker mode="date" value="{{form.birthday}}" start="2010-01-01" end="{{todayStr}}" bindchange="onBirthday">
+      <view class="field">
+        <text class="f-label">生日</text>
+        <view class="f-value">
+          <text>{{form.birthday}}</text>
+          <text class="f-arrow">›</text>
+        </view>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 喂养参数 -->
+  <view class="section-title">
+    <text class="t">喂养参数</text>
+  </view>
+
+  <view class="card">
+    <view class="field">
+      <text class="f-label">当前体重</text>
+      <view class="f-unit-wrap">
+        <input
+          class="f-input right"
+          type="digit"
+          value="{{form.weight}}"
+          bindinput="onWeight"
+          placeholder="0.00"
+          placeholder-class="ph"
+        />
+        <text class="f-unit">kg</text>
+      </view>
+    </view>
+
+    <view class="field">
+      <text class="f-label">每日进食目标</text>
+      <view class="f-unit-wrap">
+        <input
+          class="f-input right"
+          type="number"
+          value="{{form.foodTarget}}"
+          bindinput="onTarget"
+          placeholder="180"
+          placeholder-class="ph"
+        />
+        <text class="f-unit">g</text>
+      </view>
+    </view>
+
+    <view class="field last">
+      <text class="f-label">备注</text>
+      <input
+        class="f-input right"
+        value="{{form.note}}"
+        placeholder="性格 / 忌口"
+        placeholder-class="ph"
+        maxlength="20"
+        bindinput="onNote"
+      />
+    </view>
+  </view>
+
+  <view class="save-btn" bindtap="onSave">保存档案</view>
+  <view class="del-btn" wx:if="{{isEdit}}" bindtap="onDelete">删除这只猫</view>
+
+  <view class="footer">资料仅保存在本机，换手机不会同步</view>
+
+</view>

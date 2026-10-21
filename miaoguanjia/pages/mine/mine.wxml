@@ -1,0 +1,151 @@
+<view class="page">
+
+  <!-- 用户卡 -->
+  <view class="card profile">
+    <view class="profile-avatar"><image class="profile-ico" src="/images/icons/user.png" mode="aspectFit" /></view>
+    <view class="profile-meta">
+      <text class="profile-name">铲屎官</text>
+      <text class="profile-sub">{{deviceText}}</text>
+    </view>
+    <view class="profile-pill">VIP 1</view>
+  </view>
+
+  <!-- 统计 -->
+  <view class="card stats">
+    <view class="stat">
+      <text class="stat-num">{{stats.cats}}</text>
+      <text class="stat-label">在管猫咪</text>
+    </view>
+    <view class="stat-line"></view>
+    <view class="stat">
+      <text class="stat-num">{{stats.records}}</text>
+      <text class="stat-label">累计记录</text>
+    </view>
+    <view class="stat-line"></view>
+    <view class="stat">
+      <text class="stat-num">{{stats.days}}</text>
+      <text class="stat-label">记录天数</text>
+    </view>
+  </view>
+
+  <!-- 猫咪档案 -->
+  <view class="section-title">
+    <text class="t">猫咪档案</text>
+    <text class="more" bindtap="goAdd">＋ 添加</text>
+  </view>
+
+  <view class="card list-card">
+    <view
+      class="row {{index === cats.length - 1 ? 'last' : ''}}"
+      wx:for="{{cats}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="goEdit"
+    >
+      <image class="row-avatar" src="{{item.avatar}}" mode="aspectFill" />
+      <view class="row-body">
+        <text class="row-title">{{item.name}}</text>
+        <text class="row-sub">{{item.breed}} · {{item.ageText}} · {{item.weight}}kg</text>
+      </view>
+      <text class="row-arrow">›</text>
+    </view>
+    <view class="row empty-row" wx:if="{{!cats.length}}" bindtap="goAdd">
+      <text class="row-sub">还没有猫咪，点这里添加</text>
+      <text class="row-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 设备管理 -->
+  <view class="section-title">
+    <text class="t">设备管理</text>
+    <text class="more">{{onlineText}}</text>
+  </view>
+
+  <view class="card list-card">
+    <view class="row">
+      <view class="row-ico"><image class="row-ico-img" src="/images/icons/feed.png" mode="aspectFit" /></view>
+      <view class="row-body">
+        <text class="row-title">智能喂食器</text>
+        <text class="row-sub">{{settings.feeder ? '已连接 · 余粮充足' : '已断开连接'}}</text>
+      </view>
+      <switch checked="{{settings.feeder}}" color="#B5442F" data-key="feeder" bindchange="onToggle" />
+    </view>
+    <view class="row">
+      <view class="row-ico"><image class="row-ico-img" src="/images/icons/water.png" mode="aspectFit" /></view>
+      <view class="row-body">
+        <text class="row-title">循环饮水机</text>
+        <text class="row-sub">{{settings.fountain ? '已连接 · 滤芯正常' : '已断开连接'}}</text>
+      </view>
+      <switch checked="{{settings.fountain}}" color="#B5442F" data-key="fountain" bindchange="onToggle" />
+    </view>
+    <view class="row last">
+      <view class="row-ico"><image class="row-ico-img" src="/images/icons/camera.png" mode="aspectFit" /></view>
+      <view class="row-body">
+        <text class="row-title">猫咪摄像头</text>
+        <text class="row-sub">{{settings.camera ? '在线 · 1080P' : '已关闭'}}</text>
+      </view>
+      <switch checked="{{settings.camera}}" color="#B5442F" data-key="camera" bindchange="onToggle" />
+    </view>
+  </view>
+
+  <!-- 提醒设置 -->
+  <view class="section-title">
+    <text class="t">提醒设置</text>
+  </view>
+
+  <view class="card list-card">
+    <view class="row">
+      <view class="row-ico ico-bell">⏰</view>
+      <view class="row-body">
+        <text class="row-title">定时投食提醒</text>
+        <text class="row-sub">每天到点提醒你补粮</text>
+      </view>
+      <switch checked="{{settings.feedRemind}}" color="#B5442F" data-key="feedRemind" bindchange="onToggle" />
+    </view>
+    <view class="row">
+      <view class="row-ico ico-shot">💉</view>
+      <view class="row-body">
+        <text class="row-title">疫苗驱虫提醒</text>
+        <text class="row-sub">到期前 7 天提醒</text>
+      </view>
+      <switch checked="{{settings.vaccineRemind}}" color="#B5442F" data-key="vaccineRemind" bindchange="onToggle" />
+    </view>
+    <view class="row last">
+      <view class="row-ico ico-clock">🕗</view>
+      <view class="row-body">
+        <text class="row-title">每日提醒时间</text>
+        <text class="row-sub">{{settings.remindTime}}</text>
+      </view>
+      <picker mode="time" value="{{settings.remindTime}}" bindchange="onTimeChange">
+        <view class="picker-btn">修改</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 其他 -->
+  <view class="section-title">
+    <text class="t">其他</text>
+  </view>
+
+  <view class="card list-card">
+    <view class="row" bindtap="onAbout">
+      <view class="row-ico ico-info">ℹ️</view>
+      <view class="row-body">
+        <text class="row-title">关于喵管家</text>
+        <text class="row-sub">版本 {{version}}</text>
+      </view>
+      <text class="row-arrow">›</text>
+    </view>
+    <view class="row last" bindtap="onReset">
+      <view class="row-ico ico-trash">🧹</view>
+      <view class="row-body">
+        <text class="row-title">重置演示数据</text>
+        <text class="row-sub">清空本机数据并恢复初始三只猫</text>
+      </view>
+      <text class="row-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="footer">喵管家 · 微信原生小程序 · 数据保存在本机</view>
+
+</view>

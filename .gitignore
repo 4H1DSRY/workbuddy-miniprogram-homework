@@ -1,0 +1,15 @@
+# 开发过程截图（临时证据，不入库）
+_shots/
+_design/*.png
+
+# 窗口抓取 / 点击注入等一次性排查脚本
+_*.py
+
+# 微信开发者工具私有配置：含本机绝对路径与个人设置
+miaoguanjia/project.private.config.json
+
+# 系统与缓存
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc

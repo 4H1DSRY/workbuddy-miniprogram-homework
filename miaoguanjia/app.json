@@ -1,0 +1,42 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/records/records",
+    "pages/mine/mine",
+    "pages/cat-edit/cat-edit"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#FAF8F4",
+    "navigationBarTitleText": "喵管家",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FAF8F4"
+  },
+  "tabBar": {
+    "color": "#B8B0A6",
+    "selectedColor": "#1E1B19",
+    "backgroundColor": "#FAF8F4",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tabbar/home.png",
+        "selectedIconPath": "images/tabbar/home-on.png"
+      },
+      {
+        "pagePath": "pages/records/records",
+        "text": "记录",
+        "iconPath": "images/tabbar/records.png",
+        "selectedIconPath": "images/tabbar/records-on.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "images/tabbar/mine.png",
+        "selectedIconPath": "images/tabbar/mine-on.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json"
+}

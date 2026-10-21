@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>喵管家 · 设计对照（现行 vs 纸墨朱）</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#ECEAE5;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Helvetica,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:48px 40px 80px;
+    color:#26221E;
+  }
+
+  /* ---------- 版面 ---------- */
+  .head { max-width:900px; margin:0 auto 40px; }
+  .head h1 { font-size:22px; font-weight:600; letter-spacing:.04em; }
+  .head p { font-size:13px; color:#7A726A; margin-top:10px; line-height:1.7; }
+  .head .k { color:#B5442F; }
+
+  .stage { display:flex; justify-content:center; align-items:flex-start; gap:34px; }
+  .col { width:375px; }
+  .col-title {
+    font-size:11px; letter-spacing:.18em; color:#8A827A;
+    margin-bottom:14px; display:flex; align-items:baseline; gap:8px;
+  }
+  .col-title b { font-size:13px; letter-spacing:.06em; color:#26221E; font-weight:600; }
+  .col-title .note { margin-left:auto; font-size:10px; letter-spacing:.04em; color:#A39A90; }
+
+  .phone {
+    width:375px; height:812px; border-radius:34px; overflow:hidden;
+    position:relative; background:#fff;
+    box-shadow:0 20px 50px rgba(60,48,38,.16), 0 0 0 1px rgba(0,0,0,.06);
+  }
+  .screen { position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; }
+  .screen::-webkit-scrollbar { width:0; }
+
+  .vs {
+    align-self:center; font-size:11px; letter-spacing:.1em; color:#A39A90;
+    writing-mode:vertical-rl; padding:20px 0;
+  }
+
+  /* ================================================================
+     旧版 —— 忠实还原现行 WXSS（rpx ÷ 2 = px）
+     ================================================================ */
+  .old { background:#FFF8F3; color:#2E2A27; font-size:14px; line-height:1.5; }
+  .old .page { padding:12px 14px 64px; }
+  .old .hero { display:flex; align-items:flex-start; justify-content:space-between; padding:6px 4px 4px; }
+  .old .hero-main { display:flex; flex-direction:column; }
+  .old .hero-date { font-size:12px; color:#B3A79C; letter-spacing:.5px; }
+  .old .hero-title { font-size:21px; font-weight:700; margin-top:4px; letter-spacing:.5px; }
+  .old .hero-sub { font-size:12px; color:#9C9188; margin-top:3px; }
+  .old .hero-badge {
+    width:56px; height:56px; border-radius:16px; background:#fff;
+    box-shadow:0 5px 15px rgba(196,148,112,.14);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .old .badge-num { font-size:18px; font-weight:700; color:#FF7A45; line-height:1.1; }
+  .old .badge-txt { font-size:10px; color:#B3A79C; }
+
+  .old .switcher { margin-top:12px; }
+  .old .switcher-row { display:flex; align-items:center; padding:2px 0 4px; }
+  .old .switch-item {
+    display:flex; flex-direction:column; align-items:center;
+    margin-right:12px; padding:4px 5px 5px; border-radius:14px;
+  }
+  .old .switch-item.on { background:#FFEFE4; }
+  .old .switch-avatar {
+    width:48px; height:48px; border-radius:16px; background:#F3E8DE;
+    border:2px solid transparent; object-fit:cover;
+  }
+  .old .switch-item.on .switch-avatar { border-color:#FF7A45; }
+  .old .switch-name { font-size:11px; color:#8C8178; margin-top:4px; }
+  .old .switch-item.on .switch-name { color:#FF7A45; font-weight:600; }
+  .old .plus {
+    width:48px; height:48px; line-height:44px; text-align:center; border-radius:16px;
+    border:1px dashed #E2D3C6; color:#C9B7A8; font-size:20px; background:#FFFDFB;
+  }
+
+  .old .card {
+    background:#fff; border-radius:16px; padding:15px;
+    box-shadow:0 5px 18px rgba(196,148,112,.10);
+  }
+  .old .card + .card { margin-top:12px; }
+  .old .status-card {
+    margin-top:10px;
+    background:linear-gradient(150deg,#FFFFFF 0%,#FFFBF7 55%,#FFF2E7 100%);
+  }
+  .old .status-head { display:flex; align-items:center; }
+  .old .avatar-lg { width:74px; height:74px; border-radius:22px; background:#F3E8DE; object-fit:cover; flex-shrink:0; }
+  .old .status-meta { margin-left:12px; flex:1; min-width:0; }
+  .old .name-row { display:flex; align-items:center; }
+  .old .cat-name { font-size:20px; font-weight:700; margin-right:6px; }
+  .old .tag {
+    font-size:10px; color:#E8763F; background:#FFEDE1;
+    border-radius:999px; padding:1px 7px; margin-right:4px;
+  }
+  .old .tag.ghost { color:#8C8178; background:#F5EEE8; }
+  .old .breed { display:block; font-size:11.5px; color:#A2968B; margin-top:4px; }
+  .old .weight-row { display:flex; align-items:baseline; margin-top:5px; }
+  .old .weight-num { font-size:19px; font-weight:700; }
+  .old .weight-unit { font-size:11px; color:#A2968B; margin-left:2px; margin-right:7px; }
+  .old .trend { font-size:11px; color:#E8763F; }
+
+  .old .rings {
+    display:flex; justify-content:space-around; margin-top:14px;
+    padding:10px 0 4px; border-top:1px solid #F6EBE1;
+  }
+  .old .ring-item { display:flex; flex-direction:column; align-items:center; }
+  .old .ring {
+    width:64px; height:64px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .old .ring-hole {
+    width:48px; height:48px; border-radius:50%; background:#FFFCF9;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .old .ring-val { font-size:13px; font-weight:700; }
+  .old .ring-label { font-size:11px; color:#8C8178; margin-top:6px; }
+
+  .old .hint {
+    display:flex; align-items:center; margin-top:11px;
+    background:#FFF7EF; border-radius:10px; padding:8px 10px;
+  }
+  .old .hint-dot { width:6px; height:6px; border-radius:50%; background:#FF7A45; margin-right:7px; flex-shrink:0; }
+  .old .hint-txt { font-size:12px; color:#A2745A; }
+
+  .old .actions {
+    display:flex; justify-content:space-between; margin-top:12px;
+    background:#fff; border-radius:16px; padding:14px 9px;
+    box-shadow:0 5px 18px rgba(196,148,112,.10);
+  }
+  .old .action { flex:1; display:flex; flex-direction:column; align-items:center; }
+  .old .action-ico {
+    width:44px; height:44px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+  }
+  .old .i-feed { background:#FFF0E6; }
+  .old .i-water { background:#E5F5F2; }
+  .old .i-play { background:#F1EBFA; }
+  .old .i-weight { background:#E8EEFB; }
+  .old .action-txt { font-size:12px; color:#6E645C; margin-top:6px; }
+
+  .old .intake-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+  .old .intake-title { font-size:15px; font-weight:600; }
+  .old .intake-date { font-size:11px; color:#B3A79C; }
+  .old .bar-row { display:flex; align-items:center; margin-top:12px; }
+  .old .bar-icon { font-size:15px; width:26px; flex-shrink:0; }
+  .old .bar-body { flex:1; }
+  .old .bar-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; }
+  .old .bar-label { font-size:12px; color:#6E645C; }
+  .old .bar-val { font-size:11px; color:#A2968B; }
+  .old .bar-track { height:7px; border-radius:999px; background:#F5EEE8; overflow:hidden; }
+  .old .bar-fill { height:100%; border-radius:999px; }
+  .old .fill-feed { background:linear-gradient(90deg,#FFB07C 0%,#FF7A45 100%); }
+  .old .fill-water { background:linear-gradient(90deg,#7FD6C6 0%,#3FA695 100%); }
+
+  .old .section-title {
+    display:flex; align-items:center; justify-content:space-between;
+    margin:18px 4px 9px;
+  }
+  .old .section-title .t { font-size:15px; font-weight:600; }
+  .old .section-title .more { font-size:12px; color:#A2968B; }
+
+  .old .remind-row { display:flex; align-items:center; }
+  .old .remind-ico {
+    width:36px; height:36px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
+  }
+  .old .r-clock { background:#FFF0E6; }
+  .old .r-scale { background:#E8EEFB; }
+  .old .remind-body { flex:1; margin-left:10px; min-width:0; }
+  .old .remind-title { display:block; font-size:13.5px; font-weight:500; }
+  .old .remind-sub { display:block; font-size:11px; color:#A2968B; margin-top:2px; }
+  .old .remind-state { font-size:11px; color:#4FB3A6; flex-shrink:0; }
+  .old .remind-line { height:1px; background:#F6EBE1; margin:11px 0; }
+
+  .old .rec-row { display:flex; align-items:center; }
+  .old .rec-ico {
+    width:37px; height:37px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
+  }
+  .old .rec-body { flex:1; margin-left:10px; min-width:0; }
+  .old .rec-title { display:block; font-size:13.5px; font-weight:500; }
+  .old .rec-sub { display:block; font-size:11px; color:#A2968B; margin-top:2px; }
+  .old .rec-time { font-size:11px; color:#C0B4A8; }
+
+  .old .footer { text-align:center; font-size:10.5px; color:#C9BCB0; margin-top:22px; }
+
+  /* 旧版 tabBar */
+  .old-tab {
+    position:sticky; bottom:0; height:50px; background:#fff;
+    border-top:1px solid #F3E8DE; display:flex; align-items:center;
+  }
+  .old-tab > div { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .old-tab .em { font-size:19px; line-height:1; filter:grayscale(1) opacity(.45); }
+  .old-tab .lb { font-size:10px; color:#A2968B; }
+  .old-tab .on .em { filter:none; }
+  .old-tab .on .lb { color:#FF7A45; }
+
+  /* ================================================================
+     新版 —— 纸 · 墨 · 朱
+     ================================================================ */
+  .new { background:#FAF8F4; color:#1E1B19; font-size:14px; line-height:1.62;
+    font-family:"Songti SC","STSong","Noto Serif SC","Noto Serif CJK SC","SimSun",serif; }
+  .new .page { padding:30px 24px 26px; }
+
+  .new .topline { display:flex; align-items:baseline; justify-content:space-between; }
+  .new .date { font-size:10px; color:#8C8178; letter-spacing:.18em; }
+  .new .switcher { display:flex; align-items:baseline; gap:9px; }
+  .new .sw { font-size:11px; color:#B8B0A6; letter-spacing:.06em; }
+  .new .sw.on { color:#1E1B19; }
+  .new .sw.on::after { content:""; display:inline-block; width:3px; height:3px; border-radius:50%; background:#B5442F; margin-left:4px; vertical-align:middle; }
+  .new .sw-add { font-size:13px; color:#C9C2B8; line-height:1; }
+
+  .new .rule { height:1px; background:#E6E0D6; margin-top:12px; }
+
+  /* 字体：标题与数字走宋体（Songti SC / STSong / 思源宋体），界面文字仍走黑体。
+     Android 拿不到中文衬线时回退黑体，损失的只是风格而非可读性。 */
+  .new .name {
+    font-family:"Songti SC","STSong","Noto Serif SC","Noto Serif CJK SC","SimSun",serif;
+    font-size:34px; font-weight:400; letter-spacing:.14em;
+    margin-top:26px; line-height:1.15;
+  }
+  .new .sub {
+    font-size:12px; color:#8C8178; margin-top:8px; letter-spacing:.08em;
+  }
+
+  .new .photo {
+    display:block; width:100%; height:196px; object-fit:cover;
+    margin-top:22px; background:#EDE8DF;
+    /* 占位图去色：避免卡通 emoji 的橙黄色把新版整体色调带偏，便于只判断构图与留白 */
+    filter:grayscale(1) contrast(1.04) brightness(1.02);
+    opacity:.72;
+  }
+  .new .photo-cap {
+    font-size:10px; color:#C9C2B8; letter-spacing:.06em; margin-top:8px;
+  }
+
+  .new .weigh { display:flex; align-items:flex-end; justify-content:space-between; margin-top:20px; }
+  .new .num {
+    font-family:"Songti SC","STSong","Noto Serif SC","Noto Serif CJK SC","SimSun",serif;
+    font-size:46px; font-weight:400; line-height:1; letter-spacing:.01em;
+  }
+  .new .unit { font-size:12px; color:#8C8178; margin-left:5px; letter-spacing:.06em; }
+  .new .delta { font-size:12px; color:#B5442F; margin-left:10px; letter-spacing:.02em; }
+  .new .delta .w { color:#B8B0A6; margin-left:3px; }
+
+  .new .ring-wrap { display:flex; flex-direction:column; align-items:center; gap:7px; }
+  .new .ring {
+    width:58px; height:58px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .new .ring-hole {
+    width:47px; height:47px; border-radius:50%; background:#FAF8F4;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .new .ring-num { font-size:17px; font-weight:400; }
+  .new .ring-cap { font-size:10px; color:#B8B0A6; letter-spacing:.08em; }
+
+  .new .bars { margin-top:26px; border-top:1px solid #E6E0D6; }
+  .new .bar { display:flex; align-items:center; height:34px; border-bottom:1px solid #F0EBE2; }
+  .new .bar-label { width:38px; font-size:12px; color:#4A443F; letter-spacing:.08em; flex-shrink:0; }
+  .new .bar-track { flex:1; height:1px; background:#DED8CC; margin:0 12px; position:relative; }
+  .new .bar-fill { position:absolute; left:0; top:0; height:1px; background:#1E1B19; }
+  .new .bar-fill.low { background:#B5442F; }
+  .new .bar-fill.half { background:#7A7168; }
+  .new .bar-val {
+    width:82px; text-align:right; font-size:12px; color:#8C8178;
+    font-variant-numeric:tabular-nums; letter-spacing:.02em;
+  }
+  .new .bar-val b { font-weight:500; color:#1E1B19; }
+
+  .new .acts { display:flex; margin-top:22px; }
+  .new .act { flex:1; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .new .act svg { width:22px; height:22px; stroke:#1E1B19; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+  .new .act span { font-size:12px; color:#4A443F; letter-spacing:.12em; }
+
+  .new .foot {
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-top:16px; padding-top:12px; border-top:1px solid #E6E0D6;
+    font-size:12px; color:#8C8178;
+  }
+  .new .foot .n { color:#1E1B19; }
+  .new .foot .ar { color:#B8B0A6; }
+
+  /* 新版 tabBar */
+  .new-tab {
+    position:sticky; bottom:0; height:52px; background:rgba(250,248,244,.96);
+    border-top:1px solid #E6E0D6; display:flex; align-items:center;
+    backdrop-filter:blur(10px);
+  }
+  .new-tab > div { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .new-tab svg { width:19px; height:19px; stroke:#B8B0A6; fill:none; stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+  .new-tab .lb { font-size:9px; color:#B8B0A6; letter-spacing:.12em; }
+  .new-tab .on svg { stroke:#1E1B19; }
+  .new-tab .on .lb { color:#1E1B19; }
+
+  /* ---------- 说明 ---------- */
+  .notes { max-width:900px; margin:56px auto 0; }
+  .notes h2 { font-size:13px; font-weight:600; letter-spacing:.14em; color:#6E665E; margin-bottom:18px; }
+  .nrow {
+    display:grid; grid-template-columns:22px 1fr 1fr; gap:18px;
+    padding:14px 0; border-top:1px solid #DCD8D0; font-size:12.5px; line-height:1.65;
+  }
+  .nrow .i { font-size:11px; color:#B5442F; letter-spacing:.06em; padding-top:1px; }
+  .nrow .a { color:#2E2A27; }
+  .nrow .b { color:#6E665E; }
+  .nrow .b em { font-style:normal; color:#B5442F; }
+  .foot-note { max-width:900px; margin:34px auto 0; font-size:11.5px; color:#8A827A; line-height:1.8; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>喵管家 · 设计对照</h1>
+  <p>
+    左侧是现行版本的真实还原（rpx ÷ 2 = px，数值全部照搬 WXSS）。右侧按《设计中的设计》重做：
+    底改宣纸、字改墨阶、只留一个 <span class="k">朱砂</span> 点睛色、去掉全部阴影与 emoji。
+    两版使用<span class="k">同一套自洽数据</span>（体积 168/200g、饮水 180/240ml、心情 82%），差异只来自设计本身。
+  </p>
+</div>
+
+<div class="stage">
+
+  <!-- ================= 旧版 ================= -->
+  <div class="col">
+    <div class="col-title"><b>现行</b><span>暖橙 · 卡片 · emoji</span><span class="note">8 个区块</span></div>
+    <div class="phone">
+      <div class="screen old">
+        <div class="page">
+
+          <div class="hero">
+            <div class="hero-main">
+              <span class="hero-date">10月21日 周三</span>
+              <span class="hero-title">早上好，团子</span>
+              <span class="hero-sub">3 只猫咪 · 今日 3 条记录</span>
+            </div>
+            <div class="hero-badge">
+              <span class="badge-num">3</span>
+              <span class="badge-txt">只在管</span>
+            </div>
+          </div>
+
+          <div class="switcher">
+            <div class="switcher-row">
+              <div class="switch-item on">
+                <img class="switch-avatar" src="../miaoguanjia/images/cats/cat1.jpg">
+                <span class="switch-name">团子</span>
+              </div>
+              <div class="switch-item">
+                <img class="switch-avatar" src="../miaoguanjia/images/cats/cat2.jpg">
+                <span class="switch-name">芝麻</span>
+              </div>
+              <div class="switch-item">
+                <img class="switch-avatar" src="../miaoguanjia/images/cats/cat3.jpg">
+                <span class="switch-name">豆豆</span>
+              </div>
+              <div class="switch-add">
+                <span class="plus">＋</span>
+                <span class="switch-name">添加</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card status-card">
+            <div class="status-head">
+              <img class="avatar-lg" src="../miaoguanjia/images/cats/cat1.jpg">
+              <div class="status-meta">
+                <div class="name-row">
+                  <span class="cat-name">团子</span>
+                  <span class="tag">公</span>
+                  <span class="tag ghost">3岁6个月</span>
+                </div>
+                <span class="breed">英国短毛 · 挑食，爱躲在衣柜里</span>
+                <div class="weight-row">
+                  <span class="weight-num">4.62</span>
+                  <span class="weight-unit">kg</span>
+                  <span class="trend">↑ 0.04</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rings">
+              <div class="ring-item">
+                <div class="ring" style="background:conic-gradient(#FF8A5B 0deg 302deg, #F3E8DE 302deg 360deg)">
+                  <div class="ring-hole"><span class="ring-val" style="color:#FF7A45">84%</span></div>
+                </div>
+                <span class="ring-label">饱食度</span>
+              </div>
+              <div class="ring-item">
+                <div class="ring" style="background:conic-gradient(#4FB3A6 0deg 270deg, #F3E8DE 270deg 360deg)">
+                  <div class="ring-hole"><span class="ring-val" style="color:#3FA695">75%</span></div>
+                </div>
+                <span class="ring-label">饮水度</span>
+              </div>
+              <div class="ring-item">
+                <div class="ring" style="background:conic-gradient(#A78BC9 0deg 295deg, #F3E8DE 295deg 360deg)">
+                  <div class="ring-hole"><span class="ring-val" style="color:#8A6CB8">82%</span></div>
+                </div>
+                <span class="ring-label">心情值</span>
+              </div>
+            </div>
+
+            <div class="hint">
+              <span class="hint-dot"></span>
+              <span class="hint-txt">状态不错，午后记得再添一次水</span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <div class="action"><div class="action-ico i-feed">🍚</div><span class="action-txt">投食</span></div>
+            <div class="action"><div class="action-ico i-water">💧</div><span class="action-txt">喂水</span></div>
+            <div class="action"><div class="action-ico i-play">🎾</div><span class="action-txt">逗猫</span></div>
+            <div class="action"><div class="action-ico i-weight">⚖️</div><span class="action-txt">称重</span></div>
+          </div>
+
+          <div class="card" style="margin-top:12px">
+            <div class="intake-head">
+              <span class="intake-title">今日摄入</span>
+              <span class="intake-date">10/21</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-icon">🍚</span>
+              <div class="bar-body">
+                <div class="bar-top"><span class="bar-label">进食</span><span class="bar-val">168 / 200 g</span></div>
+                <div class="bar-track"><div class="bar-fill fill-feed" style="width:84%"></div></div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <span class="bar-icon">💧</span>
+              <div class="bar-body">
+                <div class="bar-top"><span class="bar-label">饮水</span><span class="bar-val">180 / 240 ml</span></div>
+                <div class="bar-track"><div class="bar-fill fill-water" style="width:75%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title"><span class="t">今日提醒</span><span class="more">自动生成</span></div>
+          <div class="card">
+            <div class="remind-row">
+              <div class="remind-ico r-clock">⏰</div>
+              <div class="remind-body">
+                <span class="remind-title">定时投食</span>
+                <span class="remind-sub">每天 08:00 · 目标 200g</span>
+              </div>
+              <span class="remind-state">已开启</span>
+            </div>
+            <div class="remind-line"></div>
+            <div class="remind-row">
+              <div class="remind-ico r-scale">⚖️</div>
+              <div class="remind-body">
+                <span class="remind-title">体重记录</span>
+                <span class="remind-sub">昨天称过，本周正常</span>
+              </div>
+              <span class="remind-state">正常</span>
+            </div>
+          </div>
+
+          <div class="section-title"><span class="t">最近记录</span><span class="more">全部 ›</span></div>
+          <div class="card">
+            <div class="rec-row">
+              <div class="rec-ico" style="background:#FF7A4522">🍚</div>
+              <div class="rec-body">
+                <span class="rec-title">投食 168g</span>
+                <span class="rec-sub">早餐 · 08:12</span>
+              </div>
+              <span class="rec-time">今天</span>
+            </div>
+          </div>
+
+          <div class="footer">喵管家 v1.0.0 · 数据保存在本机</div>
+
+        </div>
+        <div class="old-tab">
+          <div class="on"><span class="em">😸</span><span class="lb">首页</span></div>
+          <div><span class="em">📋</span><span class="lb">记录</span></div>
+          <div><span class="em">👤</span><span class="lb">我的</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vs">同 一 屏</div>
+
+  <!-- ================= 新版 ================= -->
+  <div class="col">
+    <div class="col-title"><b>纸墨朱</b><span>宣纸 · 墨阶 · 一个焦点</span><span class="note">4 个区块</span></div>
+    <div class="phone">
+      <div class="screen new">
+        <div class="page">
+
+          <div class="topline">
+            <span class="date">10月21日 周三</span>
+            <div class="switcher">
+              <span class="sw on">团子</span>
+              <span class="sw">芝麻</span>
+              <span class="sw">豆豆</span>
+              <span class="sw-add">＋</span>
+            </div>
+          </div>
+          <div class="rule"></div>
+
+          <div class="name">团子</div>
+          <div class="sub">三岁六个月 · 英国短毛</div>
+
+          <img class="photo" src="../miaoguanjia/images/cats/cat1.jpg">
+          <div class="photo-cap">占位图 · 换成真猫照片后此区效果会大幅提升</div>
+
+          <div class="weigh">
+            <div>
+              <span class="num">4.62</span><span class="unit">KG</span><span class="delta">↑ 0.04<span class="w">本周</span></span>
+            </div>
+            <div class="ring-wrap">
+              <div class="ring" style="background:conic-gradient(#B5442F 0deg 288deg, #E6E0D6 288deg 360deg)">
+                <div class="ring-hole"><span class="ring-num">80</span></div>
+              </div>
+              <span class="ring-cap">今日照顾</span>
+            </div>
+          </div>
+
+          <div class="bars">
+            <div class="bar">
+              <span class="bar-label">进食</span>
+              <div class="bar-track"><div class="bar-fill" style="width:84%"></div></div>
+              <span class="bar-val"><b>168</b> / 200 g</span>
+            </div>
+            <div class="bar">
+              <span class="bar-label">饮水</span>
+              <div class="bar-track"><div class="bar-fill half" style="width:75%"></div></div>
+              <span class="bar-val"><b>180</b> / 240 ml</span>
+            </div>
+            <div class="bar">
+              <span class="bar-label">心情</span>
+              <div class="bar-track"><div class="bar-fill" style="width:82%"></div></div>
+              <span class="bar-val"><b>82</b></span>
+            </div>
+          </div>
+
+          <div class="acts">
+            <div class="act">
+              <svg viewBox="0 0 24 24"><path d="M4 11.5h16l-1.6 6.2a2 2 0 0 1-1.9 1.4H7.5a2 2 0 0 1-1.9-1.4L4 11.5Z"/><path d="M9 8.2h.01M12 6.8h.01M15 8.2h.01"/></svg>
+              <span>投食</span>
+            </div>
+            <div class="act">
+              <svg viewBox="0 0 24 24"><path d="M12 3.5c0 0 5.6 6.6 5.6 10.4a5.6 5.6 0 1 1-11.2 0C6.4 10.1 12 3.5 12 3.5Z"/></svg>
+              <span>喂水</span>
+            </div>
+            <div class="act">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><path d="M5.4 10.2c4.6 1.2 8.4 3.4 11 6.6M18.6 10.2c-4.6 1.2-8.4 3.4-11 6.6"/></svg>
+              <span>逗猫</span>
+            </div>
+            <div class="act">
+              <svg viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="12.5" rx="3"/><path d="M12 16.3v-2.1"/><path d="M9.2 11.4a3.8 3.8 0 0 1 5.6 0"/></svg>
+              <span>称重</span>
+            </div>
+          </div>
+
+          <div class="foot">
+            <span>今天 · <span class="n">3 条记录</span></span>
+            <span class="ar">›</span>
+          </div>
+
+        </div>
+        <div class="new-tab">
+          <div class="on">
+            <svg viewBox="0 0 24 24"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.6 10.6V19h10.8v-8.4"/></svg>
+            <span class="lb">首页</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24"><path d="M5 8h14M5 12h14M5 16h9"/></svg>
+            <span class="lb">记录</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8.8" r="3.2"/><path d="M5.6 19.2c0-3.1 2.9-4.6 6.4-4.6s6.4 1.5 6.4 4.6"/></svg>
+            <span class="lb">我的</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="notes">
+  <h2>逐 条 对 应</h2>
+
+  <div class="nrow">
+    <span class="i">01</span>
+    <div class="a">橙 + 青 + 紫 + 三个彩色图标底，一屏四个色系</div>
+    <div class="b">只留墨阶 + 一个朱砂。颜色不再承担「区分」，而是承担 <em>层级</em>——朱只出现在真正需要被看见的两个数字上：今日照顾、体重变化</div>
+  </div>
+
+  <div class="nrow">
+    <span class="i">02</span>
+    <div class="a">🍚 💧 🎾 ⚖️ ⏰ 🐾 全部是 emoji</div>
+    <div class="b">换成 <em>1.5px 描边几何图标</em>，同一个笔宽、同一个 24×24 格。emoji 是别人定义好的形，且在 iOS / Android 上长得完全不同</div>
+  </div>
+
+  <div class="nrow">
+    <span class="i">03</span>
+    <div class="a">三个等权圆环，各占一色</div>
+    <div class="b">收成 <em>一个</em> 环（今日照顾 80 = 三项均值）+ 三条水平细线做分解。从「三个并列仪表」变成「一个结论 + 三个分解」</div>
+  </div>
+
+  <div class="nrow">
+    <span class="i">04</span>
+    <div class="a">状态卡里 11 个信息点、一屏 8 个区块</div>
+    <div class="b">砍到 4 个区块、单卡 6 个信息点。首页只回答<em>一个问题</em>：我的猫今天还好吗。提醒与设置沉到「我的」页</div>
+  </div>
+
+  <div class="nrow">
+    <span class="i">05</span>
+    <div class="a">卡片靠 box-shadow 与白底分隔，圆角 32rpx</div>
+    <div class="b">去阴影，改 <em>1px 发丝线</em> 与大间距；照片直角切割（不加圆角），其余元素 0–10px。留白承担分隔，框不再重复一遍</div>
+  </div>
+
+  <div class="nrow">
+    <span class="i">06</span>
+    <div class="a">字号挤在 11–21px，全靠字重拉开</div>
+    <div class="b">「团子」31px / 300 字重 + 0.1em 字距，体重 40px / 300。<em>用尺度与字距建立层级</em>，而不是用颜色和色块</div>
+  </div>
+
+  <div class="nrow">
+    <span class="i">07</span>
+    <div class="a">「饱食度 68%」与「进食 45/200g」同时出现，互相矛盾</div>
+    <div class="b">单一数据源：细线上写绝对值，线长即百分比，环取三项均值。<em>同一件事不再用两种语言说两遍</em></div>
+  </div>
+</div>
+
+<div class="foot-note">
+  说明：右栏照片沿用占位 emoji 头像，因此观感被明显拉低——新版对照片质量比旧版敏感得多，换成真猫照片后差距会进一步拉开。
+  两侧手机框内可独立滚动，查看折叠在下方的内容。
+</div>
+
+</body>
+</html>

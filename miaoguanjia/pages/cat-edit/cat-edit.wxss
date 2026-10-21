@@ -1,0 +1,143 @@
+.avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 16rpx;
+  position: relative;
+  align-self: center;
+}
+
+.big-avatar {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 8rpx;
+  background: var(--c-line);
+}
+
+.avatar-badge {
+  margin-top: -28rpx;
+  background: var(--c-brand);
+  color: var(--c-paper);
+  font-size: 22rpx;
+  padding: 8rpx 26rpx;
+  border-radius: 4rpx;
+}
+
+.avatar-tip {
+  display: block;
+  text-align: center;
+  font-size: 21rpx;
+  color: var(--c-text-5);
+  margin: 14rpx 0 8rpx;
+}
+
+.card {
+  margin-top: 24rpx;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26rpx 0;
+  border-bottom: 1rpx solid var(--c-line-soft);
+}
+
+.field.last {
+  border-bottom: none;
+}
+
+.f-label {
+  font-size: 27rpx;
+  color: var(--c-text-2);
+  flex-shrink: 0;
+  width: 200rpx;
+}
+
+.f-input {
+  flex: 1;
+  font-size: 27rpx;
+  color: var(--c-text);
+  text-align: left;
+}
+
+.f-input.right {
+  text-align: right;
+}
+
+.ph {
+  color: var(--c-ink-5);
+  font-size: 26rpx;
+}
+
+.f-value {
+  display: flex;
+  align-items: center;
+  font-size: 27rpx;
+  color: var(--c-text);
+}
+
+.f-arrow {
+  color: var(--c-ink-6);
+  font-size: 30rpx;
+  margin-left: 10rpx;
+}
+
+.f-unit-wrap {
+  display: flex;
+  align-items: baseline;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.f-unit {
+  font-size: 24rpx;
+  color: var(--c-text-4);
+  margin-left: 8rpx;
+}
+
+.seg {
+  display: flex;
+  background: var(--c-rule-soft);
+  border-radius: 4rpx;
+  padding: 4rpx;
+}
+
+.seg-item {
+  font-size: 24rpx;
+  color: var(--c-text-3);
+  padding: 10rpx 30rpx;
+  border-radius: 4rpx;
+}
+
+.seg-item.on {
+  background: var(--c-paper);
+  color: var(--c-brand-deep);
+  font-weight: 600;
+}
+
+.save-btn {
+  margin-top: 48rpx;
+  background: linear-gradient(90deg, var(--c-vermilion) 0%, var(--c-brand) 100%);
+  color: var(--c-paper);
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+  padding: 28rpx 0;
+  border-radius: 4rpx;
+}
+
+.del-btn {
+  margin-top: 24rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--c-vermilion);
+  padding: 20rpx 0;
+}
+
+.footer {
+  text-align: center;
+  font-size: 21rpx;
+  color: var(--c-line-2);
+  margin-top: 30rpx;
+}

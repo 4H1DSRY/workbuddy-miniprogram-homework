@@ -1,0 +1,322 @@
+.rec-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12rpx 8rpx 4rpx;
+}
+
+.rec-hero-title {
+  display: block;
+  font-size: 42rpx;
+  font-weight: 700;
+}
+
+.rec-hero-sub {
+  display: block;
+  font-size: 23rpx;
+  color: var(--c-text-4);
+  margin-top: 8rpx;
+}
+
+.rec-hero-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background: var(--c-brand-tint);
+  border-radius: 8rpx;
+  padding: 12rpx 24rpx;
+}
+
+.rb-num {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--c-brand-deep);
+  line-height: 1.2;
+}
+
+.rb-txt {
+  font-size: 20rpx;
+  color: var(--c-vermilion);
+}
+
+/* 猫咪切换条 */
+.cat-bar {
+  margin-top: 20rpx;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.cat-bar-row {
+  display: flex;
+  align-items: center;
+}
+
+.cat-chip {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 22rpx 8rpx 8rpx;
+  border-radius: 4rpx;
+  background: var(--c-paper);
+  margin-right: 18rpx;
+}
+
+.cat-chip.on {
+  background: var(--c-vermilion-tint);
+}
+
+.chip-avatar {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: var(--c-line);
+}
+
+.chip-name {
+  font-size: 24rpx;
+  color: var(--c-text-2);
+  margin-left: 12rpx;
+}
+
+.cat-chip.on .chip-name {
+  color: var(--c-brand-deep);
+  font-weight: 600;
+}
+
+/* 图表 */
+.chart-card {
+  margin-top: 22rpx;
+}
+
+.chart-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.chart-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.chart-sub {
+  display: block;
+  font-size: 22rpx;
+  color: var(--c-text-4);
+  margin-top: 6rpx;
+}
+
+.chart-latest {
+  display: flex;
+  align-items: baseline;
+}
+
+.latest-num {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--c-brand);
+}
+
+.latest-unit {
+  font-size: 22rpx;
+  color: var(--c-text-4);
+  margin-left: 4rpx;
+}
+
+.chart {
+  width: 100%;
+  height: 260rpx;
+  margin-top: 12rpx;
+}
+
+.chart-tip {
+  font-size: 22rpx;
+  color: var(--c-ink-5);
+  text-align: center;
+  margin-top: -10rpx;
+  padding-bottom: 6rpx;
+}
+
+/* 筛选 */
+.filters {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 26rpx 0 6rpx;
+  overflow-x: auto;
+}
+
+.filter {
+  font-size: 24rpx;
+  color: var(--c-text-3);
+  background: var(--c-paper);
+  border-radius: 4rpx;
+  padding: 12rpx 26rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.filter.on {
+  background: var(--c-brand);
+  color: var(--c-paper);
+  font-weight: 600;
+}
+
+/* 时间线 */
+.group {
+  margin-top: 26rpx;
+}
+
+.group-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 8rpx 12rpx;
+}
+
+.group-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--c-text-2);
+}
+
+.group-count {
+  font-size: 21rpx;
+  color: var(--c-text-5);
+}
+
+.group-card {
+  padding: 10rpx 26rpx;
+}
+
+.tl-item {
+  display: flex;
+  align-items: stretch;
+  padding: 20rpx 0;
+}
+
+.tl-left {
+  width: 76rpx;
+  flex-shrink: 0;
+  padding-top: 4rpx;
+}
+
+.tl-time {
+  font-size: 21rpx;
+  color: var(--c-text-5);
+}
+
+.tl-axis {
+  width: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 12rpx;
+}
+
+.tl-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+}
+
+.tl-line {
+  flex: 1;
+  width: 2rpx;
+  background: var(--c-rule-soft);
+  margin-top: 8rpx;
+}
+
+.tl-item.last .tl-line {
+  background: transparent;
+}
+
+.tl-body {
+  flex: 1;
+  margin-left: 18rpx;
+  min-width: 0;
+  padding-bottom: 4rpx;
+}
+
+.tl-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.tl-head {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.tl-ico {
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+.tl-title {
+  font-size: 26rpx;
+  color: var(--c-ink-2);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.tl-value {
+  font-size: 24rpx;
+  color: var(--c-vermilion);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.tl-note {
+  display: block;
+  font-size: 22rpx;
+  color: var(--c-text-4);
+  margin-top: 6rpx;
+}
+
+/* 空状态（复用 index 的类名，页面级样式需重复声明） */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64rpx 40rpx;
+  margin-top: 32rpx;
+}
+
+.empty-ico {
+  font-size: 64rpx;
+}
+
+.empty-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-top: 16rpx;
+}
+
+.empty-sub {
+  font-size: 23rpx;
+  color: var(--c-text-4);
+  margin-top: 10rpx;
+  text-align: center;
+}
+
+.empty-btn {
+  margin-top: 28rpx;
+  background: var(--c-brand);
+  color: var(--c-paper);
+  font-size: 26rpx;
+  padding: 18rpx 48rpx;
+  border-radius: 4rpx;
+}
+
+.footer {
+  text-align: center;
+  font-size: 21rpx;
+  color: var(--c-line-2);
+  margin-top: 44rpx;
+}
