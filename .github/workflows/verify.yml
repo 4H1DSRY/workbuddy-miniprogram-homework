@@ -13,11 +13,14 @@ jobs:
   static-and-logic:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # v5 起改用 Node 24 运行时。v4 仍能跑，但 GitHub 会持续告警
+      # （"Node.js 20 is deprecated ... forced to run on Node.js 24"）。
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      # 版本对齐本地开发环境（managed Node 22.22.2），避免"本地过、CI 挂"
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
 
       # L1：JSON 语法、页面文件齐全、WXML 标签配对、事件处理函数存在、
       #     图片路径有效、设计 token 在 app.wxss 与 theme.js 之间一致
