@@ -22,21 +22,21 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  background: var(--c-brand-tint);
+  background: var(--c-rule-soft);
   border-radius: 8rpx;
   padding: 12rpx 24rpx;
 }
 
 .rb-num {
   font-size: 32rpx;
-  font-weight: 700;
-  color: var(--c-brand-deep);
+  font-weight: 400;
+  color: var(--c-ink);
   line-height: 1.2;
 }
 
 .rb-txt {
   font-size: 20rpx;
-  color: var(--c-vermilion);
+  color: var(--c-ink-4);
 }
 
 /* 猫咪切换条 */
@@ -61,7 +61,7 @@
 }
 
 .cat-chip.on {
-  background: var(--c-vermilion-tint);
+  background: var(--c-rule-soft);
 }
 
 .chip-avatar {
@@ -78,8 +78,8 @@
 }
 
 .cat-chip.on .chip-name {
-  color: var(--c-brand-deep);
-  font-weight: 600;
+  color: var(--c-ink);
+  font-weight: 400;
 }
 
 /* 图表 */
@@ -113,7 +113,7 @@
 
 .latest-num {
   font-size: 40rpx;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--c-brand);
 }
 
@@ -156,9 +156,9 @@
 }
 
 .filter.on {
-  background: var(--c-brand);
-  color: var(--c-paper);
-  font-weight: 600;
+  background: var(--c-ink);
+  color: var(--c-bg);
+  font-weight: 400;
 }
 
 /* 时间线 */
@@ -266,7 +266,7 @@
 
 .tl-value {
   font-size: 24rpx;
-  color: var(--c-vermilion);
+  color: var(--c-ink-2);
   font-weight: 400;
   letter-spacing: 0.02em;
   flex-shrink: 0;
@@ -289,7 +289,9 @@
 }
 
 .empty-ico {
-  font-size: 64rpx;
+  width: 56rpx;
+  height: 56rpx;
+  margin-bottom: 14rpx;
 }
 
 .empty-title {
@@ -316,7 +318,8 @@
 
 .footer {
   text-align: center;
-  font-size: 21rpx;
-  color: var(--c-line-2);
+  font-size: 22rpx;
+  color: var(--c-ink-4);
   margin-top: 44rpx;
+  letter-spacing: 0.06em;
 }

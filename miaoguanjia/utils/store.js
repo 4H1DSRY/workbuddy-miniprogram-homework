@@ -8,7 +8,7 @@ const RECORDS_KEY = 'mgj_records'
 const SETTINGS_KEY = 'mgj_settings'
 const SEED_KEY = 'mgj_seeded'
 /* 种子数据版本：改种子内容后 +1，旧缓存才会被覆盖 */
-const SEED_VERSION = 2
+const SEED_VERSION = 3
 
 const DEFAULT_SETTINGS = {
   feedRemind: true,

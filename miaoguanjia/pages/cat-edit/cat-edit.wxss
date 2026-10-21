@@ -16,10 +16,12 @@
 
 .avatar-badge {
   margin-top: -28rpx;
-  background: var(--c-brand);
-  color: var(--c-paper);
+  background: var(--c-paper);
+  color: var(--c-ink-2);
   font-size: 22rpx;
+  letter-spacing: 0.08em;
   padding: 8rpx 26rpx;
+  border: 1rpx solid var(--c-rule-strong);
   border-radius: 4rpx;
 }
 
@@ -112,16 +114,17 @@
 
 .seg-item.on {
   background: var(--c-paper);
-  color: var(--c-brand-deep);
-  font-weight: 600;
+  color: var(--c-ink);
+  font-weight: 400;
 }
 
 .save-btn {
   margin-top: 48rpx;
-  background: linear-gradient(90deg, var(--c-vermilion) 0%, var(--c-brand) 100%);
-  color: var(--c-paper);
+  background: var(--c-ink);
+  color: var(--c-bg);
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 400;
+  letter-spacing: 0.14em;
   text-align: center;
   padding: 28rpx 0;
   border-radius: 4rpx;

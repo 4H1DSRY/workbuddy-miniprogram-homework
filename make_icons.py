@@ -101,11 +101,11 @@ def i_weight(d, s, lw, c):
 
 
 def i_vaccine(d, s, lw, c):
-    """疫苗：针管（筒身 + 活塞尾 + 针头 + 一道刻度）"""
-    stroke(d, [(6.4, 17.6), (15.2, 8.8)], c, lw, s)
-    stroke(d, [(5.0, 19.0), (7.2, 16.8)], c, lw, s)
-    stroke(d, [(15.6, 8.4), (18.4, 5.6)], c, lw, s)
-    stroke(d, [(9.2, 14.8), (11.2, 16.8)], c, lw, s)
+    """疫苗：圆 + 十字（医疗符号）。
+    针管在这个尺寸会退化成一条斜线，与「记录」「删除」都分不开。"""
+    stroke(d, arc_pts(12, 12, 8.0, 0, 360, 72), c, lw, s, cap=False)
+    stroke(d, [(8.6, 12), (15.4, 12)], c, lw, s)
+    stroke(d, [(12, 8.6), (12, 15.4)], c, lw, s)
 
 
 def i_deworm(d, s, lw, c):
@@ -120,6 +120,39 @@ def i_user(d, s, lw, c):
     """人形：头 + 肩（我的页头像位）"""
     stroke(d, arc_pts(12, 8.6, 3.4, 0, 360, 64), c, lw, s, cap=False)
     stroke(d, arc_pts(12, 20.2, 6.8, 180, 360, 48), c, lw, s)
+
+
+def i_clock(d, s, lw, c):
+    """时钟：圆 + 两根指针"""
+    stroke(d, arc_pts(12, 12, 8.0, 0, 360, 72), c, lw, s, cap=False)
+    stroke(d, [(12, 7.4), (12, 12), (15.4, 13.9)], c, lw, s)
+
+
+def i_info(d, s, lw, c):
+    """信息：圆 + 一点 + 一竖"""
+    stroke(d, arc_pts(12, 12, 8.0, 0, 360, 72), c, lw, s, cap=False)
+    dot(d, 12, 8.0, 0.78, c, s)
+    stroke(d, [(12, 11.4), (12, 16.8)], c, lw, s)
+
+
+def i_bin(d, s, lw, c):
+    """垃圾桶：盖 + 提手 + 桶身 + 两道竖线（重置演示数据）"""
+    stroke(d, [(4.8, 7.6), (19.2, 7.6)], c, lw, s)
+    stroke(d, [(9.6, 7.6), (9.6, 5.2), (14.4, 5.2), (14.4, 7.6)], c, lw, s)
+    stroke(d, [(6.6, 7.6), (7.6, 19.4), (16.4, 19.4), (17.4, 7.6)], c, lw, s, cap=False)
+    stroke(d, [(10.6, 11.0), (10.6, 16.0)], c, lw, s)
+    stroke(d, [(13.4, 11.0), (13.4, 16.0)], c, lw, s)
+
+
+def i_doc(d, s, lw, c):
+    """纸页：外框 + 三条字线（记录页空状态）"""
+    d.rounded_rectangle(
+        [P(6.2, 3.6, s)[0], P(6.2, 3.6, s)[1], P(17.8, 20.4, s)[0], P(17.8, 20.4, s)[1]],
+        radius=2.2 * s, outline=c, width=lw
+    )
+    stroke(d, [(9.8, 9.0), (14.2, 9.0)], c, lw, s)
+    stroke(d, [(9.8, 12.4), (14.2, 12.4)], c, lw, s)
+    stroke(d, [(9.8, 15.8), (12.6, 15.8)], c, lw, s)
 
 
 def i_cam(d, s, lw, c):
@@ -180,7 +213,8 @@ def render(fn, size, color, out):
 def main():
     icons = {'feed': i_feed, 'water': i_water, 'play': i_play, 'weight': i_weight,
              'vaccine': i_vaccine, 'deworm': i_deworm,
-             'user': i_user, 'camera': i_cam, 'paw': i_paw}
+             'user': i_user, 'camera': i_cam, 'paw': i_paw,
+             'clock': i_clock, 'info': i_info, 'bin': i_bin, 'doc': i_doc}
     for name, fn in icons.items():
         render(fn, 96, INK, os.path.join('icons', name + '.png'))
 

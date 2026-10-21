@@ -123,37 +123,8 @@
   flex-shrink: 0;
 }
 
-.ico-feed {
-  background: var(--c-brand-tint);
-}
-
-.ico-water {
-  background: var(--c-rule-soft);
-}
-
-.ico-cam {
-  background: var(--c-rule-soft);
-}
-
-.ico-bell {
-  background: var(--c-brand-tint);
-}
-
-.ico-shot {
-  background: var(--c-rule-soft);
-}
-
-.ico-clock {
-  background: var(--c-rule-soft);
-}
-
-.ico-info {
-  background: var(--c-rule-soft);
-}
-
-.ico-trash {
-  background: var(--c-rule-soft);
-}
+/* 所有行统一：72rpx 空槽 + 38rpx 线条图标，不铺底色。
+   底色会让「设备」和「提醒」两张卡看起来不是一套。 */
 
 .row-body {
   flex: 1;
@@ -190,10 +161,12 @@
 
 .picker-btn {
   font-size: 24rpx;
-  color: var(--c-brand-deep);
-  background: var(--c-brand-tint);
+  color: var(--c-ink-2);
+  background: var(--c-paper);
+  border: 1rpx solid var(--c-rule-strong);
   border-radius: 4rpx;
   padding: 10rpx 26rpx;
+  letter-spacing: 0.08em;
 }
 
 .empty-row {
@@ -202,7 +175,8 @@
 
 .footer {
   text-align: center;
-  font-size: 21rpx;
-  color: var(--c-line-2);
+  font-size: 22rpx;
+  color: var(--c-ink-4);
   margin-top: 44rpx;
+  letter-spacing: 0.06em;
 }

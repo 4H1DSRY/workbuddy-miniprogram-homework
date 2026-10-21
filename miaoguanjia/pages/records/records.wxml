@@ -89,7 +89,7 @@
   </block>
 
   <view class="card empty" wx:else>
-    <text class="empty-ico">📋</text>
+    <image class="empty-ico" src="/images/icons/doc.png" mode="aspectFit" />
     <text class="empty-title">这个筛选下还没有记录</text>
     <text class="empty-sub">回到首页，用快捷操作给猫咪记一笔</text>
     <view class="empty-btn" bindtap="goHome">去首页投食</view>

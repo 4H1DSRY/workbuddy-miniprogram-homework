@@ -4,6 +4,12 @@
  * 字号只有四层：20(注) / 24(标签) / 68(名字) / 92(数值)，中间刻意空着。
  * ------------------------------------------------------------------ */
 
+/* 一屏说完：iPhone X 内容区 ≈ 1282rpx，本页压到 1230 左右，不留半截在折线下。 */
+.page {
+  padding-top: 32rpx;
+  padding-bottom: 40rpx;
+}
+
 .topline {
   display: flex;
   align-items: baseline;
@@ -42,7 +48,7 @@
 }
 
 .hairline {
-  margin-top: 24rpx;
+  margin-top: 20rpx;
 }
 
 /* ---- 名字 ---- */
@@ -50,7 +56,7 @@
   font-size: 68rpx;
   line-height: 1.15;
   letter-spacing: 0.14em;
-  margin-top: 52rpx;
+  margin-top: 32rpx;
   color: var(--c-ink);
 }
 
@@ -58,15 +64,15 @@
   font-size: 24rpx;
   color: var(--c-ink-4);
   letter-spacing: 0.08em;
-  margin-top: 16rpx;
+  margin-top: 14rpx;
 }
 
 /* ---- 照片：直角切割，不加圆角 ---- */
 .photo {
   display: block;
   width: 100%;
-  height: 392rpx;
-  margin-top: 44rpx;
+  height: 300rpx;
+  margin-top: 40rpx;
   background: var(--c-rule-soft);
 }
 
@@ -75,7 +81,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-top: 40rpx;
+  margin-top: 28rpx;
 }
 
 .weigh-main {
@@ -117,8 +123,8 @@
 }
 
 .ring {
-  width: 116rpx;
-  height: 116rpx;
+  width: 104rpx;
+  height: 104rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -126,8 +132,8 @@
 }
 
 .ring-hole {
-  width: 94rpx;
-  height: 94rpx;
+  width: 84rpx;
+  height: 84rpx;
   border-radius: 50%;
   background: var(--c-bg);
   display: flex;
@@ -136,7 +142,7 @@
 }
 
 .ring-num {
-  font-size: 34rpx;
+  font-size: 32rpx;
   line-height: 1;
   color: var(--c-ink);
 }
@@ -145,19 +151,19 @@
   font-size: 20rpx;
   color: var(--c-ink-5);
   letter-spacing: 0.08em;
-  margin-top: 14rpx;
+  margin-top: 12rpx;
 }
 
 /* ---- 三条刻度 ---- */
 .bars {
-  margin-top: 52rpx;
+  margin-top: 36rpx;
   border-top: 1rpx solid var(--c-rule);
 }
 
 .bar {
   display: flex;
   align-items: center;
-  height: 68rpx;
+  height: 60rpx;
   border-bottom: 1rpx solid var(--c-rule-soft);
 }
 
@@ -202,7 +208,7 @@
 /* ---- 四个动作 ---- */
 .acts {
   display: flex;
-  margin-top: 44rpx;
+  margin-top: 32rpx;
 }
 
 .act {
@@ -215,7 +221,7 @@
 .act-ico {
   width: 44rpx;
   height: 44rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: 12rpx;
 }
 
 .act-txt {
@@ -229,8 +235,8 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-top: 36rpx;
-  padding-top: 24rpx;
+  margin-top: 26rpx;
+  padding-top: 20rpx;
   border-top: 1rpx solid var(--c-rule);
   font-size: 24rpx;
   color: var(--c-ink-4);
