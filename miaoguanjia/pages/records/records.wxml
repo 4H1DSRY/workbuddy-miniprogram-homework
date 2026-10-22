@@ -95,6 +95,12 @@
     <view class="empty-btn" bindtap="goHome">去首页投食</view>
   </view>
 
+  <!-- 健康记录入口。放记录页而不是首页：首页只剩 52rpx 余量，且这是低频高价值功能 -->
+  <view class="symptom-entry" bindtap="goSymptom">
+    <text class="se-text">身体不适？记录症状</text>
+    <text class="se-arrow">›</text>
+  </view>
+
   <view class="footer">数据保存在本机 · 清空可在「我的」里操作</view>
 
 </view>

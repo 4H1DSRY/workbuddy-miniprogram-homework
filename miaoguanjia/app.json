@@ -3,7 +3,9 @@
     "pages/index/index",
     "pages/records/records",
     "pages/mine/mine",
-    "pages/cat-edit/cat-edit"
+    "pages/cat-edit/cat-edit",
+    "pages/symptom/symptom",
+    "pages/report/report"
   ],
   "window": {
     "backgroundTextStyle": "dark",

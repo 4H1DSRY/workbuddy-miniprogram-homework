@@ -1,0 +1,159 @@
+.page {
+  min-height: 100vh;
+  background: var(--c-bg);
+  padding: 32rpx 32rpx 260rpx;
+}
+
+.summary {
+  font-size: 44rpx;
+  color: var(--c-ink);
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+}
+
+.summary-sub {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--c-ink-3);
+  letter-spacing: 0.08em;
+}
+
+/* 三档分诊：底色 + 前缀竖线，不靠字号大小区分轻重 */
+.tier {
+  margin-top: 28rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 4rpx;
+  border-left: 6rpx solid transparent;
+}
+
+.tier--alert {
+  background: var(--c-alert-bg);
+  border-left-color: var(--c-alert-fg);
+}
+
+.tier--caution {
+  background: var(--c-caution-bg);
+  border-left-color: var(--c-caution-fg);
+}
+
+.tier--safe {
+  background: var(--c-safe-bg);
+  border-left-color: var(--c-safe-fg);
+}
+
+.tier--alert .tier-label { color: var(--c-alert-fg); }
+.tier--caution .tier-label { color: var(--c-caution-fg); }
+.tier--safe .tier-label { color: var(--c-safe-fg); }
+
+.tier--alert .tier-note { color: var(--c-alert-fg); }
+.tier--caution .tier-note { color: var(--c-caution-fg); }
+.tier--safe .tier-note { color: var(--c-safe-fg); }
+
+.tier-label {
+  display: block;
+  font-size: 30rpx;
+  letter-spacing: 0.06em;
+}
+
+.tier-note {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  opacity: 0.9;
+  letter-spacing: 0.02em;
+}
+
+.report {
+  margin-top: 28rpx;
+  background: var(--c-paper);
+  border: 1rpx solid var(--c-rule-soft);
+  border-radius: 4rpx;
+  padding: 28rpx 26rpx;
+}
+
+.sec {
+  font-size: 30rpx;
+  color: var(--c-ink);
+  letter-spacing: 0.1em;
+}
+
+.sec + .line,
+.sec + .grp {
+  margin-top: 8rpx;
+}
+
+.sec:not(:first-child) {
+  margin-top: 32rpx;
+}
+
+.line {
+  display: block;
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: var(--c-ink-2);
+}
+
+.free {
+  line-height: 1.85;
+}
+
+.grp {
+  display: flex;
+  gap: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.8;
+}
+
+.grp-k {
+  color: var(--c-ink-3);
+  flex-shrink: 0;
+}
+
+.grp-v {
+  color: var(--c-ink-2);
+}
+
+.meta {
+  margin-top: 32rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--c-rule-soft);
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--c-ink-3);
+  letter-spacing: 0.02em;
+}
+
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 32rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: var(--c-bg);
+  border-top: 1rpx solid var(--c-rule-soft);
+}
+
+.btn {
+  height: 92rpx;
+  border-radius: 4rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  letter-spacing: 0.14em;
+}
+
+.btn-primary {
+  background: var(--c-ink);
+  color: var(--c-bg);
+}
+
+.btn-ghost {
+  margin-top: 16rpx;
+  align-items: center;
+  border: 1rpx solid var(--c-rule-strong);
+  color: var(--c-ink-2);
+  font-size: 28rpx;
+}

@@ -280,6 +280,51 @@ eq('校验失败后改该字段会自动清错', (function () {
   return p.data.errorField === ''
 })(), true)
 
+/* ---------------- 7. 健康记录（症状 → 就诊描述） ---------------- */
+
+eq('症状分组为 9 组', store.SYMPTOM_GROUPS.length, 9)
+eq('症状项合计 42 项', store.SYMPTOM_GROUPS.reduce((n, g) => n + g.items.length, 0), 42)
+
+eq('分诊：骨折级急诊项判 emergency', store.calcTier(['蹲很久尿不出'], '1d'), 'emergency')
+eq('分诊：张嘴呼吸判 emergency', store.calcTier(['张嘴呼吸'], '2-3d'), 'emergency')
+eq('分诊：便血判 urgent', store.calcTier(['便中带血或发黑'], '1d'), 'urgent')
+eq('分诊：持续一周判 urgent', store.calcTier(['皮屑增多'], 'week'), 'urgent')
+eq('分诊：三项同时出现判 urgent', store.calcTier(['局部掉毛', '频繁抓挠', '皮屑增多'], '1d'), 'urgent')
+eq('分诊：单项且一天内判 routine', store.calcTier(['局部掉毛'], '1d'), 'routine')
+eq('分诊：急诊项优先于持续时间', store.calcTier(['抽搐'], 'longer'), 'emergency')
+
+const logCountBefore = store.getSymptomLogs().length
+const testLog = store.addSymptomLog(
+  'c1',
+  ['没精神 / 不爱动', '呕吐', '蹲很久尿不出', '误食 / 接触有毒物'],
+  '2-3d',
+  '今天一直趴在沙发底下不出来'
+)
+eq('症状日志落库', store.getSymptomLogs().length, logCountBefore + 1)
+eq('按猫筛选症状日志', store.getSymptomLogs('c1').length >= 1, true)
+
+const testReport = store.buildVisitReport(testLog, store.getCat('c1'))
+eq('报告分诊取急诊项', testReport.tier, 'emergency')
+eq('报告按组归并出 4 组', testReport.groups.length, 4)
+eq(
+  '未归类项落入「其他」组',
+  testReport.groups.filter((g) => g.label === '其他').length,
+  1
+)
+eq('组内文本用顿号连接', testReport.groups[0].text.indexOf('、') >= 0 || testReport.groups[0].items.length === 1, true)
+ok('复制文本含免责声明', testReport.plainText.indexOf('未经兽医确认') >= 0)
+ok('复制文本含「未列出的情况可能同样重要」', testReport.plainText.indexOf('未列出的情况可能同样重要') >= 0)
+ok('复制文本含自由描述原文', testReport.plainText.indexOf('今天一直趴在沙发底下') >= 0)
+ok('复制文本含持续时长', testReport.plainText.indexOf('2–3 天') >= 0)
+ok('复制文本不含「诊断」「确诊」', !/诊断|确诊/.test(testReport.plainText))
+
+// 只有自由描述、一项都没勾也能出报告
+const textOnlyLog = store.addSymptomLog('c1', [], '1d', '就是感觉不对劲')
+const textOnlyReport = store.buildVisitReport(textOnlyLog, store.getCat('c1'))
+eq('仅文字描述也能生成报告', textOnlyReport.groups.length, 0)
+eq('仅文字描述分诊为 routine', textOnlyReport.tier, 'routine')
+ok('仅文字描述时复制文本保留原文', textOnlyReport.plainText.indexOf('就是感觉不对劲') >= 0)
+
 /* ---------------- 结果 ---------------- */
 console.log('\n--- 运行时日志（前 12 条）---')
 console.log(logs.slice(0, 12).join('\n'))

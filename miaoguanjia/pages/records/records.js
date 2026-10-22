@@ -257,6 +257,10 @@ Page({
     wx.switchTab({ url: '/pages/index/index' })
   },
 
+  goSymptom() {
+    wx.navigateTo({ url: '/pages/symptom/symptom' })
+  },
+
   onPullDownRefresh() {
     this.onShow()
     wx.stopPullDownRefresh()

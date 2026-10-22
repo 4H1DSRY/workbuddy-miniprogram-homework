@@ -1,0 +1,45 @@
+<view class="page" wx:if="{{ready}}">
+
+  <view class="summary">
+    已整理 {{report.count > 0 ? report.count + ' 项症状' : '你的描述'}}
+    <text class="summary-sub">记录于 {{report.dateText}}</text>
+  </view>
+
+  <!-- 三档分诊。依据必须写出来，否则等于在暗示病情轻重 -->
+  <view class="tier tier--{{report.tierClass}}">
+    <text class="tier-label">{{report.tierLabel}}</text>
+    <text class="tier-note">{{report.tierNote}}</text>
+  </view>
+
+  <view class="card report">
+
+    <block wx:if="{{report.info.length}}">
+      <view class="sec">猫咪信息</view>
+      <text class="line" wx:for="{{report.info}}" wx:key="*this">{{item}}</text>
+    </block>
+
+    <block wx:if="{{report.groups.length}}">
+      <view class="sec">勾选的症状</view>
+      <view class="grp" wx:for="{{report.groups}}" wx:for-item="g" wx:key="label">
+        <text class="grp-k">{{g.label}}</text>
+        <text class="grp-v">{{g.text}}</text>
+      </view>
+    </block>
+
+    <block wx:if="{{report.freeText}}">
+      <view class="sec">你描述的</view>
+      <text class="line free">{{report.freeText}}</text>
+    </block>
+
+    <view class="sec">持续</view>
+    <text class="line">{{report.durationLabel}}</text>
+
+    <view class="meta">以上信息由主人自行记录，未经兽医确认。未列出的情况可能同样重要，请一并向兽医说明。</view>
+  </view>
+
+  <view class="dock">
+    <view class="btn btn-primary" bindtap="onCopy">复制描述</view>
+    <view class="btn btn-ghost" bindtap="onDone">完成</view>
+  </view>
+
+</view>

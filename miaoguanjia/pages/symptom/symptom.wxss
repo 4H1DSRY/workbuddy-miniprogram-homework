@@ -1,0 +1,178 @@
+.page {
+  min-height: 100vh;
+  background: var(--c-bg);
+  padding: 24rpx 32rpx 220rpx;
+}
+
+.hint {
+  font-size: 24rpx;
+  color: var(--c-ink-3);
+  letter-spacing: 0.04em;
+}
+
+/* 免责条：常驻、不可关闭。用 caution 而非 alert，避免一进页面就像出事 */
+.disclaim {
+  margin-top: 16rpx;
+  padding: 18rpx 24rpx;
+  background: var(--c-caution-bg);
+  color: var(--c-caution-fg);
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  line-height: 1.65;
+  letter-spacing: 0.03em;
+}
+
+.loose {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin-top: 24rpx;
+}
+
+.group {
+  margin-top: 44rpx;
+}
+
+.group-h {
+  font-size: 30rpx;
+  color: var(--c-ink-2);
+  letter-spacing: 0.1em;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid var(--c-rule);
+}
+
+.note-hint {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--c-ink-3);
+  letter-spacing: 0.02em;
+}
+
+.free {
+  margin-top: 16rpx;
+  width: 100%;
+  min-height: 140rpx;
+  padding: 20rpx 24rpx;
+  background: var(--c-paper);
+  border: 1rpx solid var(--c-rule-soft);
+  border-radius: 4rpx;
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: var(--c-ink);
+}
+
+.free-ph {
+  color: var(--c-ink-4);
+}
+
+.tick-hint {
+  margin-top: 48rpx;
+  font-size: 24rpx;
+  color: var(--c-ink-3);
+  letter-spacing: 0.1em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.chip {
+  position: relative;
+  font-size: 28rpx;
+  color: var(--c-ink-2);
+  background: var(--c-paper);
+  border: 1rpx solid var(--c-rule-soft);
+  border-radius: 4rpx;
+  padding: 18rpx 22rpx;
+  letter-spacing: 0.02em;
+}
+
+/* 热区：视觉 75rpx，点击层撑到 88rpx；外层 gap 20rpx > 上下各扩 6.5rpx，相邻不重叠 */
+.chip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 88rpx;
+  transform: translateY(-50%);
+}
+
+.chip.on {
+  background: var(--c-ink);
+  color: var(--c-bg);
+  border-color: var(--c-ink);
+}
+
+/* 虚线 = 这不是一个预设答案 */
+.chip.add {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--c-rule-strong);
+  color: var(--c-ink-3);
+}
+
+.seg {
+  display: flex;
+  gap: 8rpx;
+  margin-top: 20rpx;
+  padding: 4rpx;
+  background: var(--c-rule-soft);
+  border-radius: 4rpx;
+}
+
+.seg-i {
+  flex: 1;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--c-ink-3);
+  padding: 18rpx 0;
+  border-radius: 4rpx;
+  position: relative;
+}
+
+.seg-i::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 88rpx;
+  transform: translateY(-50%);
+}
+
+.seg-i.on {
+  background: var(--c-paper);
+  color: var(--c-ink);
+}
+
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 32rpx calc(20rpx + env(safe-area-inset-bottom));
+  background: var(--c-bg);
+  border-top: 1rpx solid var(--c-rule-soft);
+}
+
+.btn {
+  height: 92rpx;
+  border-radius: 4rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  letter-spacing: 0.14em;
+  background: var(--c-ink);
+  color: var(--c-bg);
+}
+
+.btn.is-disabled {
+  background: var(--c-rule-soft);
+  color: var(--c-ink-4);
+}

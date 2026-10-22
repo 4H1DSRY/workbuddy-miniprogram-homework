@@ -6,6 +6,7 @@ const theme = require('./theme.js')
 
 const CATS_KEY = 'mgj_cats'
 const RECORDS_KEY = 'mgj_records'
+const SYMPTOM_KEY = 'mgj_symptoms'
 const SETTINGS_KEY = 'mgj_settings'
 const SEED_KEY = 'mgj_seeded'
 /* 种子数据版本：改种子内容后 +1，旧缓存才会被覆盖 */
@@ -325,6 +326,225 @@ function typeMeta(type) {
   return TYPE_META[type] || { label: '记录', icon: '/images/icons/feed.png', unit: '', color: theme.PALETTE.ink6 }
 }
 
+/* ------------------------- 症状记录 ------------------------- */
+
+/* 分组照兽医系统回顾的顺序，与 docs/症状清单依据-2026-10-22.md 一一对应。
+   存储只存「原始选择 + 自由文本」，不存加工后的句子——以后改报告模板不用迁移历史数据。 */
+const SYMPTOM_GROUPS = [
+  {
+    key: 'general',
+    label: '精神与活动',
+    items: ['没精神 / 不爱动', '躲起来不出来', '烦躁易怒', '半夜乱叫 / 叫声变多']
+  },
+  {
+    key: 'intake',
+    label: '吃喝',
+    items: ['食欲下降', '完全不吃', '食欲变好 / 总讨食', '喝水变多', '喝水变少', '体重下降']
+  },
+  {
+    key: 'coat',
+    label: '皮肤与被毛',
+    items: ['理毛变少 / 毛乱', '局部掉毛', '频繁抓挠', '皮肤发红 / 结痂', '皮屑增多']
+  },
+  {
+    key: 'gi',
+    label: '吐与排便',
+    items: ['呕吐', '干呕 / 吐毛球', '腹泻 / 软便', '便秘', '便中带血或发黑']
+  },
+  {
+    key: 'urinary',
+    label: '排尿',
+    items: ['频繁进猫砂盆', '蹲很久尿不出', '尿量变多', '尿里带血', '猫砂盆外乱尿']
+  },
+  {
+    key: 'resp',
+    label: '呼吸与鼻子',
+    items: ['打喷嚏 / 流鼻涕', '咳嗽', '张嘴呼吸', '呼吸声变重']
+  },
+  {
+    key: 'eyeear',
+    label: '眼睛与耳朵',
+    items: ['眼部分泌物', '眼睛红 / 睁不开', '耳朵有异味', '频繁挠耳甩头']
+  },
+  {
+    key: 'oral',
+    label: '口腔与牙齿',
+    items: ['流口水', '口臭', '吃饭偏头 / 掉食', '只敢吃软食', '牙龈出血']
+  },
+  {
+    key: 'limb',
+    label: '走路与动作',
+    items: ['走路不稳 / 转圈', '后腿无力 / 拖行', '跛行 / 不愿跳', '抽搐']
+  }
+]
+
+/* 不归属任何分组的快捷入口项 */
+const LOOSE_ITEMS = ['说不上来，但感觉不对劲', '误食 / 接触有毒物']
+
+const DURATIONS = [
+  { key: '1d', label: '1 天内' },
+  { key: '2-3d', label: '2–3 天' },
+  { key: 'week', label: '一周内' },
+  { key: 'longer', label: '更久' }
+]
+
+/* 急诊项：命中任一项即判 emergency。依据见《症状清单依据》第三节。
+   「蹲很久尿不出」排第一：公猫尿道阻塞 24–48 小时可致死，时间窗最短。 */
+const EMERGENCY_ITEMS = ['蹲很久尿不出', '张嘴呼吸', '抽搐', '后腿无力 / 拖行', '误食 / 接触有毒物']
+
+/* 加急项：24 小时内应就诊 */
+const URGENT_ITEMS = ['便中带血或发黑', '眼睛红 / 睁不开', '完全不吃']
+
+/* 三档分诊的文案。依据必须写出来，否则等于在暗示病情轻重。 */
+const TIER_META = {
+  emergency: {
+    label: '请立即就医',
+    note: '记录中有需要立即处理的情况，不要等到明天。',
+    cls: 'alert'
+  },
+  urgent: {
+    label: '建议今天或明天就诊',
+    note: '依据：症状数量与持续时间，仅供就诊沟通使用。',
+    cls: 'caution'
+  },
+  routine: {
+    label: '可先观察，继续记录',
+    note: '依据：症状数量与持续时间，仅供就诊沟通使用。',
+    cls: 'safe'
+  }
+}
+
+function readSymptomLogs() {
+  const v = wx.getStorageSync(SYMPTOM_KEY)
+  return Array.isArray(v) ? v : []
+}
+
+function writeSymptomLogs(logs) {
+  wx.setStorageSync(SYMPTOM_KEY, logs)
+}
+
+/**
+ * 按症状与持续时间做三档分诊。按时限，不按"病情轻重"。
+ * @returns {'emergency'|'urgent'|'routine'}
+ */
+function calcTier(symptoms, duration) {
+  const list = symptoms || []
+  const hit = function (pool) {
+    for (let i = 0; i < list.length; i++) {
+      if (pool.indexOf(list[i]) >= 0) return true
+    }
+    return false
+  }
+  if (hit(EMERGENCY_ITEMS)) return 'emergency'
+  if (hit(URGENT_ITEMS)) return 'urgent'
+  if (duration === 'week' || duration === 'longer') return 'urgent'
+  // 三项以上同时出现，风险高于单项
+  if (list.length >= 3) return 'urgent'
+  return 'routine'
+}
+
+function addSymptomLog(catId, symptoms, duration, freeText) {
+  const logs = readSymptomLogs()
+  const log = {
+    id: uid('sym'),
+    catId: catId,
+    symptoms: Array.isArray(symptoms) ? symptoms.slice() : [],
+    duration: duration || '1d',
+    freeText: String(freeText || '').trim(),
+    time: Date.now()
+  }
+  logs.push(log)
+  writeSymptomLogs(logs)
+  return log
+}
+
+function getSymptomLogs(catId) {
+  const logs = readSymptomLogs()
+  if (!catId) return logs
+  return logs.filter(function (l) {
+    return l.catId === catId
+  })
+}
+
+/**
+ * 生成就诊描述。纯模板拼接，不调用任何模型。
+ * 输出同时给页面渲染（结构化）与复制（plainText，含免责声明）。
+ */
+function buildVisitReport(log, cat) {
+  const symptoms = log.symptoms || []
+  const tier = calcTier(symptoms, log.duration)
+  const meta = TIER_META[tier]
+
+  // 按分组归并
+  const groups = []
+  SYMPTOM_GROUPS.forEach(function (g) {
+    const picked = symptoms.filter(function (s) {
+      return g.items.indexOf(s) >= 0
+    })
+    if (picked.length) groups.push({ label: g.label, items: picked, text: picked.join('、') })
+  })
+  const loose = symptoms.filter(function (s) {
+    const inGroup = SYMPTOM_GROUPS.some(function (g) {
+      return g.items.indexOf(s) >= 0
+    })
+    return !inGroup
+  })
+  if (loose.length) groups.push({ label: '其他', items: loose, text: loose.join('、') })
+
+  const dur =
+    DURATIONS.filter(function (d) {
+      return d.key === log.duration
+    })[0] || DURATIONS[0]
+
+  const info = []
+  if (cat) {
+    info.push(cat.name + ' · ' + ageText(cat.birthday) + ' · ' + (cat.breed || '未填品种'))
+    if (cat.weight) {
+      const trend = weightTrend(cat.id)
+      let w = '近期体重 ' + cat.weight + ' kg'
+      if (trend.delta) {
+        w += '，最近两次' + (trend.delta > 0 ? '上升' : '下降') + ' ' + Math.abs(trend.delta).toFixed(2) + ' kg'
+      }
+      info.push(w)
+    }
+  }
+
+  const lines = []
+  lines.push('【猫咪信息】')
+  if (info.length) info.forEach(function (t) { lines.push(t) })
+  if (groups.length) {
+    lines.push('')
+    lines.push('【勾选的症状】')
+    groups.forEach(function (g) {
+      lines.push('· ' + g.label + '：' + g.items.join('、'))
+    })
+  }
+  if (log.freeText) {
+    lines.push('')
+    lines.push('【你描述的】')
+    lines.push(log.freeText)
+  }
+  lines.push('')
+  lines.push('【持续】' + dur.label)
+  lines.push('')
+  // 这句必须跟正文一起被复制走：描述会经过微信转给兽医，免责声明不能留在这个页面上
+  lines.push('以上信息由主人自行记录，未经兽医确认。未列出的情况可能同样重要，请一并向兽医说明。')
+
+  return {
+    tier: tier,
+    tierLabel: meta.label,
+    tierNote: meta.note,
+    tierClass: meta.cls,
+    dateText: dayKey(log.time) + ' ' + fmtClock(log.time),
+    count: symptoms.length,
+    groups: groups,
+    freeText: log.freeText || '',
+    durationLabel: dur.label,
+    info: info,
+    plainText: lines.join('\n')
+  }
+}
+
 function getRecords(catId) {
   let list = readRecords()
   if (catId) {
@@ -488,6 +708,7 @@ function stats() {
 function resetAll() {
   wx.removeStorageSync(CATS_KEY)
   wx.removeStorageSync(RECORDS_KEY)
+  wx.removeStorageSync(SYMPTOM_KEY)
   wx.removeStorageSync(SETTINGS_KEY)
   wx.removeStorageSync(SEED_KEY)
   init()
@@ -521,5 +742,14 @@ module.exports = {
   clamp: clamp,
   CAT_LIMITS: CAT_LIMITS,
   validateCat: validateCat,
+  SYMPTOM_GROUPS: SYMPTOM_GROUPS,
+  LOOSE_ITEMS: LOOSE_ITEMS,
+  DURATIONS: DURATIONS,
+  EMERGENCY_ITEMS: EMERGENCY_ITEMS,
+  URGENT_ITEMS: URGENT_ITEMS,
+  calcTier: calcTier,
+  addSymptomLog: addSymptomLog,
+  getSymptomLogs: getSymptomLogs,
+  buildVisitReport: buildVisitReport,
   resetAll: resetAll
 }

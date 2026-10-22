@@ -340,6 +340,30 @@
   border-radius: 4rpx;
 }
 
+/* 健康记录入口：整行可点，行高即热区，不需要伪元素 */
+.symptom-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24rpx;
+  padding: 0 24rpx;
+  height: 88rpx;
+  background: var(--c-paper);
+  border: 1rpx solid var(--c-rule);
+  border-radius: 4rpx;
+}
+
+.se-text {
+  font-size: 28rpx;
+  color: var(--c-caution-fg);
+  letter-spacing: 0.04em;
+}
+
+.se-arrow {
+  font-size: 30rpx;
+  color: var(--c-ink-4);
+}
+
 .footer {
   text-align: center;
   font-size: 24rpx;

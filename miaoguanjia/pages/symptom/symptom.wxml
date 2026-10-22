@@ -1,0 +1,71 @@
+<view class="page">
+
+  <view class="hint">当前：{{catLabel}}</view>
+
+  <view class="disclaim">
+    本工具仅记录症状并生成就诊描述，不提供诊断或医疗建议。
+  </view>
+
+  <!-- 跳脱常规分类的两个快捷入口：「说不上来」是有效信号，毒物是急诊 -->
+  <view class="loose">
+    <view
+      class="chip {{selectedMap[item] ? 'on' : ''}}"
+      wx:for="{{looseItems}}"
+      wx:key="*this"
+      data-text="{{item}}"
+      bindtap="onToggle"
+    >{{item}}</view>
+  </view>
+
+  <!-- 自由描述放在选项之前：先让人说，再给提示，避免选项框定观察范围 -->
+  <view class="group">
+    <view class="group-h">用自己的话说</view>
+    <view class="note-hint">找不到对应的选项、或者说不清是什么，都写在这里。描述得粗糙也没关系，照你看到的写就行。</view>
+    <textarea
+      class="free"
+      value="{{freeText}}"
+      bindinput="onFreeText"
+      placeholder="比如：今天一直趴在沙发底下不出来，叫它也不应"
+      placeholder-class="free-ph"
+      maxlength="300"
+      auto-height
+    />
+  </view>
+
+  <view class="tick-hint">或者从下面勾选，可多选</view>
+
+  <view class="group" wx:for="{{groups}}" wx:for-item="group" wx:key="key">
+    <view class="group-h">{{group.label}}</view>
+    <view class="chips">
+      <view
+        class="chip {{selectedMap[item] ? 'on' : ''}}"
+        wx:for="{{group.items}}"
+        wx:key="*this"
+        data-text="{{item}}"
+        bindtap="onToggle"
+      >{{item}}</view>
+      <view class="chip add" bindtap="onOther">其他…</view>
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="group-h">持续多久</view>
+    <view class="seg">
+      <view
+        class="seg-i {{duration === d.key ? 'on' : ''}}"
+        wx:for="{{durations}}"
+        wx:for-item="d"
+        wx:key="key"
+        data-key="{{d.key}}"
+        bindtap="onDuration"
+      >{{d.label}}</view>
+    </view>
+  </view>
+
+  <view class="dock">
+    <view class="btn {{canSubmit ? '' : 'is-disabled'}}" bindtap="onSubmit">
+      {{submitting ? '生成中…' : '生成就诊描述'}}
+    </view>
+  </view>
+
+</view>
