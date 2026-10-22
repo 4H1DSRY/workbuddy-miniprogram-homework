@@ -1,0 +1,10 @@
+<view class="fig fig--{{color}} acc--{{accessory}}" style="font-size: {{size}}">
+  <view class="fig-body">
+    <view class="fig-ear fig-ear--l"></view>
+    <view class="fig-ear fig-ear--r"></view>
+    <view class="fig-eye fig-eye--l"></view>
+    <view class="fig-eye fig-eye--r"></view>
+    <view class="fig-nose"></view>
+  </view>
+  <view class="fig-acc"></view>
+</view>

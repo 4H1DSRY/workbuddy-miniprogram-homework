@@ -7,6 +7,7 @@ const WEEK = ['日', '一', '二', '三', '四', '五', '六']
 
 Page({
   data: {
+    figBounce: false,
     version: '1.0.0',
     today: '',
     cats: [],
@@ -28,6 +29,17 @@ Page({
       version: (app.globalData && app.globalData.version) || '1.0.0',
       today: (now.getMonth() + 1) + '月' + now.getDate() + '日 周' + WEEK[now.getDay()]
     })
+  },
+
+  /** 形象的点击微交互：轻震 + 轻微缩放。照片模式下不响应，免得点了没反应还以为坏了 */
+  onFigureTap() {
+    if (!this.data.cat || this.data.cat.avatarType !== 'figure') return
+    if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+    this.setData({ figBounce: true })
+    const that = this
+    setTimeout(function () {
+      that.setData({ figBounce: false })
+    }, 160)
   },
 
   onShow() {

@@ -182,3 +182,49 @@
   color: var(--c-ink-3);
   margin-top: 30rpx;
 }
+
+/* ---- 形象 ---- */
+
+.fig-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 168rpx;
+}
+
+.sw-row {
+  display: flex;
+  align-items: center;
+  /* 每个 88rpx 容器里只有 44rpx 的圆点，视觉间距已经够，不需要再加 gap */
+  gap: 0;
+  flex-shrink: 0;
+}
+
+/* 色块：88rpx 容器承担热区，44rpx 的圆点画在 ::before 里，
+   这样视觉还是一个 44rpx 的点，但点击区达到 88rpx，不用伪元素 hack */
+.swatch {
+  width: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swatch::before {
+  content: "";
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+}
+
+/* 选中环用外阴影叠加，不改变圆点尺寸 */
+.swatch.on::before {
+  box-shadow: 0 0 0 3rpx var(--c-paper), 0 0 0 5rpx var(--c-ink);
+}
+
+/* 直接给 ::before 上色，不用局部变量：check.js 要求所有 var() 都在 app.wxss 里有定义 */
+.swatch--ink::before { background: var(--c-ink); }
+.swatch--vermilion::before { background: var(--c-vermilion); }
+.swatch--brown::before { background: var(--c-caution-fg); }
+.swatch--gray::before { background: var(--c-ink-3); }
+.swatch--cream::before { background: var(--c-rule-strong); }

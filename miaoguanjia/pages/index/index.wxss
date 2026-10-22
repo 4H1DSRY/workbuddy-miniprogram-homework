@@ -91,12 +91,28 @@
 }
 
 /* ---- 照片：直角切割，不加圆角 ---- */
-.photo {
-  display: block;
+/* 照片 / 形象共用一个槽位，高度 300rpx 不变（一屏预算就是按它算的） */
+.photo-slot {
   width: 100%;
   height: 300rpx;
   margin-top: 40rpx;
   background: var(--c-rule-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 300rpx;
+}
+
+/* 形象的点击反馈：轻微内缩，不做弹跳，不遮内容 */
+.photo-slot.is-bounce {
+  transform: scale(0.98);
+  transition: transform 120ms ease-out;
 }
 
 /* ---- 体重 + 今日照顾 ---- */

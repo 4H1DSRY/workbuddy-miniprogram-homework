@@ -21,7 +21,16 @@
     <view class="name">{{cat.name}}</view>
     <view class="sub">{{cat.ageText}} · {{cat.breed}}</view>
 
-    <image class="photo" src="{{cat.avatar}}" mode="aspectFill" />
+    <!-- 照片与几何形象二选一，由档案页的「显示方式」决定 -->
+    <view class="photo-slot {{figBounce ? 'is-bounce' : ''}}" bindtap="onFigureTap">
+      <cat-figure
+        wx:if="{{cat.avatarType === 'figure'}}"
+        color="{{cat.figure ? cat.figure.color : 'ink'}}"
+        accessory="{{cat.figure ? cat.figure.accessory : 'none'}}"
+        size="260rpx"
+      />
+      <image wx:else class="photo" src="{{cat.avatar}}" mode="aspectFill" />
+    </view>
 
     <!-- 唯一的朱色焦点：今日照顾分 -->
     <view class="weigh">

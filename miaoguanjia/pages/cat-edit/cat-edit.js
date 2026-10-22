@@ -15,6 +15,10 @@ Page({
     submitting: false,
     errorField: '',
     errorMsg: '',
+    avatarType: 'photo',
+    figure: { color: 'ink', accessory: 'none' },
+    figureColors: store.FIGURE_COLORS,
+    figureAccessories: store.FIGURE_ACCESSORIES,
     breeds: BREEDS,
     breedIndex: 0,
     todayStr: '',
@@ -55,6 +59,11 @@ Page({
             foodTarget: cat.foodTarget,
             note: cat.note || '',
             avatar: cat.avatar
+          },
+          avatarType: cat.avatarType || 'photo',
+          figure: {
+            color: (cat.figure && cat.figure.color) || 'ink',
+            accessory: (cat.figure && cat.figure.accessory) || 'none'
           }
         })
         return
@@ -101,6 +110,20 @@ Page({
   onTarget(e) {
     this.setData({ 'form.foodTarget': e.detail.value })
     this.clearError('foodTarget')
+  },
+
+  onAvatarType(e) {
+    this.setData({ avatarType: e.currentTarget.dataset.v })
+  },
+
+  onPickColor(e) {
+    const key = e.currentTarget.dataset.k
+    this.setData({ 'figure.color': key })
+  },
+
+  onPickAcc(e) {
+    const key = e.currentTarget.dataset.k
+    this.setData({ 'figure.accessory': key })
   },
 
   onBreed(e) {
@@ -162,7 +185,10 @@ Page({
     }
 
     this.setData({ submitting: true, errorField: '', errorMsg: '' })
-    const payload = checked.value
+    const payload = Object.assign({}, checked.value, {
+      figure: this.data.figure,
+      avatarType: this.data.avatarType
+    })
 
     try {
       if (this.data.isEdit) {
