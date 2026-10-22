@@ -37,8 +37,8 @@ Page({
   },
 
   onDone() {
-    /* 两个入口：症状页提交后进来（记录 ← 症状 ← 报告，退两层），
-       或从记录页的历史列表点进来（记录 ← 报告，退一层）。
+    /* 三个来源：首页「症状」或记录页「记录症状」进症状页、提交后到报告（退两层回起点），
+       以及从记录页的历史列表直接点开某次描述（退一层）。
        靠栈里上一页是谁来判断，比写死 delta 稳。 */
     const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : []
     const prev = pages.length >= 2 ? pages[pages.length - 2] : null

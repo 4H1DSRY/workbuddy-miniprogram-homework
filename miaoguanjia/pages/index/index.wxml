@@ -66,7 +66,9 @@
       </view>
     </view>
 
-    <!-- 四个动作：只有线条图标与字，没有色块 -->
+    <!-- 五个动作：只有线条图标与字，没有色块。
+         「症状」排在最后：前四个是记一笔就完的日常操作，它是唯一会跳页的，
+         但同处一行、同样尺寸，不做视觉区分，免得首页出现第二个焦点。 -->
     <view class="acts">
       <view class="act" hover-class="tap-active" bindtap="onFeed">
         <image class="act-ico" src="/images/icons/feed.png" mode="aspectFit" />
@@ -83,6 +85,10 @@
       <view class="act" hover-class="tap-active" bindtap="onWeigh">
         <image class="act-ico" src="/images/icons/weight.png" mode="aspectFit" />
         <text class="act-txt">称重</text>
+      </view>
+      <view class="act" hover-class="tap-active" bindtap="onSymptom">
+        <image class="act-ico" src="/images/icons/doc.png" mode="aspectFit" />
+        <text class="act-txt">症状</text>
       </view>
     </view>
 

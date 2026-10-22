@@ -349,6 +349,25 @@ eq('L3 首页显示新猫', home3.data.cat.name, '端到端')
 eq('L4 新猫默认仍用照片', home3.data.cat.avatarType, 'photo')
 stack.length = 0
 
+console.log('\n【O】首页「症状」入口 → 提交 → 完成回首页')
+stack.length = 0
+const home4 = pushUrl('/pages/index/index')
+eq('O1 首页在栈底', top().pathname, '/pages/index/index')
+home4.onSymptom()
+eq('O2 点「症状」进入症状页', top().pathname, '/pages/symptom/symptom')
+eq('O3 栈深 2（首页 / 症状）', stack.length, 2)
+const symHome = top().page
+eq('O4 带过去的仍是当前猫', symHome.data.cat && symHome.data.cat.name, '端到端')
+symHome.onToggle({ currentTarget: { dataset: { text: '食欲下降' } } })
+symHome.onDuration({ currentTarget: { dataset: { key: 'week' } } })
+symHome.onSubmit()
+eq('O5 提交后进报告页', top().pathname, '/pages/report/report')
+const repHome = top().page
+repHome.onDone()
+eq('O6 完成后退回首页（不是记录页）', top().pathname, '/pages/index/index')
+eq('O7 栈深回到 1', stack.length, 1)
+stack.length = 0
+
 /* ================= 结果 ================= */
 console.log('\n' + steps.join('\n'))
 console.log('\n' + (fails.length ? '❌ 失败 ' + fails.length + ' 项：\n- ' + fails.join('\n- ') : '✅ 端到端全流程通过'))

@@ -92,8 +92,9 @@ Page({
   },
 
   /**
-   * 四个动作共用一条落笔路径：改状态 → 写记录 → 轻震 → 刷新。
+   * 投食 / 喂水 / 逗猫共用一条落笔路径：改状态 → 写记录 → 轻震 → 刷新。
    * 震动是刻意的：这是「触觉」，原先只有一句 toast，摸起来跟表单一样。
+   * 称重不走这里——它要用户先输入数值，流程不同。
    */
   bump(field, delta, type, value, note, toast) {
     const cat = this.data.cat
@@ -146,6 +147,11 @@ Page({
 
   goRecords() {
     wx.switchTab({ url: '/pages/records/records' })
+  },
+
+  /** 症状记录是唯一会跳页的动作，不写记录、不改猫的状态 */
+  onSymptom() {
+    wx.navigateTo({ url: '/pages/symptom/symptom' })
   },
 
   goAdd() {
