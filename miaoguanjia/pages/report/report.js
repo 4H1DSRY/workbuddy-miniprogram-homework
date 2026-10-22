@@ -37,9 +37,15 @@ Page({
   },
 
   onDone() {
-    // 报告 ← 症状 ← 记录页，退两层回到起点
+    /* 两个入口：症状页提交后进来（记录 ← 症状 ← 报告，退两层），
+       或从记录页的历史列表点进来（记录 ← 报告，退一层）。
+       靠栈里上一页是谁来判断，比写死 delta 稳。 */
+    const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : []
+    const prev = pages.length >= 2 ? pages[pages.length - 2] : null
+    const delta = prev && prev.route === 'pages/symptom/symptom' ? 2 : 1
+
     wx.navigateBack({
-      delta: 2,
+      delta: delta,
       fail() {
         wx.switchTab({ url: '/pages/records/records' })
       }

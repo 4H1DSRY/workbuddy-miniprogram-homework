@@ -341,6 +341,74 @@
 }
 
 /* 健康记录入口：整行可点，行高即热区，不需要伪元素 */
+/* 就诊描述历史。与时间线区分：这里不做轴、不做图标，
+   只留「日期 / 紧急度 / 记了什么」三样，因为它是一个索引而不是流水。 */
+.visit-card {
+  padding: 4rpx 0;
+}
+
+.visit-item {
+  display: flex;
+  flex-direction: column;
+  padding: 22rpx 28rpx;
+  border-bottom: 1rpx solid var(--c-rule-soft);
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.visit-item.last {
+  border-bottom: 0;
+}
+
+.visit-item:active {
+  transform: scale(0.985);
+  opacity: 0.8;
+}
+
+.visit-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.visit-date {
+  font-size: 24rpx;
+  color: var(--c-ink-3);
+  letter-spacing: 0.06em;
+}
+
+.visit-tag {
+  font-size: 24rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 4rpx;
+  letter-spacing: 0.04em;
+}
+
+.visit-tag--alert {
+  color: var(--c-alert-fg);
+  background: var(--c-alert-bg);
+}
+
+.visit-tag--caution {
+  color: var(--c-caution-fg);
+  background: var(--c-caution-bg);
+}
+
+.visit-tag--safe {
+  color: var(--c-safe-fg);
+  background: var(--c-safe-bg);
+}
+
+.visit-summary {
+  margin-top: 6rpx;
+  font-size: 28rpx;
+  color: var(--c-ink);
+  line-height: 1.5;
+  /* 只显示一行，超出打点：列表是索引，全文在报告页 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .symptom-entry {
   display: flex;
   align-items: center;

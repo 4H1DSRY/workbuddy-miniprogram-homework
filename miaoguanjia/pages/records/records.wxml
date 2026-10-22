@@ -95,6 +95,31 @@
     <view class="empty-btn" bindtap="goHome">去首页投食</view>
   </view>
 
+  <!-- 就诊描述：记完必须能回看。否则用户复制走之后，这条记录就再也找不到了 -->
+  <block wx:if="{{visits.length}}">
+    <view class="section-title">
+      <text class="t">就诊描述</text>
+      <text class="more">最近 {{visits.length}} 次</text>
+    </view>
+    <view class="card visit-card">
+      <view
+        class="visit-item {{vi === visits.length - 1 ? 'last' : ''}}"
+        wx:for="{{visits}}"
+        wx:for-item="v"
+        wx:for-index="vi"
+        wx:key="id"
+        data-id="{{v.id}}"
+        bindtap="goReport"
+      >
+        <view class="visit-line">
+          <text class="visit-date">{{v.dateText}}</text>
+          <text class="visit-tag visit-tag--{{v.tierClass}}">{{v.tierLabel}}</text>
+        </view>
+        <text class="visit-summary">{{v.summary}}</text>
+      </view>
+    </view>
+  </block>
+
   <!-- 健康记录入口。放记录页而不是首页：首页只剩 52rpx 余量，且这是低频高价值功能 -->
   <view class="symptom-entry" bindtap="goSymptom">
     <text class="se-text">身体不适？记录症状</text>

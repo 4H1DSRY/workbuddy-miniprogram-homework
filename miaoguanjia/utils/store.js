@@ -10,7 +10,7 @@ const SYMPTOM_KEY = 'mgj_symptoms'
 const SETTINGS_KEY = 'mgj_settings'
 const SEED_KEY = 'mgj_seeded'
 /* 种子数据版本：改种子内容后 +1，旧缓存才会被覆盖 */
-const SEED_VERSION = 3
+const SEED_VERSION = 4
 
 const DEFAULT_SETTINGS = {
   feedRemind: true,
@@ -126,6 +126,22 @@ function buildSeed() {
   const H = 3600 * 1000
   const D = 24 * H
 
+  /* 种子时间不能写成 now - 3H 这种相对偏移：
+     凌晨 0:00–0:36 之间启动，最新一条会落到昨天，
+     首页「今日摄入」直接归零，看着像坏了。
+     改成按「今天已过去时段的百分比」铺开——永远在今天，也永远在过去；
+     顺带让截图里的时间分布符合真实作息，而不是凌晨三点喂了五顿。 */
+  const d0 = new Date(now)
+  d0.setHours(0, 0, 0, 0)
+  const d0t = d0.getTime()
+  const todayAt = function (p) {
+    return Math.round(d0t + (now - d0t) * p)
+  }
+  /* 往前第 n 天的某个整点 */
+  const backAt = function (n, hour) {
+    return d0t - n * D + hour * H
+  }
+
   const cats = [
     {
       id: 'c1',
@@ -172,28 +188,31 @@ function buildSeed() {
   ]
 
   const records = [
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 45, note: '早餐 · 冻干拌粮', time: now - 3 * H },
-    { id: uid('r'), catId: 'c1', type: 'water', value: 60, note: '饮水机补水', time: now - 2.2 * H },
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 78, note: '午餐 · 冻干拌粮', time: now - 1.4 * H },
-    { id: uid('r'), catId: 'c1', type: 'water', value: 120, note: '换水后续饮', time: now - 1.0 * H },
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 45, note: '加餐 · 主食罐', time: now - 0.6 * H },
-    { id: uid('r'), catId: 'c1', type: 'weight', value: 4.62, note: '晨间称重', time: now - 5 * H },
-    { id: uid('r'), catId: 'c2', type: 'feed', value: 60, note: '早餐 · 湿粮', time: now - 4 * H },
-    { id: uid('r'), catId: 'c2', type: 'play', value: 15, note: '逗猫棒 15 分钟', time: now - 6 * H },
-    { id: uid('r'), catId: 'c2', type: 'weight', value: 3.18, note: '晨间称重', time: now - 4.8 * H },
-    { id: uid('r'), catId: 'c2', type: 'vaccine', value: 0, note: '猫三联加强针已接种', time: now - 1 * D },
-    { id: uid('r'), catId: 'c3', type: 'feed', value: 80, note: '早餐 · 全价粮', time: now - 3.6 * H },
-    { id: uid('r'), catId: 'c3', type: 'weight', value: 5.04, note: '晨间称重', time: now - 5.2 * H },
-    { id: uid('r'), catId: 'c2', type: 'weight', value: 3.14, note: '晚间称重', time: now - 1.3 * D },
-    { id: uid('r'), catId: 'c3', type: 'weight', value: 5.01, note: '晚间称重', time: now - 1.5 * D },
-    { id: uid('r'), catId: 'c3', type: 'weight', value: 4.98, note: '晨间称重', time: now - 3.4 * D },
-    { id: uid('r'), catId: 'c2', type: 'weight', value: 3.11, note: '晨间称重', time: now - 3.6 * D },
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 70, note: '晚餐 · 猫粮', time: now - 1 * D },
-    { id: uid('r'), catId: 'c1', type: 'weight', value: 4.58, note: '晚间称重', time: now - 1.1 * D },
-    { id: uid('r'), catId: 'c2', type: 'water', value: 40, note: '换水', time: now - 1.2 * D },
-    { id: uid('r'), catId: 'c3', type: 'deworm', value: 0, note: '体内驱虫完成', time: now - 2.3 * D },
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 65, note: '早餐 · 猫粮', time: now - 2.1 * D },
-    { id: uid('r'), catId: 'c1', type: 'weight', value: 4.55, note: '晚间称重', time: now - 2.2 * D }
+    { id: uid('r'), catId: 'c1', type: 'weight', value: 4.62, note: '晨间称重', time: todayAt(0.12) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 45, note: '早餐 · 冻干拌粮', time: todayAt(0.22) },
+    { id: uid('r'), catId: 'c1', type: 'water', value: 60, note: '饮水机补水', time: todayAt(0.36) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 78, note: '午餐 · 冻干拌粮', time: todayAt(0.55) },
+    { id: uid('r'), catId: 'c1', type: 'water', value: 120, note: '换水后续饮', time: todayAt(0.72) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 45, note: '加餐 · 主食罐', time: todayAt(0.9) },
+
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 70, note: '晚餐 · 猫粮', time: backAt(1, 19) },
+    { id: uid('r'), catId: 'c1', type: 'weight', value: 4.58, note: '晚间称重', time: backAt(1, 21) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 65, note: '早餐 · 猫粮', time: backAt(2, 8) },
+    { id: uid('r'), catId: 'c1', type: 'weight', value: 4.55, note: '晚间称重', time: backAt(2, 21) },
+
+    { id: uid('r'), catId: 'c2', type: 'weight', value: 3.18, note: '晨间称重', time: todayAt(0.1) },
+    { id: uid('r'), catId: 'c2', type: 'feed', value: 60, note: '早餐 · 湿粮', time: todayAt(0.2) },
+    { id: uid('r'), catId: 'c2', type: 'play', value: 15, note: '逗猫棒 15 分钟', time: todayAt(0.5) },
+    { id: uid('r'), catId: 'c2', type: 'water', value: 40, note: '换水', time: backAt(1, 9) },
+    { id: uid('r'), catId: 'c2', type: 'vaccine', value: 0, note: '猫三联加强针已接种', time: backAt(1, 10) },
+    { id: uid('r'), catId: 'c2', type: 'weight', value: 3.14, note: '晚间称重', time: backAt(1, 20) },
+    { id: uid('r'), catId: 'c2', type: 'weight', value: 3.11, note: '晨间称重', time: backAt(3, 8) },
+
+    { id: uid('r'), catId: 'c3', type: 'weight', value: 5.04, note: '晨间称重', time: todayAt(0.1) },
+    { id: uid('r'), catId: 'c3', type: 'feed', value: 80, note: '早餐 · 全价粮', time: todayAt(0.28) },
+    { id: uid('r'), catId: 'c3', type: 'weight', value: 5.01, note: '晚间称重', time: backAt(1, 20) },
+    { id: uid('r'), catId: 'c3', type: 'deworm', value: 0, note: '体内驱虫完成', time: backAt(2, 15) },
+    { id: uid('r'), catId: 'c3', type: 'weight', value: 4.98, note: '晨间称重', time: backAt(3, 8) }
   ]
 
   return { cats, records }
@@ -417,20 +436,25 @@ const EMERGENCY_ITEMS = ['蹲很久尿不出', '张嘴呼吸', '抽搐', '后腿
 /* 加急项：24 小时内应就诊 */
 const URGENT_ITEMS = ['便中带血或发黑', '眼睛红 / 睁不开', '完全不吃']
 
-/* 三档分诊的文案。依据必须写出来，否则等于在暗示病情轻重。 */
+/* 三档分诊的文案。依据必须写出来，否则等于在暗示病情轻重。
+   short 只给列表用：列表是索引，「继续记录」这种叮嘱放在列表里是当下的语气，
+   回看历史时读着别扭，所以只留判断本身。 */
 const TIER_META = {
   emergency: {
     label: '请立即就医',
+    short: '立即就医',
     note: '记录中有需要立即处理的情况，不要等到明天。',
     cls: 'alert'
   },
   urgent: {
     label: '建议今天或明天就诊',
+    short: '尽快就诊',
     note: '依据：症状数量与持续时间，仅供就诊沟通使用。',
     cls: 'caution'
   },
   routine: {
     label: '可先观察，继续记录',
+    short: '先观察',
     note: '依据：症状数量与持续时间，仅供就诊沟通使用。',
     cls: 'safe'
   }
@@ -485,6 +509,41 @@ function getSymptomLogs(catId) {
   if (!catId) return logs
   return logs.filter(function (l) {
     return l.catId === catId
+  })
+}
+
+/**
+ * 列表用的精简摘要。报告页要完整正文，列表只要「什么时候、多急、记了什么」。
+ * 不给日期补年份：都是最近几次，补年份反而占宽。
+ */
+function getSymptomBriefs(catId, limit) {
+  const logs = readSymptomLogs()
+    .filter(function (l) {
+      return !catId || l.catId === catId
+    })
+    .sort(function (a, b) {
+      return b.time - a.time
+    })
+    .slice(0, limit || 3)
+
+  return logs.map(function (l) {
+    const items = l.symptoms || []
+    const tier = calcTier(items, l.duration)
+    const meta = TIER_META[tier]
+    let summary = items.slice(0, 3).join('、')
+    if (items.length > 3) summary += ' 等 ' + items.length + ' 项'
+    if (!summary) summary = l.freeText || '仅文字描述'
+
+    const d = new Date(l.time)
+    return {
+      id: l.id,
+      dateText: pad(d.getMonth() + 1) + '/' + pad(d.getDate()) + ' ' + fmtClock(l.time),
+      tier: tier,
+      tierLabel: meta.short,
+      tierClass: meta.cls,
+      summary: summary,
+      count: items.length
+    }
   })
 }
 
@@ -775,6 +834,7 @@ module.exports = {
   calcTier: calcTier,
   addSymptomLog: addSymptomLog,
   getSymptomLogs: getSymptomLogs,
+  getSymptomBriefs: getSymptomBriefs,
   buildVisitReport: buildVisitReport,
   resetAll: resetAll
 }

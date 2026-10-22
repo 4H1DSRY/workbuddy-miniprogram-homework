@@ -44,6 +44,15 @@ Page({
     })
   },
 
+  /**
+   * 从报告页用安卓返回键 / iOS 侧滑退回来时，页面不会重建，只走 onShow。
+   * submitting 若停在上次的 true，提交按钮就变成按不动的死按钮——这里复位。
+   * （点「完成」走的是 navigateBack({delta:2})，页面会被销毁，不会经过这里）
+   */
+  onShow() {
+    if (this.data.submitting) this.setData({ submitting: false })
+  },
+
   /** 统一收敛「能不能提交」的判断，避免两处各写一遍 */
   refreshCanSubmit() {
     const count = Object.keys(this.data.selectedMap).length

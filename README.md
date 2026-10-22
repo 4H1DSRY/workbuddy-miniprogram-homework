@@ -9,7 +9,7 @@
 | 知道「什么算做完」「什么不能破」 | [`PROJECT.md`](PROJECT.md) —— 章程、里程碑、5 条架构不变量、三层验收口径 |
 | 知道「接下来做什么」 | [`docs/backlog.md`](docs/backlog.md) —— 编号条目、优先级、可验收标准 |
 | 知道「已经验证过什么」 | [`docs/验收清单.md`](docs/验收清单.md) —— 逐项证据与截图 |
-| 改完代码快速确认没弄坏 | `npm test`（= 静态校验 + 61 项逻辑断言） |
+| 改完代码快速确认没弄坏 | `npm test`（= 静态校验 + 99 项逻辑断言 + 67 项端到端断言） |
 | 看版本变化 | [`CHANGELOG.md`](CHANGELOG.md) |
 | 只是想跑起来看看 | 往下读第二节 |
 
@@ -108,9 +108,10 @@ miaoguanjia/
 | 路径 | 作用 |
 | --- | --- |
 | `PROJECT.md` / `docs/backlog.md` | 项目章程 / 待办条目 |
-| `package.json` | 只有 scripts，无依赖。`npm test` = check + simulate |
+| `package.json` | 只有 scripts，无依赖。`npm test` = check + simulate + e2e |
 | `check.js` | **L1 静态校验**：JSON 语法、页面文件齐全、WXML 标签配对、事件处理函数存在、图片路径有效、设计 token 双份一致。失败时退出码 1 |
-| `simulate.js` | **L2 逻辑冒烟**：打桩 `wx` API，在 Node 里真跑一遍数据层与四个页面生命周期，61 项断言 |
+| `simulate.js` | **L2 逻辑冒烟**：打桩 `wx` API，在 Node 里真跑一遍数据层与四个页面生命周期，99 项断言 |
+| `e2e.js` | **L2+ 端到端**：带页面栈的路由模拟器，把「记录页 → 症状页 → 报告页 → 返回 → 回看」连着走一遍，67 项断言。专抓单页测试测不出的接线问题 |
 | `.github/workflows/verify.yml` | push / PR 时自动跑上面两层 |
 | `tools/assets/` | 图标与占位图生成器（Pillow，4× 超采样） |
 | `tools/capture/` | 开发者工具截图与窗口驱动（Windows，不抢前台焦点） |
@@ -127,13 +128,14 @@ miaoguanjia/
 npm test
 ```
 
-两层依次跑完打印 `ALL CHECKS PASSED` 与 `全部通过 ✅`；**任何一层失败退出码为 1**，CI 靠这个判定。也可以单独跑 `npm run check` / `npm run simulate`。
+三层依次跑完打印 `ALL CHECKS PASSED`、`全部通过 ✅` 与 `✅ 端到端全流程通过`；**任何一层失败退出码为 1**，CI 靠这个判定。也可以单独跑 `npm run check` / `npm run simulate` / `npm run e2e`。
 
 | 校验 | 结果 |
 | --- | --- |
 | `node --check` 全部 7 个 JS 文件 | 通过 |
 | `check.js` 结构与 WXML 静态校验 | `ALL CHECKS PASSED` |
-| `simulate.js` 逻辑冒烟（61 项断言） | 全部通过 |
+| `simulate.js` 逻辑冒烟（99 项断言） | 全部通过 |
+| `e2e.js` 端到端流程（67 项断言） | 全部通过 |
 | 开发者工具内编译 | 通过——四页渲染正常，状态栏 `0 错误 / 0 警告` |
 
 冒烟测试覆盖了：种子数据、今日摄入统计、体重趋势、按天分组、四页生命周期、投食/喂水/逗猫/称重四种操作对数据的真实改写、筛选、切猫、设备开关落库、新增/编辑/删除猫咪的完整闭环，以及数据层的 `validateCat` 边界值（空名 / 超长名 / 体重 0 与 31 / 目标 19 与 601 / 首尾空格修剪 / 两位小数归一化）。

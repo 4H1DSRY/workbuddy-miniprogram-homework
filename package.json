@@ -4,9 +4,10 @@
   "private": true,
   "description": "喵管家 · 微信原生猫咪管理小程序（零网络 · 纸墨朱设计）",
   "scripts": {
-    "test": "node check.js && node simulate.js",
+    "test": "node check.js && node simulate.js && node e2e.js",
     "check": "node check.js",
     "simulate": "node simulate.js",
+    "e2e": "node e2e.js",
     "icons": "python tools/assets/make_icons.py"
   },
   "keywords": [

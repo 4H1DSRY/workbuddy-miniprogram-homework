@@ -26,7 +26,8 @@ Page({
     series: [],
     latestWeight: '--',
     chartSub: '最近 7 次称重',
-    groups: []
+    groups: [],
+    visits: []
   },
 
   onShow() {
@@ -45,7 +46,7 @@ Page({
   build() {
     const catId = this.data.catId
     if (!catId) {
-      this.setData({ groups: [], total: 0, days: 0, weekCount: 0, series: [], latestWeight: '--' })
+      this.setData({ groups: [], total: 0, days: 0, weekCount: 0, series: [], latestWeight: '--', visits: [] })
       return
     }
 
@@ -106,6 +107,7 @@ Page({
         latestWeight: latest,
         chartSub: series.length ? '最近 ' + series.length + ' 次称重' : '还没有称重记录',
         groups: groups,
+        visits: store.getSymptomBriefs(catId, 3),
         catName: catName
       },
       () => {
@@ -259,6 +261,13 @@ Page({
 
   goSymptom() {
     wx.navigateTo({ url: '/pages/symptom/symptom' })
+  },
+
+  /** 回看历史就诊描述。栈里只有「记录 ← 报告」两层，报告页的「完成」按一层退 */
+  goReport(e) {
+    const id = e.currentTarget.dataset.id
+    if (!id) return
+    wx.navigateTo({ url: '/pages/report/report?id=' + id })
   },
 
   onPullDownRefresh() {

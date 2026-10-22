@@ -116,6 +116,19 @@ const store = require(path.join(ROOT, 'utils/store.js'))
 eq('种子数据: 猫咪数', store.getCats().length, 3)
 ok('种子数据: 记录数 > 0', store.getRecords().length > 0, store.getRecords().length)
 
+/* 种子时间写成 now-3H 时，凌晨 0:00–0:36 启动会整体落到昨天，
+   首页「今日摄入」归零、看着像坏了。这条断言把「今天必须有记录」钉死。 */
+const seedDay = store.dayKey(Date.now())
+ok('种子数据: 每只猫今天都有记录',
+  store.getCats().every(function (c) {
+    return store.getRecords(c.id).some(function (r) {
+      return store.dayKey(r.time) === seedDay
+    })
+  }),
+  store.getCats().map(function (c) { return store.todayIntake(c.id).food }))
+ok('种子数据: 今天不是未来时间',
+  store.getRecords().every(function (r) { return r.time <= Date.now() + 1000 }), true)
+
 /* ---------------- 2. 数据层 ---------------- */
 const c1 = store.getCats()[0].id
 const intake0 = store.todayIntake(c1)
