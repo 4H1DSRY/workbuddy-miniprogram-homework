@@ -149,6 +149,47 @@ wxssFiles.forEach((f) => {
   })
 }
 
+// 6. 合规：个人主体不得提供诊断，界面不得出现结论性判断或 AI 参与医疗判断的表述
+// 注意白名单语境：单独的「诊断」允许出现（例如「不提供诊断」），但「确诊 / 疑似 / 判定为」不行
+{
+  const BANNED = [
+    '确诊', '疑似', '判定为', '诊断为', 'AI 诊断', 'AI诊断', '智能诊断',
+    'AI 生成', 'AI生成', '算法分析', '大模型', '辅助诊断'
+  ]
+  const collect = (d, out) => {
+    for (const f of fs.readdirSync(d)) {
+      const p = path.join(d, f)
+      if (fs.statSync(p).isDirectory()) {
+        if (f !== 'docs' && f !== 'node_modules') collect(p, out)
+      } else if (/\.(wxml|js|json)$/.test(f)) {
+        out.push(p)
+      }
+    }
+    return out
+  }
+  collect('.', []).forEach((p) => {
+    const text = fs.readFileSync(p, 'utf8')
+    BANNED.forEach((w) => {
+      if (text.indexOf(w) >= 0) {
+        errs.push('合规：' + p + ' 出现「' + w + '」，个人主体不得提供诊断')
+      }
+    })
+  })
+
+  // 免责文案是提审要件，删掉必须报错
+  const MUST_HAVE = [
+    ['pages/symptom/symptom.wxml', '不提供诊断或医疗建议', '症状页顶部免责条'],
+    ['pages/report/report.wxml', '未经兽医确认', '报告页免责声明'],
+    ['pages/report/report.wxml', '未列出的情况可能同样重要', '清单完整性声明'],
+    ['utils/store.js', '仅供就诊沟通使用', '分级依据说明']
+  ]
+  MUST_HAVE.forEach(([p, kw, desc]) => {
+    if (!fs.existsSync(p) || fs.readFileSync(p, 'utf8').indexOf(kw) < 0) {
+      errs.push('合规：缺少' + desc + '（' + p + ' 应含「' + kw + '」）')
+    }
+  })
+}
+
 console.log(errs.length ? errs.join('\n') : 'ALL CHECKS PASSED')
 // 退出码是守门人的意义所在：CI（.github/workflows）靠它判定成败。
 // 没有这行，npm test 永远返回 0，检查等于没做。
