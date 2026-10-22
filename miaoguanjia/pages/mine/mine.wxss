@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 52rpx;
+  /* 原先这里有个 52rpx 的字号，是给文字占位用的；此处放的是 image，字号不生效，已删 */
   flex-shrink: 0;
 }
 
@@ -42,13 +42,13 @@
 
 .profile-sub {
   display: block;
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--c-ink-3);
   margin-top: 8rpx;
 }
 
 .profile-pill {
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: var(--c-vermilion-deep);
   background: var(--c-vermilion-tint);
   border-radius: 4rpx;
@@ -72,14 +72,14 @@
 }
 
 .stat-num {
-  font-size: 40rpx;
+  font-size: 44rpx;
   font-weight: 700;
   color: var(--c-ink);
   line-height: 1.2;
 }
 
 .stat-label {
-  font-size: 21rpx;
+  font-size: 24rpx;
   color: var(--c-ink-3);
   margin-top: 6rpx;
 }
@@ -121,7 +121,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
+  font-size: 34rpx;
   flex-shrink: 0;
 }
 
@@ -147,7 +147,7 @@
 
 .row-sub {
   display: block;
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--c-ink-3);
   margin-top: 6rpx;
   overflow: hidden;
@@ -177,7 +177,7 @@
 
 .footer {
   text-align: center;
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--c-ink-3);
   margin-top: 44rpx;
   letter-spacing: 0.06em;

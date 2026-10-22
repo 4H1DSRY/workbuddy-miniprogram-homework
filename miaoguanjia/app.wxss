@@ -100,7 +100,7 @@ textarea {
 }
 
 .section-title .more {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--c-ink-3);
   letter-spacing: 0.06em;
   /* 热区扩展：文字只有约 36rpx 高，用伪元素撑到 88rpx，不占布局 */
@@ -126,7 +126,7 @@ textarea {
   display: inline-block;
   padding: 2rpx 14rpx;
   border-radius: 4rpx;
-  font-size: 20rpx;
+  font-size: 24rpx;
   background: var(--c-vermilion-tint);
   color: var(--c-vermilion-deep);
   letter-spacing: 0.06em;
