@@ -21,6 +21,8 @@ PY="C:/Users/donny/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
 | --- | --- | --- |
 | `make_icons.py` | 生成 13 个线条图标（`images/icons/`）与 6 个 tabBar 图标（`images/tabbar/`）。Pillow 绘制，24×24 设计坐标，4× 超采样 + LANCZOS 缩小抗锯齿 | `$PY tools/assets/make_icons.py` |
 | `make_assets.py` | 生成三只猫的占位头像与 `default.jpg` | `$PY tools/assets/make_assets.py` |
+| `make_report_figs.py` | 生成课程报告的三张配图（`docs/figures/`）。HTML + CSS 排版比手算 SVG 坐标快，playwright 以 2× 截图 | `$PY tools/assets/make_report_figs.py` |
+| `md2docx.py` | 把 `docs/课程报告.md` 转成可提交的 docx。改完报告必须重跑，否则两份不同步 | `$PY tools/assets/md2docx.py` |
 
 改图标的唯一入口是 `make_icons.py`。**手改 PNG 会在下次生成时被覆盖。**
 
@@ -38,7 +40,7 @@ PY="C:/Users/donny/.workbuddy/binaries/python/envs/default/Scripts/python.exe"
 | `recover_window.py` | `$PY tools/capture/recover_window.py <hwnd>` | 用 `SW_SHOWNOACTIVATE` 把最小化/隐藏的窗口还原，不抢焦点 |
 | `_cap.py` | `$PY tools/capture/_cap.py <hwnd> _shots/out.png` | 抓整窗，`PW_RENDERFULLCONTENT` |
 | `_crop.py` | `$PY tools/capture/_crop.py <src> <dst> <x1> <y1> <x2> <y2> [scale]` | 裁剪 + 缩放 |
-| `_click.py` | `$PY tools/capture/_click.py <hwnd> <img_x> <img_y> [img_w]` | 向窗口投递合成点击（可驱动模拟器原生 tabBar） |
+| `_click.py` | `$PY tools/capture/_click.py <hwnd> <img_x> <img_y> [img_w]` | 向窗口投递合成点击。**打得进模拟器内容区，打不进原生 tabBar**——切页请改用「编译模式」下拉 |
 | `_jump.py` | `$PY tools/capture/_jump.py <page> <out> <hwnd>` | 临时改 `onShow` 跳到目标页再抓图，抓完自动还原 |
 | `_scroll.py` | `$PY tools/capture/_scroll.py <js> <page> <offset> <out> <hwnd>` | 注入滚动偏移，抓长页下半屏 |
 | `_preview_icons.py` | `$PY tools/capture/_preview_icons.py` | 把全部图标排成 19px / 22px 对照图，用于判断小尺寸可辨性 |
