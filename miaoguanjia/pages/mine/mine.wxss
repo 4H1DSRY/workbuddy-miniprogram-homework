@@ -175,6 +175,17 @@
   justify-content: space-between;
 }
 
+/* 卡片下的就地声明。字号 22rpx、ink-3（4.51:1，压着 AA 线），
+   目的是读得到但不抢眼——它是说明，不是警告，所以不用朱色、不加边框。 */
+.card-note {
+  display: block;
+  margin: 12rpx 4rpx 0;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--c-ink-3);
+  letter-spacing: 0.03em;
+}
+
 .footer {
   text-align: center;
   font-size: 24rpx;

@@ -197,7 +197,9 @@ eq('记录页切猫生效', rec.data.catId, store.getCats()[0].id)
 const mine = loadPage('pages/mine/mine.js')
 mine.onShow()
 eq('我的: 统计猫咪数', mine.data.stats.cats, 3)
-ok('我的: 设备在线文案正确', /3 台设备 · \d 台在线/.test(mine.data.deviceText), mine.data.deviceText)
+/* 文案从「台在线」改成「台已启用」：开关只记录偏好，没有任何连接通道，
+   「在线」是个会被人当真的错误说法。这条断言同时锁住措辞。 */
+ok('我的: 设备文案用「已启用」而非「在线」', /3 台设备 · \d 台已启用/.test(mine.data.deviceText), mine.data.deviceText)
 mine.onToggle({ currentTarget: { dataset: { key: 'feeder' } }, detail: { value: false } })
 eq('关掉喂食器后设置已落库', store.getSettings().feeder, false)
 mine.onTimeChange({ detail: { value: '07:45' } })

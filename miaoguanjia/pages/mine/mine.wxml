@@ -55,7 +55,10 @@
     </view>
   </view>
 
-  <!-- 设备管理 -->
+  <!-- 设备管理
+       行内状态原先是「已连接 · 余粮充足」「已连接 · 滤芯正常」「在线 · 1080P」，
+       这三条都是设备上报值，而这里没有任何上报通道，属于直接写假数据。
+       改为只陈述开关本身的状态，是否接入由下方声明统一交代。 -->
   <view class="section-title">
     <text class="t">设备管理</text>
     <text class="more">{{onlineText}}</text>
@@ -66,7 +69,7 @@
       <view class="row-ico"><image class="row-ico-img" src="/images/icons/feed.png" mode="aspectFit" /></view>
       <view class="row-body">
         <text class="row-title">智能喂食器</text>
-        <text class="row-sub">{{settings.feeder ? '已连接 · 余粮充足' : '已断开连接'}}</text>
+        <text class="row-sub">{{settings.feeder ? '已启用' : '已停用'}}</text>
       </view>
       <switch checked="{{settings.feeder}}" color="#1E1B19" data-key="feeder" bindchange="onToggle" />
     </view>
@@ -74,7 +77,7 @@
       <view class="row-ico"><image class="row-ico-img" src="/images/icons/water.png" mode="aspectFit" /></view>
       <view class="row-body">
         <text class="row-title">循环饮水机</text>
-        <text class="row-sub">{{settings.fountain ? '已连接 · 滤芯正常' : '已断开连接'}}</text>
+        <text class="row-sub">{{settings.fountain ? '已启用' : '已停用'}}</text>
       </view>
       <switch checked="{{settings.fountain}}" color="#1E1B19" data-key="fountain" bindchange="onToggle" />
     </view>
@@ -82,11 +85,14 @@
       <view class="row-ico"><image class="row-ico-img" src="/images/icons/camera.png" mode="aspectFit" /></view>
       <view class="row-body">
         <text class="row-title">猫咪摄像头</text>
-        <text class="row-sub">{{settings.camera ? '在线 · 1080P' : '已关闭'}}</text>
+        <text class="row-sub">{{settings.camera ? '已启用' : '已停用'}}</text>
       </view>
       <switch checked="{{settings.camera}}" color="#1E1B19" data-key="camera" bindchange="onToggle" />
     </view>
   </view>
+
+  <!-- 就地声明：拨开关的人此刻最容易误以为它连着什么，所以话放在这里，不放页尾。 -->
+  <view class="card-note">演示：三台设备均未接入，开关只记录偏好，不发送任何控制指令。</view>
 
   <!-- 提醒设置 -->
   <view class="section-title">
@@ -121,6 +127,8 @@
       </picker>
     </view>
   </view>
+
+  <view class="card-note">演示：小程序不支持本地通知，到点不会主动推送；时间设置只记录偏好。</view>
 
   <!-- 其他 -->
   <view class="section-title">

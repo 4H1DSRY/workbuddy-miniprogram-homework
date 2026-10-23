@@ -30,8 +30,10 @@ Page({
       cats: cats,
       stats: stats,
       settings: settings,
-      deviceText: '3 台设备 · ' + online + ' 台在线',
-      onlineText: online + '/3 在线'
+      // 原来写的是「N 台在线」——这个词暗示真的连着设备，和下方声明自相矛盾。
+      // 开关的实际含义只是「你把这个开关拨到了开」，故改称「已启用」。
+      deviceText: '3 台设备 · ' + online + ' 台已启用',
+      onlineText: online + '/3 已启用'
     })
   },
 
@@ -62,7 +64,7 @@ Page({
   onAbout() {
     wx.showModal({
       title: '喵管家 v' + this.data.version,
-      content: '猫咪日常管理小程序 Demo：档案、投食饮水、体重趋势、设备与提醒设置。数据全部保存在本机存储，不联网。',
+      content: '猫咪日常管理小程序 Demo。档案、投食饮水、体重趋势、症状初诊记录均可用，数据全部保存在本机存储，不联网、不上传。\n\n设备管理与提醒设置为界面演示：未接入任何硬件，也不会主动推送消息。',
       showCancel: false,
       confirmText: '知道了'
     })
