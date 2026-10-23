@@ -21,8 +21,10 @@
     <view class="name">{{cat.name}}</view>
     <view class="sub">{{cat.ageText}} · {{cat.breed}}</view>
 
-    <!-- 照片与几何形象二选一，由档案页的「显示方式」决定 -->
-    <view class="photo-slot {{figBounce ? 'is-bounce' : ''}}" bindtap="onFigureTap">
+    <!-- 照片与几何形象二选一，由档案页的「显示方式」决定。
+         这里原本挂了 bindtap（点一下缩一下，无任何功能），已移除：
+         看不出能点、点了又什么都没发生，是可点击区域里最差的一种。 -->
+    <view class="photo-slot">
       <cat-figure
         wx:if="{{cat.avatarType === 'figure'}}"
         color="{{cat.figure ? cat.figure.color : 'ink'}}"

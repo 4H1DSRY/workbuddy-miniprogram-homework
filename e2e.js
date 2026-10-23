@@ -323,15 +323,9 @@ stack.length = 0
 const home = pushUrl('/pages/index/index')
 eq('K6 首页取到形象模式', home.data.cat.avatarType, 'figure')
 eq('K7 首页取到主色', home.data.cat.figure.color, 'vermilion')
-home.onFigureTap()
-ok('K8 形象可点击且触发缩放', home.data.figBounce === true, home.data.figBounce)
-stack.length = 0
-/* 照片模式下点击不该有反应 */
-const home2 = pushUrl('/pages/index/index')
-home2.setData({ 'cat.avatarType': 'photo' })
-home2.setData({ figBounce: false })
-home2.onFigureTap()
-eq('K9 照片模式下点击不缩放', home2.data.figBounce, false)
+/* 形象槽位原先挂了 bindtap：点一下缩一下，但不触发任何功能。
+   「看不出能点 + 点了没反应」比纯静态图更糟，已移除。这条断言防止它被加回来。 */
+ok('K8 形象槽位不再挂假点击', typeof home.onFigureTap === 'undefined', typeof home.onFigureTap)
 stack.length = 0
 
 console.log('\n【L】新增一只猫 → 首页自动切过去')
