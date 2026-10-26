@@ -5,6 +5,23 @@ const app = getApp()
 
 const WEEK = ['日', '一', '二', '三', '四', '五', '六']
 
+/* 面板标题跟按钮上的字保持一致：用户刚点的是「喂水」，弹出来的标题就该是「喂水」，
+   换成数据层的「饮水」会让人怀疑自己点错了。 */
+const INTAKE_TITLE = { feed: '投食', water: '喂水', play: '逗猫' }
+const INTAKE_NOTE = { feed: '手动投食', water: '手动补水', play: '逗猫' }
+
+const EMPTY_SHEET = {
+  open: false,
+  type: '',
+  title: '',
+  unit: '',
+  presets: [],
+  value: '',
+  before: 0,
+  target: 0,
+  tip: { text: '', cls: '' }
+}
+
 Page({
   data: {
     version: '1.0.0',
@@ -23,7 +40,8 @@ Page({
     mood: 0,
     moodText: '',
     moodScale: [1, 2, 3, 4, 5],
-    moodLabels: store.MOOD_LABELS
+    moodLabels: store.MOOD_LABELS,
+    sheet: Object.assign({}, EMPTY_SHEET)
   },
 
   onLoad() {
@@ -84,6 +102,8 @@ Page({
   onSwitch(e) {
     const id = e.currentTarget.dataset.id
     if (app.globalData) app.globalData.currentCatId = id
+    /* 面板还开着就切猫，里面的「今天已进食」会跟新猫对不上，先关掉 */
+    if (this.data.sheet.open) this.closeSheet()
     this.refresh()
   },
 
@@ -104,17 +124,146 @@ Page({
     this.refresh()
   },
 
+  /* ---- 投食 / 喂水 / 逗猫：先问数量，再落笔 ----
+   * 原先这三个动作各自写死一个数（投食 40 g、补水 60 ml、逗猫 15 分钟）。
+   * 写死的数不是「默认值」，是「所有人的同一个事实」——而记录该记的是
+   * 这一顿到底给了多少。所以改成先开面板选数量。
+   */
   onFeed() {
-    this.log('feed', 40, '手动投食 40g', '已投食 40 g')
+    this.openSheet('feed')
   },
 
   onWater() {
-    this.log('water', 60, '饮水机补水', '已补水 60 ml')
+    this.openSheet('feed')
   },
 
   onPlay() {
-    this.log('play', 15, '逗猫棒 15 分钟', '逗猫 15 分钟')
+    this.openSheet('play')
   },
+
+  openSheet(type) {
+    const cat = this.data.cat
+    if (!cat.id) return
+    const presets = store.INTAKE_PRESETS[type] || []
+    /* 默认停在中间那档。不给空值：空输入框会让人以为必须自己算一遍，
+       实际大多数人只会点一下最接近的数。 */
+    const value = presets.length ? presets[Math.floor(presets.length / 2)] : ''
+    const imp = store.overflowOf(cat.id, type, value)
+
+    this.setData({
+      sheet: {
+        open: true,
+        type: type,
+        title: INTAKE_TITLE[type] || '',
+        unit: store.intakeUnit(type),
+        presets: presets,
+        value: value,
+        before: imp ? imp.before : 0,
+        target: imp ? imp.target : 0,
+        tip: this.tipOf(type, value)
+      }
+    })
+  },
+
+  /**
+   * 面板里那行预告：「记完 208 / 200 g · 超出 8 g」。
+   * 提示放在选择时而不是提交后——拨数字的那一刻才知道会不会超，
+   * 比写完再被弹窗拦住更像是在商量。
+   */
+  tipOf(type, value) {
+    const cat = this.data.cat
+    const imp = store.overflowOf(cat.id, type, value)
+    /* 输入框被清空时不预告：0 也算一个数，写出来会变成「记完 168 / 200 g」这种假进度 */
+    if (!imp || String(value) === '') return { text: '', cls: '' }
+
+    let text = '记完 ' + imp.after + ' / ' + imp.target + ' ' + imp.unit
+    if (!imp.over) return { text: text, cls: '' }
+
+    if (type === 'feed') {
+      return { text: text + ' · 超出 ' + imp.excess + ' ' + imp.unit, cls: 'over' }
+    }
+    if (type === 'water') {
+      return { text: text + ' · 已多于参考量', cls: 'note' }
+    }
+    return { text: text, cls: '' }
+  },
+
+  onPreset(e) {
+    this.updateAmount(e.currentTarget.dataset.v)
+  },
+
+  onAmountInput(e) {
+    this.updateAmount(e.detail.value)
+  },
+
+  /* 只留数字，最多四位：input type=number 在部分安卓机仍能敲进小数点与减号 */
+  updateAmount(raw) {
+    const s = this.data.sheet
+    if (!s.open) return
+    const clean = String(raw).replace(/[^\d]/g, '').slice(0, 4)
+    this.setData({
+      sheet: Object.assign({}, s, { value: clean, tip: this.tipOf(s.type, clean) })
+    })
+  },
+
+  onSheetClose() {
+    this.closeSheet()
+  },
+
+  closeSheet() {
+    this.setData({ sheet: Object.assign({}, this.data.sheet, { open: false }) })
+  },
+
+  /**
+   * 提交。超量时先弹一次提醒，但不硬拦：
+   * 目标只是估值，真正知道猫吃没吃饱的是端着碗的人。
+   * 喂食给「仍然记录 / 先不喂」两选一；饮水只告知（showCancel: false），
+   * 因为「别让它多喝水」是错的建议。
+   */
+  onSheetConfirm() {
+    const s = this.data.sheet
+    if (!s.open) return
+
+    const res = store.validateAmount(s.type, s.value)
+    if (!res.ok) {
+      wx.showToast({ title: res.msg, icon: 'none' })
+      return
+    }
+
+    const tip = store.overflowTip(this.data.cat.id, s.type, res.value)
+    if (!tip) {
+      this.commit(s.type, res.value)
+      return
+    }
+
+    const that = this
+    wx.showModal({
+      title: tip.title,
+      content: tip.content,
+      confirmText: tip.confirmText,
+      cancelText: tip.cancelText,
+      showCancel: tip.needConfirm,
+      confirmColor: tip.needConfirm ? PALETTE.vermilion : PALETTE.ink,
+      success(r) {
+        /* 取消不关面板：人改个数字就能重来，不用从头点一遍 */
+        if (!r.confirm) return
+        that.commit(s.type, res.value)
+      }
+    })
+  },
+
+  commit(type, value) {
+    const note = INTAKE_NOTE[type] + ' ' + value + ' ' + (type === 'play' ? '分钟' : store.intakeUnit(type))
+    const toast = {
+      feed: '已投食 ' + value + ' g',
+      water: '已补水 ' + value + ' ml',
+      play: '逗猫 ' + value + ' 分钟'
+    }[type]
+    this.closeSheet()
+    this.log(type, value, note, toast)
+  },
+
+  noop() {},
 
   /**
    * 心情自评：1-5，写进当天记录，同一天再点只改分不叠加。

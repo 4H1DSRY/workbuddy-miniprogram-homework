@@ -155,25 +155,62 @@ eq('首页: 照顾分等于三项均值', idx.data.care,
 ok('首页: 今日记录条数已统计', typeof idx.data.todayCount === 'number', idx.data.todayCount)
 
 /* 旧版同时显示「饱食度 68%」和「进食 45/200g」，两个数字互相矛盾。
-   现在百分比必须能由绝对值反推出来，这条断言就是防止它再漂回去。 */
+   现在百分比必须能由绝对值反推出来，这条断言就是防止它再漂回去。
+   封顶 100：刻度线画到满就停，超出的部分只能看右边的绝对值，
+   这正是超量提醒必须写在面板里的原因——进度条本身不会告诉你有多少超了。 */
 eq('首页: 进食百分比与绝对值自洽', idx.data.pct.food,
-  Math.round(idx.data.pct.foodAbs / idx.data.pct.foodTarget * 100))
+  Math.min(100, Math.round(idx.data.pct.foodAbs / idx.data.pct.foodTarget * 100)))
 eq('首页: 饮水百分比与绝对值自洽', idx.data.pct.water,
-  Math.round(idx.data.pct.waterAbs / idx.data.pct.waterTarget * 100))
+  Math.min(100, Math.round(idx.data.pct.waterAbs / idx.data.pct.waterTarget * 100)))
 eq('首页: 逗猫百分比与绝对值自洽', idx.data.pct.play,
-  Math.round(idx.data.pct.playAbs / idx.data.pct.playTarget * 100))
+  Math.min(100, Math.round(idx.data.pct.playAbs / idx.data.pct.playTarget * 100)))
 
 /* 第三项从 mood 改成逗猫之后，最该锁的是「它真的会随记录变化」。
    旧实现里 mood 只在逗猫时 +14、永不衰减，逗两次就锁死在 100，
    这条断言如果还在用 cat.mood 就会立刻失败。 */
 const playBefore = idx.data.pct.playAbs
 idx.onPlay()
-eq('逗猫一次后今日逗猫分钟 +15', idx.data.pct.playAbs, playBefore + 15)
+eq('逗猫先开面板，不直接落库', idx.data.sheet.open, true)
+eq('面板打开时今日逗猫不变', idx.data.pct.playAbs, playBefore)
+eq('逗猫档位默认停在中间一档', idx.data.sheet.value, store.INTAKE_PRESETS.play[2])
+idx.onSheetConfirm()
+eq('确认后逗猫按面板里的数落库', idx.data.pct.playAbs, playBefore + 20)
+eq('提交后面板关闭', idx.data.sheet.open, false)
 
+/* 原先这里写死 idx.onFeed() → +40g。现在数量由用户选，这条断言改成
+   「面板里的数才作数」——写死 40 的那种实现会在这里失败。 */
 const beforeFood = idx.data.pct.foodAbs
 idx.onFeed()
-eq('投食后今日摄入增加 40g', idx.data.pct.foodAbs, beforeFood + 40)
+eq('投食面板默认 40 g', idx.data.sheet.value, '40')
+eq('面板打开时今日摄入不变', idx.data.pct.foodAbs, beforeFood)
+idx.onPreset({ currentTarget: { dataset: { v: '30' } } })
+eq('点档位后输入框同步', idx.data.sheet.value, '30')
+idx.onSheetConfirm()
+eq('投食按选中的 30g 落库', idx.data.pct.foodAbs, beforeFood + 30)
 ok('投食后照顾分仍在 0-100', idx.data.care >= 0 && idx.data.care <= 100, idx.data.care)
+
+/* 自定义数量：输入框直接填，不限于档位 */
+idx.onFeed()
+idx.onAmountInput({ detail: { value: '7' } })
+idx.onSheetConfirm()
+eq('自定义 7g 也能落库', idx.data.pct.foodAbs, beforeFood + 37)
+eq('0 被拦下不写记录', store.validateAmount('feed', '0').ok, false)
+eq('超过单次上限被拦下', store.validateAmount('feed', '999').ok, false)
+eq('空值被拦下', store.validateAmount('water', '').ok, false)
+
+/* 超量判定与文案。三类动作方向不同，不能套同一句话：
+   喂食劝阻、饮水只告知、逗猫不提醒。 */
+const ovFeed = store.overflowOf(idx.data.cat.id, 'feed', 100)
+ok('喂食超量被识别', ovFeed.over === true, { before: ovFeed.before, after: ovFeed.after, target: ovFeed.target })
+const tipFeed = store.overflowTip(idx.data.cat.id, 'feed', 100)
+ok('喂食超量给两选一确认', tipFeed.needConfirm === true && tipFeed.cancelText === '先不喂', tipFeed.title)
+const ovWater = store.overflowOf(idx.data.cat.id, 'water', 400)
+ok('饮水超量被识别', ovWater.over === true, { before: ovWater.before, after: ovWater.after, target: ovWater.target })
+const tipWater = store.overflowTip(idx.data.cat.id, 'water', 400)
+ok('饮水超量只告知，不给「别喝」选项', tipWater.needConfirm === false, tipWater.title)
+ok('饮水文案不写病名', tipWater.content.indexOf('病') < 0, tipWater.content.slice(0, 24))
+eq('逗猫超过目标不提醒', store.overflowTip(idx.data.cat.id, 'play', 60), null)
+eq('未超量时不提醒', store.overflowTip('c3', 'feed', 75), null)
 
 /* 心情自评：1-5，不进照顾分，同日重复点只改分不堆记录。 */
 const careBeforeMood = idx.data.care
@@ -194,8 +231,10 @@ ok('心情自评不计入今日记录条数', idx.data.todayCount ===
   }).length, idx.data.todayCount)
 
 idx.onPlay()
+idx.onSheetConfirm()
 idx.onWater()
-ok('逗猫/喂水未抛异常', true)
+idx.onSheetConfirm()
+ok('逗猫 / 喂水面板流程未抛异常', true)
 idx.onWeigh()
 eq('称重后体重已更新', idx.data.cat.weight, 4.75)
 

@@ -426,3 +426,167 @@
   letter-spacing: 0.14em;
   border-radius: 4rpx;
 }
+
+/* ---- 用量面板 ----
+ * 形态取「从纸下抽出一张纸条」：直角、单条上发丝线、不用圆角卡片与阴影。
+ * 遮罩用主墨色压到 28% 不透明度，而不是 rgba 黑——纸墨体系里没有纯黑。 */
+.sheet-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 90;
+  background: var(--c-ink);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+.sheet-mask.on {
+  opacity: 0.28;
+  visibility: visible;
+}
+
+/* 页面是 tabBar 页，webview 底边本来就在 tabBar 之上，
+   所以底部只留常规内边距，不再叠 env(safe-area-inset-bottom) 造成空洞。 */
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 91;
+  padding: 36rpx 48rpx 32rpx;
+  background: var(--c-bg);
+  border-top: 1rpx solid var(--c-rule);
+  transform: translateY(104%);
+  transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.sheet.on {
+  transform: translateY(0);
+}
+
+.sheet-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.sheet-title {
+  font-size: 34rpx;
+  color: var(--c-ink);
+  letter-spacing: 0.12em;
+}
+
+.sheet-sub {
+  font-size: 24rpx;
+  color: var(--c-ink-3);
+  letter-spacing: 0.02em;
+}
+
+/* 五档等分：750 - 96(内边距) - 48(四处间隔) = 606，每格约 121rpx。
+   高度直接给 88rpx，它就是热区，不靠伪元素撑——这一条不需要压回原行高。 */
+.sheet-opts {
+  display: flex;
+  margin-top: 24rpx;
+}
+
+.opt {
+  flex: 1;
+  height: 88rpx;
+  margin-right: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx solid var(--c-rule-strong);
+}
+
+.opt:last-child {
+  margin-right: 0;
+}
+
+.opt-n {
+  font-size: 28rpx;
+  color: var(--c-ink);
+  letter-spacing: 0.02em;
+}
+
+/* 选中反白：这一格是「已填进去的当前值」，与输入框里的数字是同一个事实 */
+.opt.on {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+}
+
+.opt.on .opt-n {
+  color: var(--c-bg);
+}
+
+.opt-hover {
+  background: var(--c-rule-soft);
+}
+
+.sheet-row {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  margin-top: 20rpx;
+  border-bottom: 1rpx solid var(--c-rule);
+}
+
+.sheet-input {
+  flex: 1;
+  font-size: 44rpx;
+  color: var(--c-ink);
+  letter-spacing: 0.02em;
+}
+
+.sheet-ph {
+  color: var(--c-ink-5);
+}
+
+.sheet-unit {
+  font-size: 24rpx;
+  color: var(--c-ink-3);
+  margin-left: 8rpx;
+}
+
+/* 预告行：选择时就说清「记完是多少、超不超」。
+   朱色只给喂食超量——饮水超参考量不是坏事，压成同一色会误导。 */
+.sheet-tip {
+  display: block;
+  min-height: 34rpx;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--c-ink-3);
+  letter-spacing: 0.02em;
+}
+
+.sheet-tip.over {
+  color: var(--c-vermilion);
+}
+
+.sheet-tip.note {
+  color: var(--c-ink-2);
+}
+
+.sheet-btn {
+  height: 88rpx;
+  margin-top: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-ink);
+}
+
+.sheet-btn-hover {
+  background: var(--c-ink-2);
+}
+
+.sheet-btn-txt {
+  font-size: 28rpx;
+  color: var(--c-bg);
+  letter-spacing: 0.2em;
+  /* 字距会把最后一个字往左带，补一格让光学重心回到正中 */
+  margin-left: 0.2em;
+}

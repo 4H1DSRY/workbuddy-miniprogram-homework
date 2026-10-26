@@ -20,6 +20,32 @@ const PLAY_TARGET = 30
    它是「饲主看到的状态」，不是「系统测出来的指标」，两者不能换算。 */
 const MOOD_LABELS = ['很差', '一般', '还行', '不错', '很好']
 
+/* 数量型动作的「常用量」档位。
+   名字是常用量，不是推荐量：同样 40 g，冻干和主食罐的热量能差一倍，
+   该给多少取决于粮，不取决于猫。所以档位只做输入框的快捷填充，
+   真正写进记录的是用户自己确认的那个数。 */
+const INTAKE_PRESETS = {
+  feed: ['20', '30', '40', '50', '60'],
+  water: ['50', '100', '150', '200'],
+  play: ['10', '15', '20', '30']
+}
+
+/* 单次量的允许范围。上限不是医学上限，是「防手滑」：
+   一次喂 300 g 以上基本可以确定是少打了一位小数点，不是猫能吃。 */
+const INTAKE_LIMITS = {
+  feed: { min: 5, max: 300 },
+  water: { min: 10, max: 500 },
+  play: { min: 1, max: 180 }
+}
+
+/* 面板与提示里用的短单位。TYPE_META 的 unit 是列表页用的（「分钟」），
+   放到 121rpx 宽的档位块里会挤，故另给一套短的。 */
+const INTAKE_UNITS = { feed: 'g', water: 'ml', play: 'min' }
+
+function intakeUnit(type) {
+  return INTAKE_UNITS[type] || ''
+}
+
 const DEFAULT_SETTINGS = {
   feedRemind: true,
   vaccineRemind: true,
@@ -757,6 +783,125 @@ function careScore(catId) {
   return Math.round((p.food + p.water + p.play) / 3)
 }
 
+/* ---------------------- 用量与超量 ---------------------- */
+
+/**
+ * 校验一次数量型记录。范围与单位都在数据层，页面只管把 msg 弹出来。
+ * @returns {{ok:boolean, msg?:string, value?:number}}
+ */
+function validateAmount(type, raw) {
+  const lim = INTAKE_LIMITS[type]
+  if (!lim) return { ok: false, msg: '未知的记录类型' }
+  const unit = intakeUnit(type)
+  const v = Math.round(Number(raw))
+  if (!raw || !isFinite(v) || v <= 0) {
+    return { ok: false, msg: '先填一个数量' }
+  }
+  if (v < lim.min || v > lim.max) {
+    return { ok: false, msg: '请填 ' + lim.min + '–' + lim.max + ' ' + unit }
+  }
+  return { ok: true, value: v }
+}
+
+/**
+ * 这一笔落下去，今天会到多少、有没有超过「参考量」。
+ *
+ * 用词是参考量而不是上限：foodTarget 由饲主自己填，waterTarget 又是
+ * foodTarget + 60 推出来的粗估，两个都不精确。把一个不精确的数字
+ * 当成红线去拦人，等于给估值班加了执法权。
+ *
+ * @returns {null|{type,unit,before,after,target,excess,over,pct}}
+ */
+function overflowOf(catId, type, value) {
+  const cat = getCat(catId)
+  if (!cat) return null
+  const intake = todayIntake(catId)
+  let before = 0
+  let target = 0
+  if (type === 'feed') {
+    before = intake.food
+    target = Number(cat.foodTarget) || 200
+  } else if (type === 'water') {
+    before = intake.water
+    target = waterTargetOf(cat)
+  } else if (type === 'play') {
+    before = intake.play
+    target = PLAY_TARGET
+  } else {
+    return null
+  }
+
+  const after = before + (Number(value) || 0)
+  const excess = after - target
+  return {
+    type: type,
+    unit: intakeUnit(type),
+    before: before,
+    after: after,
+    target: target,
+    excess: excess > 0 ? excess : 0,
+    over: excess > 0,
+    pct: target > 0 ? Math.round((after / target) * 100) : 0
+  }
+}
+
+/**
+ * 超量提醒的文案。返回 null 表示不必提醒。
+ *
+ * 三类动作的提醒方向不一样，不能套同一句话：
+ *   投食超量 → 劝阻。一次给太多，猫容易吃急了吐，剩下的也会受潮。
+ *   饮水超量 → 不劝阻。猫多喝水本来就是好事，限制饮水才是错的；
+ *              该提醒的是「连续几天都多」这件事值得记录下来带给兽医。
+ *   逗猫超量 → 不提醒。超过目标只有好处。
+ *
+ * 也不写病名：这个 App 的立场是不做诊断，界面里连「可能是肾病」都不该出现，
+ * 否则等于替用户下了半个结论。
+ *
+ * 正文不写换行符：wx.showModal 的 content 会把 \n 折成空格，
+ * 排出来的断行只在代码里成立，在屏幕上是连成一片的一句话。
+ * 所以每句都写成能独立读完的一句话，靠自然折行。
+ */
+function overflowTip(catId, type, value) {
+  if (type !== 'feed' && type !== 'water') return null
+  const imp = overflowOf(catId, type, value)
+  if (!imp || !imp.over) return null
+
+  const v = Math.round(Number(value) || 0)
+
+  if (type === 'water') {
+    return {
+      needConfirm: false,
+      title: '今天饮水已多于参考量',
+      content:
+        '今天已饮水 ' + imp.before + ' ml，参考量 ' + imp.target + ' ml，' +
+        '记下这 ' + v + ' ml 会到 ' + imp.after + ' ml。' +
+        '喝水多不用限制，只是如果连着几天都比平常多，把这几天的记录带给兽医看。',
+      confirmText: '知道了',
+      cancelText: ''
+    }
+  }
+
+  /* 110% 是文案的分界，不是安全线：超出一点点只说明「参考量本来就是个估值」，
+     说到「容易吐」就过头了；超出明显时才说具体后果。 */
+  const heavy = imp.after > imp.target * 1.1
+  const head =
+    '今天已进食 ' + imp.before + ' g，参考量 ' + imp.target + ' g。' +
+    '再给 ' + v + ' g 会到 ' + imp.after + ' g' +
+    (heavy ? '，超出 ' + imp.excess + ' g。' : '。')
+
+  return {
+    needConfirm: true,
+    title: heavy ? '今天喂得偏多了' : '已经到参考量了',
+    content:
+      head +
+      (heavy
+        ? '一次给太多，猫容易吃急了吐，剩下的也会受潮。如果它刚吃过，这份可以先收起来。'
+        : '参考量是按体重和粮估出来的，不是硬标准，偶尔超一点不用紧张。'),
+    confirmText: '仍然记录',
+    cancelText: '先不喂'
+  }
+}
+
 /* ---------------------- 心情自评 ---------------------- */
 
 /**
@@ -866,6 +1011,12 @@ module.exports = {
   waterTargetOf: waterTargetOf,
   intakePercent: intakePercent,
   careScore: careScore,
+  INTAKE_PRESETS: INTAKE_PRESETS,
+  INTAKE_LIMITS: INTAKE_LIMITS,
+  intakeUnit: intakeUnit,
+  validateAmount: validateAmount,
+  overflowOf: overflowOf,
+  overflowTip: overflowTip,
   weightSeries: weightSeries,
   weightTrend: weightTrend,
   stats: stats,

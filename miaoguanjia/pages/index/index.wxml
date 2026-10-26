@@ -130,4 +130,50 @@
     <view class="empty-btn" hover-class="tap-active" bindtap="goAdd">添加第一只猫</view>
   </view>
 
+  <!-- 用量面板。投食 / 喂水 / 逗猫共用一套壳，只是档位与单位不同。
+       为什么不是「点一下直接 +40g」：40 g 是别人家的数，用户要知道的是
+       「这一顿给了多少」。档位只负责省打字，最终以输入框里的数为准。 -->
+  <view
+    class="sheet-mask {{sheet.open ? 'on' : ''}}"
+    bindtap="onSheetClose"
+    catchtouchmove="noop"
+  ></view>
+
+  <view class="sheet {{sheet.open ? 'on' : ''}}">
+    <view class="sheet-head">
+      <text class="sheet-title">{{sheet.title}}</text>
+      <text class="sheet-sub">今天已 {{sheet.before}} / {{sheet.target}} {{sheet.unit}}</text>
+    </view>
+
+    <view class="sheet-opts">
+      <view
+        class="opt {{sheet.value === item ? 'on' : ''}}"
+        wx:for="{{sheet.presets}}"
+        wx:key="*this"
+        data-v="{{item}}"
+        hover-class="opt-hover"
+        bindtap="onPreset"
+      ><text class="opt-n">{{item}}</text></view>
+    </view>
+
+    <view class="sheet-row">
+      <input
+        class="sheet-input"
+        type="number"
+        value="{{sheet.value}}"
+        placeholder="或直接填"
+        placeholder-class="sheet-ph"
+        bindinput="onAmountInput"
+        adjust-position="{{true}}"
+      />
+      <text class="sheet-unit">{{sheet.unit}}</text>
+    </view>
+
+    <text class="sheet-tip {{sheet.tip.cls}}">{{sheet.tip.text}}</text>
+
+    <view class="sheet-btn" hover-class="sheet-btn-hover" bindtap="onSheetConfirm">
+      <text class="sheet-btn-txt">记录</text>
+    </view>
+  </view>
+
 </view>
