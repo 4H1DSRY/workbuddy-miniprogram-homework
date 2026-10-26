@@ -129,6 +129,20 @@ ok('种子数据: 每只猫今天都有记录',
 ok('种子数据: 今天不是未来时间',
   store.getRecords().every(function (r) { return r.time <= Date.now() + 1000 }), true)
 
+/* 种子里的数量必须取自面板档位。面板只给整十档位（20/30/40/50/60），
+   种子却写 168 g 的时候，首页那个 168 就在证明「它不是这套 UI 记出来的」——
+   演示时一眼穿帮。逐条比对，新增种子漏改会被这里拦下。
+   weight / vaccine / deworm 不在档位体系里，跳过。 */
+const offPreset = store.getRecords().filter(function (r) {
+  const presets = store.INTAKE_PRESETS[r.type]
+  if (!presets) return false
+  if (Number(r.value) === 0) return false  // 疫苗、驱虫这类不含数量的记录
+  return presets.map(Number).indexOf(Number(r.value)) < 0
+})
+ok('种子数据: 数量都取自面板档位',
+  offPreset.length === 0,
+  offPreset.map(function (r) { return r.type + ' ' + r.value }))
+
 /* ---------------- 2. 数据层 ---------------- */
 const c1 = store.getCats()[0].id
 const intake0 = store.todayIntake(c1)

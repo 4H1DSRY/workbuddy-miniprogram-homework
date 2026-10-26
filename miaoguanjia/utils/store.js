@@ -10,7 +10,7 @@ const SYMPTOM_KEY = 'mgj_symptoms'
 const SETTINGS_KEY = 'mgj_settings'
 const SEED_KEY = 'mgj_seeded'
 /* 种子数据版本：改种子内容后 +1，旧缓存才会被覆盖 */
-const SEED_VERSION = 6
+const SEED_VERSION = 7
 
 /* 每日逗猫目标（分钟）。三条刻度里「逗猫」的目标就取这个数。
    写死而不再按体重推导：逗猫时长取决于人，与猫的大小无关。 */
@@ -160,16 +160,23 @@ function buildSeed() {
   const H = 3600 * 1000
   const D = 24 * H
 
-  /* 种子时间不能写成 now - 3H 这种相对偏移：
-     凌晨 0:00–0:36 之间启动，最新一条会落到昨天，
-     首页「今日摄入」直接归零，看着像坏了。
-     改成按「今天已过去时段的百分比」铺开——永远在今天，也永远在过去；
-     顺带让截图里的时间分布符合真实作息，而不是凌晨三点喂了五顿。 */
   const d0 = new Date(now)
   d0.setHours(0, 0, 0, 0)
   const d0t = d0.getTime()
-  const todayAt = function (p) {
-    return Math.round(d0t + (now - d0t) * p)
+
+  /* 钟点按绝对时间给（8.33 = 08:20），不按「今天已过时长的百分比」：
+     百分比在 19:25 重置时，0.22 会落到凌晨 4:16，一条标着「早餐」的记录
+     出现在凌晨四点——和 168 g 一样，是数据自己反驳自己。
+     改成钟点后，只要启动时间晚于该钟点，就是真的那个点。
+
+     凌晨启动时目标钟点还没到，压到「现在之前 backMin 分钟」，且不早于
+     今天 00:01；否则会落到昨天，首页今日摄入归零。backMin 按记录先后
+     递减，保证全被压时顺序仍然正确——这也是「记录时间不得晚于现在」
+     那条断言的保证。 */
+  const atHour = function (h, backMin) {
+    const t = d0t + Math.round(h * H)
+    if (t < now) return t
+    return Math.max(d0t + 60 * 1000, now - (backMin || 10) * 60 * 1000)
   }
   /* 往前第 n 天的某个整点 */
   const backAt = function (n, hour) {
@@ -215,30 +222,35 @@ function buildSeed() {
     }
   ]
 
+  /* 数量必须取自 INTAKE_PRESETS 的档位（feed 20/30/40/50/60、water 50/100/150/200、
+     play 10/15/20/30）。这些是「用这个 App 记出来的数」，而面板只给整十档位——
+     种子写 168 g 就等于当场证明「首页那 168 不是这套 UI 产生的」。
+     simulate 里有一条断言逐个比对，新增种子时漏改会被拦下。 */
   const records = [
-    { id: uid('r'), catId: 'c1', type: 'weight', value: 4.62, note: '晨间称重', time: todayAt(0.12) },
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 45, note: '早餐 · 冻干拌粮', time: todayAt(0.22) },
-    { id: uid('r'), catId: 'c1', type: 'water', value: 60, note: '饮水机补水', time: todayAt(0.36) },
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 78, note: '午餐 · 冻干拌粮', time: todayAt(0.55) },
-    { id: uid('r'), catId: 'c1', type: 'water', value: 120, note: '换水后续饮', time: todayAt(0.72) },
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 45, note: '加餐 · 主食罐', time: todayAt(0.9) },
-    { id: uid('r'), catId: 'c1', type: 'play', value: 15, note: '逗猫棒 15 分钟', time: todayAt(0.62) },
+    { id: uid('r'), catId: 'c1', type: 'weight', value: 4.62, note: '晨间称重', time: atHour(8.08, 70) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 50, note: '早餐 · 冻干拌粮', time: atHour(8.33, 62) },
+    { id: uid('r'), catId: 'c1', type: 'water', value: 50, note: '饮水机补水', time: atHour(10.5, 52) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 60, note: '午餐 · 冻干拌粮', time: atHour(12.67, 42) },
+    { id: uid('r'), catId: 'c1', type: 'water', value: 150, note: '换水后续饮', time: atHour(15.33, 30) },
+    { id: uid('r'), catId: 'c1', type: 'play', value: 15, note: '逗猫棒 15 分钟', time: atHour(17, 18) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 50, note: '晚餐 · 主食罐', time: atHour(18.5, 6) },
 
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 70, note: '晚餐 · 猫粮', time: backAt(1, 19) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 60, note: '晚餐 · 猫粮', time: backAt(1, 19) },
     { id: uid('r'), catId: 'c1', type: 'weight', value: 4.58, note: '晚间称重', time: backAt(1, 21) },
-    { id: uid('r'), catId: 'c1', type: 'feed', value: 65, note: '早餐 · 猫粮', time: backAt(2, 8) },
+    { id: uid('r'), catId: 'c1', type: 'feed', value: 60, note: '早餐 · 猫粮', time: backAt(2, 8) },
     { id: uid('r'), catId: 'c1', type: 'weight', value: 4.55, note: '晚间称重', time: backAt(2, 21) },
 
-    { id: uid('r'), catId: 'c2', type: 'weight', value: 3.18, note: '晨间称重', time: todayAt(0.1) },
-    { id: uid('r'), catId: 'c2', type: 'feed', value: 60, note: '早餐 · 湿粮', time: todayAt(0.2) },
-    { id: uid('r'), catId: 'c2', type: 'play', value: 15, note: '逗猫棒 15 分钟', time: todayAt(0.5) },
-    { id: uid('r'), catId: 'c2', type: 'water', value: 40, note: '换水', time: backAt(1, 9) },
+    { id: uid('r'), catId: 'c2', type: 'weight', value: 3.18, note: '晨间称重', time: atHour(8.1, 70) },
+    { id: uid('r'), catId: 'c2', type: 'feed', value: 60, note: '早餐 · 湿粮', time: atHour(8.5, 58) },
+    { id: uid('r'), catId: 'c2', type: 'play', value: 15, note: '逗猫棒 15 分钟', time: atHour(17.5, 20) },
+    { id: uid('r'), catId: 'c2', type: 'water', value: 50, note: '换水', time: backAt(1, 9) },
     { id: uid('r'), catId: 'c2', type: 'vaccine', value: 0, note: '猫三联加强针已接种', time: backAt(1, 10) },
     { id: uid('r'), catId: 'c2', type: 'weight', value: 3.14, note: '晚间称重', time: backAt(1, 20) },
     { id: uid('r'), catId: 'c2', type: 'weight', value: 3.11, note: '晨间称重', time: backAt(3, 8) },
 
-    { id: uid('r'), catId: 'c3', type: 'weight', value: 5.04, note: '晨间称重', time: todayAt(0.1) },
-    { id: uid('r'), catId: 'c3', type: 'feed', value: 80, note: '早餐 · 全价粮', time: todayAt(0.28) },
+    { id: uid('r'), catId: 'c3', type: 'weight', value: 5.04, note: '晨间称重', time: atHour(8.15, 70) },
+    { id: uid('r'), catId: 'c3', type: 'feed', value: 40, note: '早餐 · 全价粮', time: atHour(8.75, 54) },
+    { id: uid('r'), catId: 'c3', type: 'feed', value: 40, note: '晚餐 · 全价粮', time: atHour(18.25, 8) },
     { id: uid('r'), catId: 'c3', type: 'weight', value: 5.01, note: '晚间称重', time: backAt(1, 20) },
     { id: uid('r'), catId: 'c3', type: 'deworm', value: 0, note: '体内驱虫完成', time: backAt(2, 15) },
     { id: uid('r'), catId: 'c3', type: 'weight', value: 4.98, note: '晨间称重', time: backAt(3, 8) }
