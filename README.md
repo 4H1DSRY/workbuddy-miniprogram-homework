@@ -9,8 +9,9 @@
 | 知道「什么算做完」「什么不能破」 | [`PROJECT.md`](PROJECT.md) —— 章程、里程碑、5 条架构不变量、三层验收口径 |
 | 知道「接下来做什么」 | [`docs/backlog.md`](docs/backlog.md) —— 编号条目、优先级、可验收标准 |
 | 知道「已经验证过什么」 | [`docs/验收清单.md`](docs/验收清单.md) —— 逐项证据与截图 |
-| 改完代码快速确认没弄坏 | `npm test`（= 静态校验 + 99 项逻辑断言 + 74 项端到端断言） |
-| 想知道「为什么这么设计」 | [`docs/课程报告.md`](docs/课程报告.md) —— 12 页报告：架构、纸墨朱、AI 功能取舍、四层验证与四次翻车复盘 |
+| 改完代码快速确认没弄坏 | `npm test`（= 静态校验 + 108 项逻辑断言 + 73 项端到端断言） |
+| 想知道「为什么这么设计」 | [`docs/课程报告.md`](docs/课程报告.md) —— 15 页报告：架构、纸墨朱、AI 功能取舍、四层验证、四次翻车复盘，以及把设计指南做成 8 个技能的经过 |
+| 想知道「规范是怎么被执行的」 | 报告第六章 —— 自建 8 个技能（1,342 行）；审计脚本已随仓库提供：`python tools/wxmp_ui_audit.py miaoguanjia` |
 | 看版本变化 | [`CHANGELOG.md`](CHANGELOG.md) |
 | 只是想跑起来看看 | 往下读第二节 |
 
@@ -25,7 +26,7 @@
    `D:\Claw\workbuddy-course\homework-4\miaoguanjia`
    → AppID 那一栏点 **「测试号」** → 确定
 
-> `project.config.json` 里已写入 `"appid": "touristappid"`，直接打开不会卡在 AppID 上。
+> `project.config.json` 里填的是本项目的 AppID。你没有收录权限，**直接改成 `"touristappid"`（测试号）即可打开**，功能不受影响——本项目不联网，不需要真实 AppID。
 
 打开后模拟器应立即出现首页（三只示例猫：团子 / 芝麻 / 豆豆）。
 
@@ -88,7 +89,7 @@
 ```
 miaoguanjia/
 ├── app.js / app.json / app.wxss      # 全局入口、路由与 TabBar、全局样式与色彩 token
-├── project.config.json               # 项目配置（appid = touristappid）
+├── project.config.json               # 项目配置（appid 换成 touristappid 即可本地打开）
 ├── sitemap.json
 ├── pages/
 │   ├── index/      # 首页
