@@ -229,6 +229,8 @@ eq('未超量时不提醒', store.overflowTip('c3', 'feed', 75), null)
 /* 心情自评：1-5，不进照顾分，同日重复点只改分不堆记录。 */
 const careBeforeMood = idx.data.care
 eq('未评时心情为 0', store.todayMood(idx.data.cat.id), 0)
+/* 「还没评」把一件没做的事说成一件欠着的事；这里的状态只是「不知道」，不是「没交作业」。 */
+eq('未评时右侧写「未知」', idx.data.moodText, '未知')
 idx.onMood({ currentTarget: { dataset: { v: 4 } } })
 eq('评一次后心情为 4', idx.data.mood, 4)
 eq('心情文案取自分档表', idx.data.moodText, store.MOOD_LABELS[3])

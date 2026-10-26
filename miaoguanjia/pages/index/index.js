@@ -95,7 +95,7 @@ Page({
       careRing: theme.ringGradient(care, PALETTE.vermilion, PALETTE.rule),
       todayCount: todayCount,
       mood: mood,
-      moodText: mood ? store.MOOD_LABELS[mood - 1] : '还没评'
+      moodText: mood ? store.MOOD_LABELS[mood - 1] : '未知'
     })
   },
 

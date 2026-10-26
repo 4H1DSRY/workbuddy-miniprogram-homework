@@ -7,7 +7,6 @@
       <text class="profile-name">铲屎官</text>
       <text class="profile-sub">{{deviceText}}</text>
     </view>
-    <view class="profile-pill">VIP 1</view>
   </view>
 
   <!-- 统计 -->

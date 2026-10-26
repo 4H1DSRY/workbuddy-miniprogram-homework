@@ -52,7 +52,6 @@ const DEFAULT_SETTINGS = {
   remindTime: '08:30',
   feeder: true,
   fountain: true,
-  deviceName: '喵管家 Pro · 客厅',
   camera: true
 }
 

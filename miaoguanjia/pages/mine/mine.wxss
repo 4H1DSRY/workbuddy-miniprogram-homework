@@ -47,14 +47,6 @@
   margin-top: 8rpx;
 }
 
-.profile-pill {
-  font-size: 24rpx;
-  color: var(--c-vermilion-deep);
-  background: var(--c-vermilion-tint);
-  border-radius: 4rpx;
-  padding: 6rpx 18rpx;
-}
-
 /* 统计 */
 .stats {
   display: flex;
