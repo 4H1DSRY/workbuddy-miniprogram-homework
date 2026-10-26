@@ -34,7 +34,7 @@
         wx:if="{{cat.avatarType === 'figure'}}"
         color="{{cat.figure ? cat.figure.color : 'ink'}}"
         accessory="{{cat.figure ? cat.figure.accessory : 'none'}}"
-        size="220rpx"
+        size="320rpx"
       />
       <image wx:else class="photo" src="{{cat.avatar}}" mode="aspectFit" />
     </view>
