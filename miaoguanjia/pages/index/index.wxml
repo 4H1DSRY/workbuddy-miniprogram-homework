@@ -49,7 +49,8 @@
       </view>
     </view>
 
-    <!-- 三条刻度：线长即完成度，右侧写绝对值，同一件事只说一遍 -->
+    <!-- 三条刻度：线长即完成度，右侧写绝对值，同一件事只说一遍。
+         三项全部来自今天的记录，没有一项是档案里的固定值。 -->
     <view class="bars">
       <view class="bar">
         <text class="bar-label">进食</text>
@@ -62,10 +63,28 @@
         <text class="bar-val">{{pct.waterAbs}} / {{pct.waterTarget}} ml</text>
       </view>
       <view class="bar">
-        <text class="bar-label">心情</text>
-        <view class="bar-track"><view class="bar-fill" style="width: {{pct.mood}}%;"></view></view>
-        <text class="bar-val">{{pct.mood}}</text>
+        <text class="bar-label">逗猫</text>
+        <view class="bar-track"><view class="bar-fill" style="width: {{pct.play}}%;"></view></view>
+        <text class="bar-val">{{pct.playAbs}} / {{pct.playTarget}} min</text>
       </view>
+    </view>
+
+    <!-- 心情自评：与上面三条刻意不同构。
+         刻度是「从记录算出来的」，这一行是「你看到的」——所以它没有进度条、
+         没有百分比，只有五个格子。它也不进照顾分。 -->
+    <view class="mood">
+      <text class="mood-label">心情</text>
+      <view class="mood-cells">
+        <view
+          class="mood-cell {{mood === item ? 'on' : ''}}"
+          wx:for="{{moodScale}}"
+          wx:key="*this"
+          data-v="{{item}}"
+          hover-class="mood-cell-hover"
+          bindtap="onMood"
+        ></view>
+      </view>
+      <text class="mood-word">{{moodText}}</text>
     </view>
 
     <!-- 五个动作：只有线条图标与字，没有色块。

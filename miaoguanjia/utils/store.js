@@ -10,7 +10,15 @@ const SYMPTOM_KEY = 'mgj_symptoms'
 const SETTINGS_KEY = 'mgj_settings'
 const SEED_KEY = 'mgj_seeded'
 /* 种子数据版本：改种子内容后 +1，旧缓存才会被覆盖 */
-const SEED_VERSION = 4
+const SEED_VERSION = 5
+
+/* 每日逗猫目标（分钟）。三条刻度里「逗猫」的目标就取这个数。
+   写死而不再按体重推导：逗猫时长取决于人，与猫的大小无关。 */
+const PLAY_TARGET = 30
+
+/* 心情自评的 1-5 档。刻意不映射成百分比——
+   它是「饲主看到的状态」，不是「系统测出来的指标」，两者不能换算。 */
+const MOOD_LABELS = ['很差', '一般', '还行', '不错', '很好']
 
 const DEFAULT_SETTINGS = {
   feedRemind: true,
@@ -151,9 +159,6 @@ function buildSeed() {
       birthday: '2023-04-12',
       weight: 4.62,
       avatar: '/images/cats/cat1.jpg',
-      food: 68,
-      water: 52,
-      mood: 82,
       foodTarget: 200,
       note: '爱吃冻干，怕生'
     },
@@ -165,9 +170,6 @@ function buildSeed() {
       birthday: '2024-01-08',
       weight: 3.18,
       avatar: '/images/cats/cat2.jpg',
-      food: 41,
-      water: 30,
-      mood: 64,
       foodTarget: 160,
       note: '半夜跑酷选手'
     },
@@ -179,9 +181,6 @@ function buildSeed() {
       birthday: '2022-09-30',
       weight: 5.04,
       avatar: '/images/cats/cat3.jpg',
-      food: 86,
-      water: 71,
-      mood: 90,
       foodTarget: 220,
       note: '粘人，爱喝水'
     }
@@ -194,6 +193,7 @@ function buildSeed() {
     { id: uid('r'), catId: 'c1', type: 'feed', value: 78, note: '午餐 · 冻干拌粮', time: todayAt(0.55) },
     { id: uid('r'), catId: 'c1', type: 'water', value: 120, note: '换水后续饮', time: todayAt(0.72) },
     { id: uid('r'), catId: 'c1', type: 'feed', value: 45, note: '加餐 · 主食罐', time: todayAt(0.9) },
+    { id: uid('r'), catId: 'c1', type: 'play', value: 15, note: '逗猫棒 15 分钟', time: todayAt(0.62) },
 
     { id: uid('r'), catId: 'c1', type: 'feed', value: 70, note: '晚餐 · 猫粮', time: backAt(1, 19) },
     { id: uid('r'), catId: 'c1', type: 'weight', value: 4.58, note: '晚间称重', time: backAt(1, 21) },
@@ -270,9 +270,6 @@ function decorate(cat) {
   const out = Object.assign({}, cat)
   out.ageText = ageText(cat.birthday)
   out.genderText = cat.gender === 'female' ? '♀ 妹妹' : '♂ 弟弟'
-  out.food = clamp(cat.food, 0, 100)
-  out.water = clamp(cat.water, 0, 100)
-  out.mood = clamp(cat.mood, 0, 100)
   // 老数据没有这两个字段，补默认值；默认仍走照片，不让已有用户突然变成几何形象
   out.figure = Object.assign({}, DEFAULT_FIGURE, cat.figure || {})
   out.avatarType = cat.avatarType === 'figure' ? 'figure' : 'photo'
@@ -306,9 +303,6 @@ function addCat(data) {
       birthday: dayKey(Date.now()),
       weight: 3,
       avatar: '/images/cats/default.jpg',
-      food: 70,
-      water: 60,
-      mood: 75,
       foodTarget: 180,
       note: ''
     },
@@ -338,10 +332,12 @@ function removeCat(id) {
 const TYPE_META = {
   feed: { label: '投食', icon: '/images/icons/feed.png', unit: 'g', color: theme.PALETTE.ink6 },
   water: { label: '饮水', icon: '/images/icons/water.png', unit: 'ml', color: theme.PALETTE.ink6 },
-  play: { label: '陪玩', icon: '/images/icons/play.png', unit: '分钟', color: theme.PALETTE.ink6 },
+  play: { label: '逗猫', icon: '/images/icons/play.png', unit: '分钟', color: theme.PALETTE.ink6 },
   weight: { label: '称重', icon: '/images/icons/weight.png', unit: 'kg', color: theme.PALETTE.vermilion },
   vaccine: { label: '疫苗', icon: '/images/icons/vaccine.png', unit: '', color: theme.PALETTE.ink6 },
-  deworm: { label: '驱虫', icon: '/images/icons/deworm.png', unit: '', color: theme.PALETTE.ink6 }
+  deworm: { label: '驱虫', icon: '/images/icons/deworm.png', unit: '', color: theme.PALETTE.ink6 },
+  /* 自评不进记录页流水，但需要 meta 兜底，否则 groupByDay 拿到 '记录' 这个泛称 */
+  mood: { label: '心情', icon: '/images/icons/paw.png', unit: '分', color: theme.PALETTE.ink6 }
 }
 
 function typeMeta(type) {
@@ -702,13 +698,15 @@ function todayIntake(catId) {
   const key = dayKey(Date.now())
   let food = 0
   let water = 0
+  let play = 0
   readRecords().forEach(function (r) {
     if (r.catId !== catId) return
     if (dayKey(r.time) !== key) return
     if (r.type === 'feed') food += Number(r.value) || 0
     if (r.type === 'water') water += Number(r.value) || 0
+    if (r.type === 'play') play += Number(r.value) || 0
   })
-  return { food: Math.round(food), water: Math.round(water) }
+  return { food: Math.round(food), water: Math.round(water), play: Math.round(play) }
 }
 
 /** 每日饮水目标：沿用「进食目标 + 60」的推导，全站只此一处 */
@@ -720,15 +718,19 @@ function waterTargetOf(cat) {
 /**
  * 今日三项完成度。
  *
- * 刻意让它与 todayIntake 同源：首页的「环」和三条「刻度」都从这一个函数取值，
- * 不会出现「饱食度 68%」与「进食 45/200g」互相矛盾的情况。
- * 心情无法从记录推导，仍取 cat.mood。
+ * 三项全部来自记录，没有一项是档案里的固定值：
+ * 进食 / 饮水 / 逗猫 都能从今天写了什么推出来，所以「环」和三条「刻度」
+ * 永远是同一份数据，不会出现「饱食度 68%」与「进食 45/200g」互相矛盾。
+ *
+ * 原先第三项是 mood：建档时写死 82，逗猫 +14，永不衰减——一个只涨不跌的
+ * 计数器，不是任何东西的度量，却占照顾分三分之一。现改为逗猫分钟数。
  */
 function intakePercent(catId) {
   const cat = getCat(catId)
   const zero = {
-    foodAbs: 0, waterAbs: 0, foodTarget: 200, waterTarget: 260,
-    food: 0, water: 0, mood: 0
+    foodAbs: 0, waterAbs: 0, playAbs: 0,
+    foodTarget: 200, waterTarget: 260, playTarget: PLAY_TARGET,
+    food: 0, water: 0, play: 0
   }
   if (!cat) return zero
 
@@ -739,18 +741,62 @@ function intakePercent(catId) {
   return {
     foodAbs: intake.food,
     waterAbs: intake.water,
+    playAbs: intake.play,
     foodTarget: foodTarget,
     waterTarget: waterTarget,
+    playTarget: PLAY_TARGET,
     food: Math.min(100, Math.round((intake.food / foodTarget) * 100)),
     water: Math.min(100, Math.round((intake.water / waterTarget) * 100)),
-    mood: clamp(Number(cat.mood) || 0, 0, 100)
+    play: Math.min(100, Math.round((intake.play / PLAY_TARGET) * 100))
   }
 }
 
 /** 今日照顾分 = 三项完成度的均值，0-100 */
 function careScore(catId) {
   const p = intakePercent(catId)
-  return Math.round((p.food + p.water + p.mood) / 3)
+  return Math.round((p.food + p.water + p.play) / 3)
+}
+
+/* ---------------------- 心情自评 ---------------------- */
+
+/**
+ * 今日心情自评，1-5；当天没评过返回 0。
+ *
+ * 这是一条「人看到的状态」，不是传感器读数——所以它不参与照顾分。
+ * 照顾分算的是「你今天做了什么」（喂了多少、陪了多久），
+ * 如果把「你觉得它今天心情怎么样」也折成百分比混进去，
+ * 等于又制造了一个伪精确的数字。
+ */
+function todayMood(catId) {
+  const key = dayKey(Date.now())
+  let latest = null
+  readRecords().forEach(function (r) {
+    if (r.catId !== catId || r.type !== 'mood') return
+    if (dayKey(r.time) !== key) return
+    if (!latest || r.time > latest.time) latest = r
+  })
+  if (!latest) return 0
+  return clamp(Number(latest.value) || 0, 1, 5)
+}
+
+/** 写下今日自评。同一天重复点只覆盖，不堆记录——它是状态，不是流水。 */
+function setTodayMood(catId, score) {
+  const s = Math.round(clamp(Number(score) || 0, 1, 5))
+  if (!s) return 0
+  const key = dayKey(Date.now())
+  const list = readRecords().filter(function (r) {
+    return !(r.catId === catId && r.type === 'mood' && dayKey(r.time) === key)
+  })
+  list.push({
+    id: uid('r'),
+    catId: catId,
+    type: 'mood',
+    value: s,
+    note: '今日心情：' + MOOD_LABELS[s - 1],
+    time: Date.now()
+  })
+  writeRecords(list)
+  return s
 }
 
 function weightSeries(catId, limit) {
@@ -813,6 +859,10 @@ module.exports = {
   getSettings: getSettings,
   saveSettings: saveSettings,
   todayIntake: todayIntake,
+  todayMood: todayMood,
+  setTodayMood: setTodayMood,
+  PLAY_TARGET: PLAY_TARGET,
+  MOOD_LABELS: MOOD_LABELS,
   waterTargetOf: waterTargetOf,
   intakePercent: intakePercent,
   careScore: careScore,

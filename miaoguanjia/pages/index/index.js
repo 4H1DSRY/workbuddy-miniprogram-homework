@@ -13,13 +13,17 @@ Page({
     cat: {},
     trend: { delta: 0, text: '暂无对比' },
     pct: {
-      foodAbs: 0, waterAbs: 0,
-      foodTarget: 200, waterTarget: 260,
-      food: 0, water: 0, mood: 0
+      foodAbs: 0, waterAbs: 0, playAbs: 0,
+      foodTarget: 200, waterTarget: 260, playTarget: 30,
+      food: 0, water: 0, play: 0
     },
     care: 0,
     careRing: '',
-    todayCount: 0
+    todayCount: 0,
+    mood: 0,
+    moodText: '',
+    moodScale: [1, 2, 3, 4, 5],
+    moodLabels: store.MOOD_LABELS
   },
 
   onLoad() {
@@ -37,7 +41,7 @@ Page({
   refresh() {
     const cats = store.getCatsDecorated()
     if (!cats.length) {
-      this.setData({ cats: [], cat: {}, care: 0, careRing: '', todayCount: 0 })
+      this.setData({ cats: [], cat: {}, care: 0, careRing: '', todayCount: 0, mood: 0, moodText: '' })
       return
     }
 
@@ -55,10 +59,12 @@ Page({
     const pct = store.intakePercent(cat.id)
     const care = store.careScore(cat.id)
     const trend = store.weightTrend(cat.id)
+    const mood = store.todayMood(cat.id)
 
     const key = store.dayKey(Date.now())
     let todayCount = 0
     store.getRecords(cat.id).forEach(function (r) {
+      if (r.type === 'mood') return
       if (store.dayKey(r.time) === key) todayCount += 1
     })
 
@@ -69,7 +75,9 @@ Page({
       pct: pct,
       care: care,
       careRing: theme.ringGradient(care, PALETTE.vermilion, PALETTE.rule),
-      todayCount: todayCount
+      todayCount: todayCount,
+      mood: mood,
+      moodText: mood ? store.MOOD_LABELS[mood - 1] : '还没评'
     })
   },
 
@@ -80,16 +88,16 @@ Page({
   },
 
   /**
-   * 投食 / 喂水 / 逗猫共用一条落笔路径：改状态 → 写记录 → 轻震 → 刷新。
+   * 投食 / 补水 / 逗猫共用一条落笔路径：写记录 → 轻震 → 刷新。
    * 震动是刻意的：这是「触觉」，原先只有一句 toast，摸起来跟表单一样。
    * 称重不走这里——它要用户先输入数值，流程不同。
+   *
+   * 不再额外维护 cat.food / cat.water / cat.mood 这类「状态字段」：
+   * 完成度已经由 todayIntake 从记录累加得出，再存第二份就是两个真相，迟早对不上。
    */
-  bump(field, delta, type, value, note, toast) {
+  log(type, value, note, toast) {
     const cat = this.data.cat
     if (!cat.id) return
-    const patch = {}
-    patch[field] = store.clamp(cat[field] + delta, 0, 100)
-    store.updateCat(cat.id, patch)
     store.addRecord(cat.id, type, value, note)
     if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
     if (toast) wx.showToast({ title: toast, icon: 'none' })
@@ -97,15 +105,30 @@ Page({
   },
 
   onFeed() {
-    this.bump('food', 16, 'feed', 40, '手动投食 40g', '已投食 40 g')
+    this.log('feed', 40, '手动投食 40g', '已投食 40 g')
   },
 
   onWater() {
-    this.bump('water', 20, 'water', 60, '饮水机补水', '已补水 60 ml')
+    this.log('water', 60, '饮水机补水', '已补水 60 ml')
   },
 
   onPlay() {
-    this.bump('mood', 14, 'play', 15, '逗猫棒 15 分钟', '陪玩 15 分钟')
+    this.log('play', 15, '逗猫棒 15 分钟', '逗猫 15 分钟')
+  },
+
+  /**
+   * 心情自评：1-5，写进当天记录，同一天再点只改分不叠加。
+   * 它不参与照顾分——照顾分算「你做了什么」，自评是「你看到什么」。
+   * 不加 toast：格子填上墨色本身就是反馈，再弹一句等于同一件事说两遍。
+   */
+  onMood(e) {
+    const cat = this.data.cat
+    if (!cat.id) return
+    const v = Number(e.currentTarget.dataset.v)
+    if (!v) return
+    store.setTodayMood(cat.id, v)
+    if (wx.vibrateShort) wx.vibrateShort({ type: 'light' })
+    this.refresh()
   },
 
   onWeigh() {

@@ -50,7 +50,12 @@ Page({
       return
     }
 
-    const all = store.getRecords(catId)
+    /* 心情自评不进流水：其余每一条都是「发生了一次的事」（投食 40g、称重 4.62kg），
+       自评是「这一天大概什么样」，性质不同。混进来会让「累计记录」变成
+       「我点过几次格子」，也会让护理筛选里冒出一条没有数量的条目。 */
+    const all = store.getRecords(catId).filter(function (r) {
+      return r.type !== 'mood'
+    })
     const dayMap = {}
     const weekLine = Date.now() - 7 * 86400000
     let weekCount = 0

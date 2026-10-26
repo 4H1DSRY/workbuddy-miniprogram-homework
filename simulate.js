@@ -146,12 +146,12 @@ idx.onLoad()
 idx.onShow()
 eq('首页: 当前猫', idx.data.cat.name, '团子')
 ok('首页: 三项完成度都在 0-100',
-  [idx.data.pct.food, idx.data.pct.water, idx.data.pct.mood].every(function (v) { return v >= 0 && v <= 100 }),
+  [idx.data.pct.food, idx.data.pct.water, idx.data.pct.play].every(function (v) { return v >= 0 && v <= 100 }),
   idx.data.pct)
 ok('首页: 照顾分是合法 conic-gradient', /conic-gradient\(#/.test(idx.data.careRing), String(idx.data.careRing).slice(0, 46))
 ok('首页: 照顾分 0-100', idx.data.care >= 0 && idx.data.care <= 100, idx.data.care)
 eq('首页: 照顾分等于三项均值', idx.data.care,
-  Math.round((idx.data.pct.food + idx.data.pct.water + idx.data.pct.mood) / 3))
+  Math.round((idx.data.pct.food + idx.data.pct.water + idx.data.pct.play) / 3))
 ok('首页: 今日记录条数已统计', typeof idx.data.todayCount === 'number', idx.data.todayCount)
 
 /* 旧版同时显示「饱食度 68%」和「进食 45/200g」，两个数字互相矛盾。
@@ -160,12 +160,38 @@ eq('首页: 进食百分比与绝对值自洽', idx.data.pct.food,
   Math.round(idx.data.pct.foodAbs / idx.data.pct.foodTarget * 100))
 eq('首页: 饮水百分比与绝对值自洽', idx.data.pct.water,
   Math.round(idx.data.pct.waterAbs / idx.data.pct.waterTarget * 100))
+eq('首页: 逗猫百分比与绝对值自洽', idx.data.pct.play,
+  Math.round(idx.data.pct.playAbs / idx.data.pct.playTarget * 100))
+
+/* 第三项从 mood 改成逗猫之后，最该锁的是「它真的会随记录变化」。
+   旧实现里 mood 只在逗猫时 +14、永不衰减，逗两次就锁死在 100，
+   这条断言如果还在用 cat.mood 就会立刻失败。 */
+const playBefore = idx.data.pct.playAbs
+idx.onPlay()
+eq('逗猫一次后今日逗猫分钟 +15', idx.data.pct.playAbs, playBefore + 15)
 
 const beforeFood = idx.data.pct.foodAbs
 idx.onFeed()
 eq('投食后今日摄入增加 40g', idx.data.pct.foodAbs, beforeFood + 40)
-ok('投食后饱食度不超 100', idx.data.cat.food <= 100, idx.data.cat.food)
 ok('投食后照顾分仍在 0-100', idx.data.care >= 0 && idx.data.care <= 100, idx.data.care)
+
+/* 心情自评：1-5，不进照顾分，同日重复点只改分不堆记录。 */
+const careBeforeMood = idx.data.care
+eq('未评时心情为 0', store.todayMood(idx.data.cat.id), 0)
+idx.onMood({ currentTarget: { dataset: { v: 4 } } })
+eq('评一次后心情为 4', idx.data.mood, 4)
+eq('心情文案取自分档表', idx.data.moodText, store.MOOD_LABELS[3])
+eq('心情自评不影响照顾分', idx.data.care, careBeforeMood)
+const moodRows = store.getRecords(idx.data.cat.id).filter(function (r) { return r.type === 'mood' })
+eq('同一天只留一条心情记录', moodRows.length, 1)
+idx.onMood({ currentTarget: { dataset: { v: 2 } } })
+eq('再点一次是改分不是新增', store.todayMood(idx.data.cat.id), 2)
+eq('改分后仍只有一条记录',
+  store.getRecords(idx.data.cat.id).filter(function (r) { return r.type === 'mood' }).length, 1)
+ok('心情自评不计入今日记录条数', idx.data.todayCount ===
+  store.getRecords(idx.data.cat.id).filter(function (r) {
+    return r.type !== 'mood' && store.dayKey(r.time) === store.dayKey(Date.now())
+  }).length, idx.data.todayCount)
 
 idx.onPlay()
 idx.onWater()
@@ -188,7 +214,7 @@ ok('drawChart 在无 canvas 时安全退出', true)
 rec.onFilter({ currentTarget: { dataset: { key: 'feed' } } })
 ok('筛选「喂食」后全是喂食记录', rec.data.groups.every((g) => g.items.every((i) => i.label === '投食')), rec.data.groups.length)
 rec.onFilter({ currentTarget: { dataset: { key: 'other' } } })
-ok('筛选「护理」只含护理类', rec.data.groups.every((g) => g.items.every((i) => ['陪玩', '疫苗', '驱虫'].indexOf(i.label) >= 0)), true)
+ok('筛选「护理」只含护理类', rec.data.groups.every((g) => g.items.every((i) => ['逗猫', '疫苗', '驱虫'].indexOf(i.label) >= 0)), true)
 rec.onFilter({ currentTarget: { dataset: { key: 'all' } } })
 rec.onSwitchCat({ currentTarget: { dataset: { id: store.getCats()[0].id } } })
 eq('记录页切猫生效', rec.data.catId, store.getCats()[0].id)
