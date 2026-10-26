@@ -25,25 +25,28 @@
     <view class="sub">{{cat.ageText}} · {{cat.breed}}</view>
 
     <!-- 照片与几何形象二选一，由档案页的「显示方式」决定。
-         这里原本挂了 bindtap（点一下缩一下，无任何功能），已移除：
+         照片用 aspectFit 而不是 aspectFill：档案页允许自己换图，比例不可控，
+         按宽度裁满会把猫的头或尾巴切掉——宁可留边，也要让整只猫在画面里。
+         这里原本还挂了 bindtap（点一下缩一下，无任何功能），已移除：
          看不出能点、点了又什么都没发生，是可点击区域里最差的一种。 -->
     <view class="photo-slot">
       <cat-figure
         wx:if="{{cat.avatarType === 'figure'}}"
         color="{{cat.figure ? cat.figure.color : 'ink'}}"
         accessory="{{cat.figure ? cat.figure.accessory : 'none'}}"
-        size="260rpx"
+        size="220rpx"
       />
-      <image wx:else class="photo" src="{{cat.avatar}}" mode="aspectFill" />
+      <image wx:else class="photo" src="{{cat.avatar}}" mode="aspectFit" />
     </view>
 
-    <!-- 唯一的朱色焦点：今日照顾分 -->
     <view class="weigh">
       <view class="weigh-main">
         <text class="num">{{cat.weight}}</text>
         <text class="unit">KG</text>
         <text class="delta {{trend.delta >= 0 ? '' : 'down'}}">{{trend.delta >= 0 ? '↑' : '↓'}} {{trend.text}}</text>
       </view>
+
+      <!-- 唯一的朱色焦点：今日照顾分 -->
       <view class="ring-wrap">
         <view class="ring" style="background: {{careRing}};">
           <view class="ring-hole"><text class="ring-num">{{care}}</text></view>

@@ -7,7 +7,7 @@
 /* 一屏说完：iPhone X 内容区 ≈ 1282rpx，本页压到 1230 左右，不留半截在折线下。 */
 .page {
   padding-top: 32rpx;
-  padding-bottom: 40rpx;
+  padding-bottom: 20rpx;
 }
 
 .topline {
@@ -73,7 +73,7 @@
 }
 
 .hairline {
-  margin-top: 20rpx;
+  margin-top: 16rpx;
 }
 
 /* ---- 名字 ---- */
@@ -81,7 +81,7 @@
   font-size: 68rpx;
   line-height: 1.15;
   letter-spacing: 0.14em;
-  margin-top: 32rpx;
+  margin-top: 20rpx;
   color: var(--c-ink);
 }
 
@@ -89,15 +89,18 @@
   font-size: 24rpx;
   color: var(--c-ink-3);
   letter-spacing: 0.08em;
-  margin-top: 14rpx;
+  margin-top: 10rpx;
 }
 
 /* ---- 照片：直角切割，不加圆角 ---- */
-/* 照片 / 形象共用一个槽位，高度 300rpx 不变（一屏预算就是按它算的） */
+/* 照片 / 形象共用一个槽位。比例定成 3:2 而不是原来的 2.48:1 横幅：
+   横幅按宽度裁满时只剩画面中间的一条，猫的下巴和身子全被切掉。3:2 是照片
+   本来的比例，配 aspectFit 就是「整张图原样放进来」，一张图都不用裁。
+   用户自己换的图比例不可控，其它比例会在槽位里留边——留边比切掉半张脸好。 */
 .photo-slot {
   width: 100%;
-  height: 264rpx;
-  margin-top: 40rpx;
+  height: 436rpx;
+  margin-top: 22rpx;
   background: var(--c-rule-soft);
   display: flex;
   align-items: center;
@@ -108,7 +111,7 @@
 .photo {
   display: block;
   width: 100%;
-  height: 264rpx;
+  height: 436rpx;
 }
 
 /* ---- 体重 + 今日照顾 ---- */
@@ -116,7 +119,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-top: 22rpx;
+  margin-top: 18rpx;
 }
 
 .weigh-main {
@@ -191,14 +194,14 @@
 
 /* ---- 三条刻度 ---- */
 .bars {
-  margin-top: 28rpx;
+  margin-top: 20rpx;
   border-top: 1rpx solid var(--c-rule);
 }
 
 .bar {
   display: flex;
   align-items: center;
-  height: 60rpx;
+  height: 54rpx;
   border-bottom: 1rpx solid var(--c-rule-soft);
 }
 
@@ -248,7 +251,7 @@
   display: flex;
   align-items: center;
   height: 44rpx;
-  margin-top: 12rpx;
+  margin-top: 8rpx;
 }
 
 /* 与 .bar-label 同宽同色，左边缘与上面三条对齐 */
@@ -333,7 +336,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16rpx 0 14rpx;
+  padding: 12rpx 0 10rpx;
   position: relative;
 }
 

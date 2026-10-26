@@ -10,7 +10,7 @@ const SYMPTOM_KEY = 'mgj_symptoms'
 const SETTINGS_KEY = 'mgj_settings'
 const SEED_KEY = 'mgj_seeded'
 /* 种子数据版本：改种子内容后 +1，旧缓存才会被覆盖 */
-const SEED_VERSION = 5
+const SEED_VERSION = 6
 
 /* 每日逗猫目标（分钟）。三条刻度里「逗猫」的目标就取这个数。
    写死而不再按体重推导：逗猫时长取决于人，与猫的大小无关。 */
@@ -176,12 +176,15 @@ function buildSeed() {
     return d0t - n * D + hour * H
   }
 
+  /* 头像用的是 Pexels 免费授权照片（来源与作者见 docs/图片来源.md）。
+     这三只猫是虚构的档案，照片只是占位——名字、品种、体重各自都对得上，
+     但它们并不是同一只真实存在的猫。录屏时不要描述成「我养的猫」。 */
   const cats = [
     {
       id: 'c1',
       name: '团子',
-      breed: '英国短毛猫',
-      gender: 'male',
+      breed: '布偶猫',
+      gender: 'female',
       birthday: '2023-04-12',
       weight: 4.62,
       avatar: '/images/cats/cat1.jpg',
@@ -191,7 +194,7 @@ function buildSeed() {
     {
       id: 'c2',
       name: '芝麻',
-      breed: '中华田园猫',
+      breed: '中华田园猫（玄猫）',
       gender: 'female',
       birthday: '2024-01-08',
       weight: 3.18,
@@ -202,7 +205,7 @@ function buildSeed() {
     {
       id: 'c3',
       name: '豆豆',
-      breed: '布偶猫',
+      breed: '中华田园猫（三花）',
       gender: 'female',
       birthday: '2022-09-30',
       weight: 5.04,
