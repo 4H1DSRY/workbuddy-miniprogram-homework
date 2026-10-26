@@ -4,14 +4,17 @@
   <view class="topline">
     <text class="date">{{today}}</text>
     <view class="switcher">
-      <text
-        class="sw {{item.id === cat.id ? 'on' : ''}}"
+      <!-- 热区放在 view 上：伪元素画在 <text> 上微信渲染层不生效（已实测），
+           所以 88rpx 的点击区不能靠 <text>::after 撑。 -->
+      <view
+        class="sw-hit {{item.id === cat.id ? 'on' : ''}}"
         wx:for="{{cats}}"
         wx:key="id"
         data-id="{{item.id}}"
+        hover-class="sw-hit-hover"
         bindtap="onSwitch"
-      >{{item.name}}</text>
-      <text class="sw-add" bindtap="goAdd">＋</text>
+      ><text class="sw">{{item.name}}</text></view>
+      <view class="sw-hit" hover-class="sw-hit-hover" bindtap="goAdd"><text class="sw-add">＋</text></view>
     </view>
   </view>
   <view class="hairline"></view>

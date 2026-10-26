@@ -26,7 +26,7 @@ const PALETTE = {
   ink6: '#C9C2B8',
 
   /* 朱 */
-  vermilion: '#B5442F',
+  vermilion: '#AE412D',
   vermilionDeep: '#9C3927',
   vermilionTint: '#F3E7E2',
 
@@ -40,7 +40,7 @@ const PALETTE = {
 
   /* ---- 三态语义（与 app.wxss 的 --c-alert-* / --c-caution-* / --c-safe-* 一一对应）----
      前景与底色成对使用，不要单取一个。 */
-  alertFg: '#B5442F',
+  alertFg: '#AE412D',
   alertBg: '#F3E7E2',
   cautionFg: '#8F5418',
   cautionBg: '#F7EADB',

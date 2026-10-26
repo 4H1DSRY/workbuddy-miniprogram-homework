@@ -68,7 +68,7 @@ M1 与其他里程碑不冲突：交作业只需 M0 + M1，M2 之后的工作是
 | 1 | 零网络请求。数据只走 `wx.setStorageSync` | Console 干净是作业硬要求；联网即引入不可控失败面 | `check.js` |
 | 2 | 页面不直接碰 Storage，全部经 `utils/store.js` | 单一数据源，改一处全局生效 | code review |
 | 3 | 色彩 token 在 `app.wxss`（CSS 变量）与 `utils/theme.js`（JS 常量）双份存在且同名同值 | canvas 与 conic-gradient 读不到 CSS 变量 | `check.js` 自动校验 |
-| 4 | 朱色 `#B5442F` 每页只留一个焦点 | 这是全站视觉秩序的唯一支点，多一个就散 | 人工核验（F 组） |
+| 4 | 朱色 `#AE412D` 每页只留一个焦点 | 这是全站视觉秩序的唯一支点，多一个就散 | 人工核验（F 组） |
 | 5 | 不用 emoji 当图标，图标由 `tools/assets/make_icons.py` 生成 | emoji 跨平台渲染不一致，且风格不可控 | `check.js` |
 
 **已知例外**：排版符号 `↑ ↓ ♀ ♂` 保留。它们是字形而非 emoji，跨平台表现一致。

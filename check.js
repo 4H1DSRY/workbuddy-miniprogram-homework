@@ -109,7 +109,7 @@ wxssFiles.forEach((f) => {
 // 前半是旧橙配色（历史遗留），后半是现行纸墨朱。
 const TOKENIZED = [
   'FF7A45', 'E8763F', 'FFF0E6', 'FFF8F3', '2E2A27', '6E645C', 'A2968B', 'B3A79C', 'F3E8DE', 'F6EBE1', 'C9BCB0',
-  'B5442F', '9C3927', 'F3E7E2', 'FAF8F4', '1E1B19', '4A443F', '7A7168', '8C8178', 'B8B0A6', 'C9C2B8', 'E6E0D6', 'F0EBE2', 'DED8CC'
+  'B5442F', 'AE412D', '9C3927', 'F3E7E2', 'FAF8F4', '1E1B19', '4A443F', '7A7168', '8C8178', 'B8B0A6', 'C9C2B8', 'E6E0D6', 'F0EBE2', 'DED8CC'
 ]
 wxssFiles.forEach((f) => {
   const css = fs.readFileSync(f, 'utf8').replace(/--c-[a-z0-9-]+\s*:\s*#[0-9A-Fa-f]{6}/g, '')

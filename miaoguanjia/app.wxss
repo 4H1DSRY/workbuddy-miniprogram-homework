@@ -28,7 +28,7 @@ page {
      语义收窄（2026-10-21）：朱只留给「需要立刻处理」的事；
      「焦点 / 展示」交给墨阶，不再靠朱来强调。新功能的三态提示统一用下面这组，
      不要另造颜色。 */
-  --c-vermilion: #B5442F;
+  --c-vermilion: #AE412D;
   --c-vermilion-deep: #9C3927;
   --c-vermilion-tint: #F3E7E2;
 
@@ -37,7 +37,7 @@ page {
   /* 下面的比值为 WCAG 2.1 实测（前景 on 各自浅底），由
      `tools/assets/check_contrast.py` 复算。此前这三个数字是错的：
      写的是「朱色 / 次文 on 纸底」的值，与前景实际的底色对不上。 */
-  --c-alert-fg: #B5442F;   /* 4.52:1  刚过 AA，余量只有 0.02 */
+  --c-alert-fg: #AE412D;   /* 对紧急底 4.82:1 / 对纸底 5.51:1 */
   --c-alert-bg: #F3E7E2;
   --c-caution-fg: #8F5418; /* 5.15:1 */
   --c-caution-bg: #F7EADB;
