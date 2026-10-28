@@ -4,7 +4,11 @@
  * 字号只有四层：20(注) / 24(标签) / 68(名字) / 92(数值)，中间刻意空着。
  * ------------------------------------------------------------------ */
 
-/* 一屏说完：iPhone X 内容区 ≈ 1282rpx，本页压到 1230 左右，不留半截在折线下。 */
+/* 一屏说完：按 iPhone X（812pt）排满，内容底距 tabBar 约 20pt，
+   视觉上刚好落地，不出现「下面空一截」。
+   间距是固定的，所以换更高的屏（14 Pro Max / 多数安卓）会重新多出空白，
+   换更矮的屏则会滚动——不做 100vh + flex 分配，那会让每一段随着屏高浮起来，
+   反而失去现在这种「每一段都有确定的落点」的观感。 */
 .page {
   padding-top: 32rpx;
   padding-bottom: 20rpx;
@@ -82,7 +86,7 @@
 .name-row {
   display: flex;
   align-items: baseline;
-  margin-top: 20rpx;
+  margin-top: 28rpx;
 }
 
 .name {
@@ -119,7 +123,7 @@
 .photo-slot {
   width: 100%;
   height: 436rpx;
-  margin-top: 22rpx;
+  margin-top: 32rpx;
   background: var(--c-rule-soft);
   overflow: hidden;
   border-radius: 12rpx;
@@ -137,7 +141,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-top: 18rpx;
+  margin-top: 30rpx;
 }
 
 .weigh-main {
@@ -210,20 +214,21 @@
   font-size: 24rpx;
   color: var(--c-ink-3);
   letter-spacing: 0.08em;
-  /* 末字的 letter-spacing 会再留 1.9rpx，用负值抵掉，让最后一个字咬住圆弧 */
-  margin-right: -2rpx;
+  /* 与圆弧留出约 10rpx：底对齐时弧线已经收到最近，再贴上去就挤成一团了。
+     负值只是抵掉末字的 letter-spacing 尾距（1.9rpx），净距仍是 8rpx。 */
+  margin-right: 8rpx;
 }
 
 /* ---- 三条刻度 ---- */
 .bars {
-  margin-top: 20rpx;
+  margin-top: 32rpx;
   border-top: 1rpx solid var(--c-rule);
 }
 
 .bar {
   display: flex;
   align-items: center;
-  height: 54rpx;
+  height: 66rpx;
   border-bottom: 1rpx solid var(--c-rule-soft);
 }
 
@@ -273,7 +278,7 @@
   display: flex;
   align-items: center;
   height: 44rpx;
-  margin-top: 8rpx;
+  margin-top: 22rpx;
 }
 
 /* 与 .bar-label 同宽同色，左边缘与上面三条对齐 */
@@ -353,7 +358,7 @@
  * 表格线是纸本来就有的东西，不引入色块、不新增第二个朱色焦点。 */
 .acts {
   display: flex;
-  margin-top: 14rpx;
+  margin-top: 26rpx;
   border-top: 1rpx solid var(--c-rule);
   border-bottom: 1rpx solid var(--c-rule);
   /* 铺一层比纸深半度的底：直角浅色带与 tabBar 的纯纸底区分开，
@@ -402,7 +407,7 @@
   align-items: baseline;
   justify-content: space-between;
   margin-top: 0;
-  padding-top: 24rpx;
+  padding-top: 34rpx;
   font-size: 24rpx;
   color: var(--c-ink-3);
   letter-spacing: 0.04em;
