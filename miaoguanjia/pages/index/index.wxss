@@ -77,19 +77,33 @@
 }
 
 /* ---- 名字 ---- */
+/* 名字与副标题一行。名字吃剩余宽度、超长省略，副标题固定不缩——
+   名字可以省，副标题不能被名字顶掉（它承载品种与年龄，省了就没了）。 */
+.name-row {
+  display: flex;
+  align-items: baseline;
+  margin-top: 20rpx;
+}
+
 .name {
   font-size: 68rpx;
   line-height: 1.15;
   letter-spacing: 0.14em;
-  margin-top: 20rpx;
   color: var(--c-ink);
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .sub {
+  flex-shrink: 0;
   font-size: 24rpx;
   color: var(--c-ink-3);
   letter-spacing: 0.08em;
-  margin-top: 10rpx;
+  /* 名字末字的 letter-spacing 已经留了 9.5rpx 的空，这里只补 6rpx，
+     合起来约 16rpx，比字内间距略宽，读得出是两段不同的信息 */
+  margin-left: 6rpx;
 }
 
 /* ---- 照片：4rpx 极小圆角，只削掉尖角，不改性格 ---- */
@@ -157,10 +171,13 @@
   color: var(--c-ink-3);
 }
 
+/* 标签在左、环在右，底边对齐：文字盒落在环的最后 34rpx 高度带里，
+   此时圆弧左缘已经收到 x≈3rpx，最后一个字正好咬住圆弧——
+   「左下角紧贴」是这么量出来的，不是压上去的。
+   底对齐后文字盒内还有约 5rpx 的字形留白，所以字形看起来贴住环底而不压色。 */
 .ring-wrap {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   flex-shrink: 0;
 }
 
@@ -193,7 +210,8 @@
   font-size: 24rpx;
   color: var(--c-ink-3);
   letter-spacing: 0.08em;
-  margin-top: 12rpx;
+  /* 末字的 letter-spacing 会再留 1.9rpx，用负值抵掉，让最后一个字咬住圆弧 */
+  margin-right: -2rpx;
 }
 
 /* ---- 三条刻度 ---- */

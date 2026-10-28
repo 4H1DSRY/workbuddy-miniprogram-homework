@@ -21,8 +21,12 @@
 
   <block wx:if="{{cat.id}}">
 
-    <view class="name">{{cat.name}}</view>
-    <view class="sub">{{cat.ageText}} · {{cat.breed}}</view>
+    <!-- 名字与副标题同一行：副标题紧跟名字右端，不再单独占一行。
+         68rpx 与 24rpx 按基线对齐，小字坐在大字的基线上。 -->
+    <view class="name-row">
+      <text class="name">{{cat.name}}</text>
+      <text class="sub">{{cat.ageText}} · {{cat.breed}}</text>
+    </view>
 
     <!-- 只放照片，一条路走到底。
          用 aspectFit 而不是 aspectFill：档案页允许自己换图，比例不可控，
@@ -41,12 +45,14 @@
       </view>
 
       <!-- 首页唯一的彩色焦点：今日照顾分。弧色随分值从红走到绿，
-           低分是警示、高分是「做到了」，不再是固定的品牌朱。 -->
+           低分是警示、高分是「做到了」，不再是固定的品牌朱。
+           标签贴在环的左下外角，与圆弧相切：放在环正下方时它悬在中间空场，
+           离 69 太远，读不出归属。 -->
       <view class="ring-wrap">
+        <text class="ring-cap">今日照顾</text>
         <view class="ring" style="background: {{careRing}};">
           <view class="ring-hole"><text class="ring-num">{{care}}</text></view>
         </view>
-        <text class="ring-cap">今日照顾</text>
       </view>
     </view>
 
