@@ -136,7 +136,7 @@ Page({
   },
 
   onWater() {
-    this.openSheet('feed')
+    this.openSheet('water')
   },
 
   onPlay() {

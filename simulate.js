@@ -221,6 +221,28 @@ idx.onSheetConfirm()
 eq('投食按选中的 30g 落库', idx.data.pct.foodAbs, beforeFood + 30)
 ok('投食后照顾分仍在 0-100', idx.data.care >= 0 && idx.data.care <= 100, idx.data.care)
 
+/* 三个动作各开各的面板。
+   原先 onWater 里写的是 openSheet('feed')——点「喂水」弹出「投食」面板，
+   而这里的断言只检查「流程未抛异常」，从不看 type，于是一路绿灯。
+   「不抛异常」不是断言，是安慰剂：任何接错线的实现都能过。
+   改成逐个锁 type / 标题 / 单位 / 默认档位，接错一根线就红。 */
+const SHEET_CASES = [
+  { fn: 'onFeed', type: 'feed', title: '投食', unit: 'g', preset: store.INTAKE_PRESETS.feed[2] },
+  { fn: 'onWater', type: 'water', title: '喂水', unit: 'ml', preset: store.INTAKE_PRESETS.water[2] },
+  { fn: 'onPlay', type: 'play', title: '逗猫', unit: 'min', preset: store.INTAKE_PRESETS.play[2] }
+]
+SHEET_CASES.forEach(function (c) {
+  idx[c.fn]()
+  eq('点「' + c.title + '」开的是自己的面板', idx.data.sheet.type, c.type)
+  eq('「' + c.title + '」面板标题与按钮一致', idx.data.sheet.title, c.title)
+  eq('「' + c.title + '」面板单位', idx.data.sheet.unit, c.unit)
+  eq('「' + c.title + '」面板默认档位来自本动作的档位表', idx.data.sheet.value, c.preset)
+  idx.onSheetClose()
+  eq('关掉「' + c.title + '」面板后不落库', idx.data.sheet.open, false)
+})
+ok('三个动作的面板互不相同',
+  new Set(SHEET_CASES.map(function (c) { return c.type })).size === 3)
+
 /* 自定义数量：输入框直接填，不限于档位 */
 idx.onFeed()
 idx.onAmountInput({ detail: { value: '7' } })
@@ -264,11 +286,21 @@ ok('心情自评不计入今日记录条数', idx.data.todayCount ===
     return r.type !== 'mood' && store.dayKey(r.time) === store.dayKey(Date.now())
   }).length, idx.data.todayCount)
 
+/* 提交路径也要看落库的类型和单位。
+   写 ok(..., true) 等于什么都没测——只要不崩就算过，正好放过「点喂水开出投食面板」
+   这种接错线的情况：提交照样成功，只是记成了「投食 40 g」。 */
+const beforeWater = idx.data.pct.waterAbs
+const beforeFeedSum = store.todayIntake(idx.data.cat.id).feed
+idx.onWater()
+eq('喂水面板确认前的单位是 ml', idx.data.sheet.unit, 'ml')
+idx.onSheetConfirm()
+const waterRec = store.getRecords(idx.data.cat.id).filter(function (r) { return r.type === 'water' })[0]
+ok('喂水落库的类型是 water 不是 feed', !!waterRec, waterRec && waterRec.type)
+eq('喂水按面板里的量增加今日饮水', idx.data.pct.waterAbs, beforeWater + 150)
+eq('喂水不改今日进食', store.todayIntake(idx.data.cat.id).feed, beforeFeedSum)
+
 idx.onPlay()
 idx.onSheetConfirm()
-idx.onWater()
-idx.onSheetConfirm()
-ok('逗猫 / 喂水面板流程未抛异常', true)
 idx.onWeigh()
 eq('称重后体重已更新', idx.data.cat.weight, 4.75)
 

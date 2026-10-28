@@ -9,7 +9,7 @@
 | 知道「什么算做完」「什么不能破」 | [`PROJECT.md`](PROJECT.md) —— 章程、里程碑、5 条架构不变量、三层验收口径 |
 | 知道「接下来做什么」 | [`docs/backlog.md`](docs/backlog.md) —— 编号条目、优先级、可验收标准 |
 | 知道「已经验证过什么」 | [`docs/验收清单.md`](docs/验收清单.md) —— 逐项证据与截图 |
-| 改完代码快速确认没弄坏 | `npm test`（= 静态校验 + 127 项逻辑断言 + 74 项端到端断言） |
+| 改完代码快速确认没弄坏 | `npm test`（= 静态校验 + 146 项逻辑断言 + 74 项端到端断言） |
 | 想知道「为什么这么设计」 | [`docs/课程报告.md`](docs/课程报告.md) —— 15 页报告：架构、纸墨朱、AI 功能取舍、四层验证、四次翻车复盘，以及把设计指南做成 8 个技能的经过 |
 | 想知道「规范是怎么被执行的」 | 报告第六章 —— 自建 8 个技能（1,342 行）；审计脚本已随仓库提供：`python tools/wxmp_ui_audit.py miaoguanjia` |
 | 看版本变化 | [`CHANGELOG.md`](CHANGELOG.md) |
@@ -119,7 +119,7 @@ miaoguanjia/
 | `PROJECT.md` / `docs/backlog.md` | 项目章程 / 待办条目 |
 | `package.json` | 只有 scripts，无依赖。`npm test` = check + simulate + e2e |
 | `check.js` | **L1 静态校验**：JSON 语法、页面文件齐全、WXML 标签配对、事件处理函数存在、图片路径有效、设计 token 双份一致。失败时退出码 1 |
-| `simulate.js` | **L2 逻辑冒烟**：打桩 `wx` API，在 Node 里真跑一遍数据层与六个页面生命周期，127 项断言 |
+| `simulate.js` | **L2 逻辑冒烟**：打桩 `wx` API，在 Node 里真跑一遍数据层与六个页面生命周期，146 项断言 |
 | `e2e.js` | **L2+ 端到端**：带页面栈的路由模拟器，把「记录页 → 症状页 → 报告页 → 返回 → 回看」连着走一遍，74 项断言。专抓单页测试测不出的接线问题 |
 | `.github/workflows/verify.yml` | push / PR 时自动跑上面两层 |
 | `tools/assets/` | 图标与占位图生成器（Pillow，4× 超采样） |
@@ -143,7 +143,7 @@ npm test
 | --- | --- |
 | `node --check` 全部 7 个 JS 文件 | 通过 |
 | `check.js` 结构与 WXML 静态校验 | `ALL CHECKS PASSED` |
-| `simulate.js` 逻辑冒烟（127 项断言） | 全部通过 |
+| `simulate.js` 逻辑冒烟（146 项断言） | 全部通过 |
 | `e2e.js` 端到端流程（74 项断言） | 全部通过 |
 | 开发者工具内编译 | 通过——四页渲染正常，状态栏 `0 错误 / 0 警告` |
 
