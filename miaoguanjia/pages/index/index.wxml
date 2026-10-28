@@ -57,7 +57,12 @@
     </view>
 
     <!-- 三条刻度：线长即完成度，右侧写绝对值，同一件事只说一遍。
-         三项全部来自今天的记录，没有一项是档案里的固定值。 -->
+         三项全部来自今天的记录，没有一项是档案里的固定值。
+
+         轨道与填充都是 4rpx，不是 2rpx：2rpx 在模拟器的非整数缩放下只有
+         一个多物理像素，抗锯齿按相位分摊，三条同代码的线会一条占两行、
+         一条占一行——饮水那条就是这么"变浅变细"的。4rpx 稳定落在三个
+         物理像素上，三条的观感才真正一致。 -->
     <view class="bars">
       <view class="bar">
         <text class="bar-label">进食</text>
@@ -66,7 +71,7 @@
       </view>
       <view class="bar">
         <text class="bar-label">饮水</text>
-        <view class="bar-track"><view class="bar-fill soft" style="width: {{pct.water}}%;"></view></view>
+        <view class="bar-track"><view class="bar-fill" style="width: {{pct.water}}%;"></view></view>
         <text class="bar-val">{{pct.waterAbs}} / {{pct.waterTarget}} ml</text>
       </view>
       <view class="bar">

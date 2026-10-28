@@ -247,9 +247,15 @@
   flex-shrink: 0;
 }
 
+/* 刻度：轨道 4rpx，填充绝对定位同高覆盖。
+   高度定在 4rpx（2pt）而不是 2rpx：2rpx 在模拟器的非整数缩放下只有
+   一个多物理像素，抗锯齿按相位分摊，三条同代码的线会一条占两行、
+   一条占一行——饮水那条就因此显得浅、显得细。4rpx 稳落在三个物理像素，
+   两层的边缘再怎么错开都还有一整行实心墨，三条才真的一样。
+   填充用 top/bottom 拉伸而不是 height，高度永远跟着父元素，不会自己算偏。 */
 .bar-track {
   flex: 1;
-  height: 2rpx;
+  height: 4rpx;
   background: var(--c-rule-strong);
   margin: 0 24rpx;
   position: relative;
@@ -259,13 +265,8 @@
   position: absolute;
   left: 0;
   top: 0;
-  height: 2rpx;
+  bottom: 0;
   background: var(--c-ink);
-}
-
-/* 饮水用次级墨色：不是每一条都同等重要 */
-.bar-fill.soft {
-  background: var(--c-ink-3);
 }
 
 .bar-val {
