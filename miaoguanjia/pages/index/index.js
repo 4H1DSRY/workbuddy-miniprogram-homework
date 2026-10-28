@@ -92,7 +92,9 @@ Page({
       trend: trend,
       pct: pct,
       care: care,
-      careRing: theme.ringGradient(care, PALETTE.vermilion, PALETTE.rule),
+      /* 弧色随分值走：低分红、高分绿。轨道色不变，
+         所以「已经做到多少」和「做得怎么样」是两个独立信号，不互相干扰。 */
+      careRing: theme.ringGradient(care, theme.scoreColor(care), PALETTE.rule),
       todayCount: todayCount,
       mood: mood,
       moodText: mood ? store.MOOD_LABELS[mood - 1] : '未知'

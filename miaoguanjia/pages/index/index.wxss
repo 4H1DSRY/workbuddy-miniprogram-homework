@@ -92,11 +92,16 @@
   margin-top: 10rpx;
 }
 
-/* ---- 照片：直角切割，不加圆角 ---- */
+/* ---- 照片：4rpx 极小圆角，只削掉尖角，不改性格 ---- */
 /* 照片 / 形象共用一个槽位。比例定成 3:2 而不是原来的 2.48:1 横幅：
    横幅按宽度裁满时只剩画面中间的一条，猫的下巴和身子全被切掉。3:2 是照片
    本来的比例，配 aspectFit 就是「整张图原样放进来」，一张图都不用裁。
-   用户自己换的图比例不可控，其它比例会在槽位里留边——留边比切掉半张脸好。 */
+   用户自己换的图比例不可控，其它比例会在槽位里留边——留边比切掉半张脸好。
+
+   圆角取 12rpx（≈6pt）：比常见的卡片圆角（16–24rpx）小一号，
+   不和方形的照顾环、直角的动作带打架，但在视网膜屏上明确看得出来。
+   槽位与图片都要写：槽位负责裁掉溢出的部分，图片自己也要圆，
+   否则 aspectFit 留白时能看到图片的直角压在圆角槽位上。 */
 .photo-slot {
   width: 100%;
   height: 436rpx;
@@ -106,12 +111,14 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  border-radius: 12rpx;
 }
 
 .photo {
   display: block;
   width: 100%;
   height: 436rpx;
+  border-radius: 12rpx;
 }
 
 /* ---- 体重 + 今日照顾 ---- */
@@ -290,11 +297,18 @@
   justify-content: center;
 }
 
+/* 描边用 2rpx 而不是 1rpx。
+   1rpx 在 750rpx 换算下是半个 pt，在 @3x 屏上是 1.57 个物理像素——
+   方形恰好落在非整数位置上时，四条边被抗锯齿分摊的比例各不相同，
+   最右那一格就出现过「左、上、下都在，右边被摊成一片浅灰」，
+   看起来像没闭合。2rpx（≈1pt / 3 物理像素）四边都是整像素，不会只剩三条。
+   尺寸同步 18→20rpx：边从占宽 5.5% 变成 10%，把方块放大一点抵掉这份重量。 */
 .mood-cell::before {
   content: "";
-  width: 18rpx;
-  height: 18rpx;
-  border: 1rpx solid var(--c-ink-4);
+  width: 20rpx;
+  height: 20rpx;
+  border: 2rpx solid var(--c-ink-4);
+  box-sizing: border-box;
 }
 
 .mood-cell.on::before {

@@ -113,6 +113,7 @@ function ok(label, cond, detail) {
 require(path.join(ROOT, 'app.js'))
 appInst.onLaunch()
 const store = require(path.join(ROOT, 'utils/store.js'))
+const theme = require(path.join(ROOT, 'utils/theme.js'))
 eq('种子数据: 猫咪数', store.getCats().length, 3)
 ok('种子数据: 记录数 > 0', store.getRecords().length > 0, store.getRecords().length)
 
@@ -164,6 +165,23 @@ ok('首页: 三项完成度都在 0-100',
   idx.data.pct)
 ok('首页: 照顾分是合法 conic-gradient', /conic-gradient\(#/.test(idx.data.careRing), String(idx.data.careRing).slice(0, 46))
 ok('首页: 照顾分 0-100', idx.data.care >= 0 && idx.data.care <= 100, idx.data.care)
+
+/* 弧色 0 分红 → 100 分绿。断言不看具体色值（色值可以微调），
+   只看色相有没有走对方向：红端 R 最大、绿端 G 最大。
+   不锁死数字的好处是以后调饱和度不会误报，坏处是「两个端点都变红」这类
+   整体性错误抓不到——所以再加一条：两端色相的差距必须够大。 */
+const rgbOf = function (hex) {
+  return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)]
+}
+const cLow = rgbOf(theme.scoreColor(0))
+const cHigh = rgbOf(theme.scoreColor(100))
+ok('照顾分 0 分偏红', cLow[0] > cLow[1] + 40 && cLow[0] > cLow[2] + 40, cLow)
+ok('照顾分 100 分偏绿', cHigh[1] > cHigh[0] + 40 && cHigh[1] > cHigh[2] + 40, cHigh)
+ok('照顾分两端色差够大（不是同一种颜色）',
+  Math.abs(cLow[0] - cHigh[0]) > 90 && Math.abs(cLow[1] - cHigh[1]) > 60,
+  [cLow, cHigh])
+const cMid = rgbOf(theme.scoreColor(60))
+ok('照顾分 60 分已偏向绿（不再发红）', cMid[1] > cMid[0], cMid)
 eq('首页: 照顾分等于三项均值', idx.data.care,
   Math.round((idx.data.pct.food + idx.data.pct.water + idx.data.pct.play) / 3))
 ok('首页: 今日记录条数已统计', typeof idx.data.todayCount === 'number', idx.data.todayCount)

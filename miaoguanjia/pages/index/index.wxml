@@ -46,7 +46,8 @@
         <text class="delta {{trend.delta >= 0 ? '' : 'down'}}">{{trend.delta >= 0 ? '↑' : '↓'}} {{trend.text}}</text>
       </view>
 
-      <!-- 唯一的朱色焦点：今日照顾分 -->
+      <!-- 首页唯一的彩色焦点：今日照顾分。弧色随分值从红走到绿，
+           低分是警示、高分是「做到了」，不再是固定的品牌朱。 -->
       <view class="ring-wrap">
         <view class="ring" style="background: {{careRing}};">
           <view class="ring-hole"><text class="ring-num">{{care}}</text></view>
