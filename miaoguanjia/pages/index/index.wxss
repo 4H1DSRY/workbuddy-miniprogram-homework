@@ -93,7 +93,7 @@
 }
 
 /* ---- 照片：4rpx 极小圆角，只削掉尖角，不改性格 ---- */
-/* 照片 / 形象共用一个槽位。比例定成 3:2 而不是原来的 2.48:1 横幅：
+/* 照片槽。比例定成 3:2 而不是原来的 2.48:1 横幅：
    横幅按宽度裁满时只剩画面中间的一条，猫的下巴和身子全被切掉。3:2 是照片
    本来的比例，配 aspectFit 就是「整张图原样放进来」，一张图都不用裁。
    用户自己换的图比例不可控，其它比例会在槽位里留边——留边比切掉半张脸好。
@@ -107,9 +107,6 @@
   height: 436rpx;
   margin-top: 22rpx;
   background: var(--c-rule-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   border-radius: 12rpx;
 }

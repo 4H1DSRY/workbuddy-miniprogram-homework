@@ -440,29 +440,30 @@ eq('仅文字描述分诊为 routine', textOnlyReport.tier, 'routine')
 ok('仅文字描述时复制文本保留原文', textOnlyReport.plainText.indexOf('就是感觉不对劲') >= 0)
 
 
-/* ---------------- 8. 形象 ---------------- */
+/* ---------------- 8. 形象系统已移除，一律用照片 ---------------- */
 
-eq('形象配色 5 种', store.FIGURE_COLORS.length, 5)
-eq('形象配饰 3 种', store.FIGURE_ACCESSORIES.length, 3)
+eq('形象配色表已移除', store.FIGURE_COLORS, undefined)
+eq('形象配饰表已移除', store.FIGURE_ACCESSORIES, undefined)
 
-const plainCat = store.decorate({ id: 'c9', name: '无形象字段', birthday: '2023-01-01' })
-eq('老数据补默认主色', plainCat.figure.color, 'ink')
-eq('老数据补默认配饰', plainCat.figure.accessory, 'none')
-eq('老数据默认仍用照片', plainCat.avatarType, 'photo')
+/* 旧存档里可能还留着 avatarType:'figure' 与 figure 对象，装饰时应当被清掉，
+   而不是原样透到界面——否则首页会出现一条没人再维护的渲染分支。 */
+const legacyFig = store.decorate({
+  id: 'c8',
+  birthday: '2023-01-01',
+  avatarType: 'figure',
+  figure: { color: 'vermilion', accessory: 'scarf' }
+})
+ok('旧数据的形象模式不再透出', typeof legacyFig.avatarType === 'undefined', legacyFig.avatarType)
+ok('旧数据的形象配色不再透出', typeof legacyFig.figure === 'undefined', legacyFig.figure)
 
-const figCat = store.decorate({ id: 'c8', birthday: '2023-01-01', avatarType: 'figure', figure: { color: 'vermilion', accessory: 'scarf' } })
-eq('保存的形象被保留', figCat.figure.color, 'vermilion')
-eq('形象模式的 avatarType', figCat.avatarType, 'figure')
-
-const badType = store.decorate({ id: 'c7', birthday: '2023-01-01', avatarType: 'xx' })
-eq('非法 avatarType 回落为照片', badType.avatarType, 'photo')
-
-// 保存链路：addCat 能存住形象字段
 const beforeCats = store.getCats().length
-const newCat = store.addCat({ name: '形象测试', weight: 4, foodTarget: 180, figure: { color: 'gray', accessory: 'collar' }, avatarType: 'figure' })
+const photoCat = store.addCat({ name: '照片测试', weight: 4, foodTarget: 180 })
 eq('新增猫咪数量 +1', store.getCats().length, beforeCats + 1)
-eq('新增时形象字段落库', store.getCat(newCat.id).figure.color, 'gray')
-eq('新增时显示方式落库', store.getCat(newCat.id).avatarType, 'figure')
+ok(
+  '新增猫咪不写形象字段',
+  store.getCat(photoCat.id).avatarType === undefined && store.getCat(photoCat.id).figure === undefined,
+  JSON.stringify(store.getCat(photoCat.id))
+)
 
 /* ---------------- 结果 ---------------- */
 console.log('\n--- 运行时日志（前 12 条）---')

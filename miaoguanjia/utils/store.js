@@ -310,9 +310,10 @@ function decorate(cat) {
   const out = Object.assign({}, cat)
   out.ageText = ageText(cat.birthday)
   out.genderText = cat.gender === 'female' ? '♀ 妹妹' : '♂ 弟弟'
-  // 老数据没有这两个字段，补默认值；默认仍走照片，不让已有用户突然变成几何形象
-  out.figure = Object.assign({}, DEFAULT_FIGURE, cat.figure || {})
-  out.avatarType = cat.avatarType === 'figure' ? 'figure' : 'photo'
+  /* 形象系统已整体移除，首页一律用照片。旧存档里可能还留着 avatarType / figure，
+     这里显式删掉，免得它们从装饰结果里继续流到界面与导出。 */
+  delete out.figure
+  delete out.avatarType
   return out
 }
 
@@ -383,25 +384,6 @@ const TYPE_META = {
 function typeMeta(type) {
   return TYPE_META[type] || { label: '记录', icon: '/images/icons/feed.png', unit: '', color: theme.PALETTE.ink6 }
 }
-
-/* ------------------------- 形象 ------------------------- */
-
-/* 几何形象的配色与配饰。key 进存储，label 进界面，颜色在 cat-figure.wxss 里定义。 */
-const FIGURE_COLORS = [
-  { key: 'ink', label: '墨' },
-  { key: 'vermilion', label: '朱' },
-  { key: 'brown', label: '褐' },
-  { key: 'gray', label: '灰' },
-  { key: 'cream', label: '米' }
-]
-
-const FIGURE_ACCESSORIES = [
-  { key: 'none', label: '不戴' },
-  { key: 'scarf', label: '围巾' },
-  { key: 'collar', label: '项圈' }
-]
-
-const DEFAULT_FIGURE = { color: 'ink', accessory: 'none' }
 
 /* ------------------------- 症状记录 ------------------------- */
 
@@ -1038,9 +1020,6 @@ module.exports = {
   clamp: clamp,
   CAT_LIMITS: CAT_LIMITS,
   validateCat: validateCat,
-  FIGURE_COLORS: FIGURE_COLORS,
-  FIGURE_ACCESSORIES: FIGURE_ACCESSORIES,
-  DEFAULT_FIGURE: DEFAULT_FIGURE,
   SYMPTOM_GROUPS: SYMPTOM_GROUPS,
   LOOSE_ITEMS: LOOSE_ITEMS,
   DURATIONS: DURATIONS,

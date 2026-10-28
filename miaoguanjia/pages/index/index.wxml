@@ -24,19 +24,13 @@
     <view class="name">{{cat.name}}</view>
     <view class="sub">{{cat.ageText}} · {{cat.breed}}</view>
 
-    <!-- 照片与几何形象二选一，由档案页的「显示方式」决定。
-         照片用 aspectFit 而不是 aspectFill：档案页允许自己换图，比例不可控，
+    <!-- 只放照片，一条路走到底。
+         用 aspectFit 而不是 aspectFill：档案页允许自己换图，比例不可控，
          按宽度裁满会把猫的头或尾巴切掉——宁可留边，也要让整只猫在画面里。
          这里原本还挂了 bindtap（点一下缩一下，无任何功能），已移除：
          看不出能点、点了又什么都没发生，是可点击区域里最差的一种。 -->
     <view class="photo-slot">
-      <cat-figure
-        wx:if="{{cat.avatarType === 'figure'}}"
-        color="{{cat.figure ? cat.figure.color : 'ink'}}"
-        accessory="{{cat.figure ? cat.figure.accessory : 'none'}}"
-        size="320rpx"
-      />
-      <image wx:else class="photo" src="{{cat.avatar}}" mode="aspectFit" />
+      <image class="photo" src="{{cat.avatar}}" mode="aspectFit" />
     </view>
 
     <view class="weigh">

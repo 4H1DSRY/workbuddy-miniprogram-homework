@@ -102,56 +102,6 @@
     </view>
   </view>
 
-  <!-- 形象：几何轮廓，与真猫照片二选一，默认仍用照片 -->
-  <view class="section-title">
-    <text class="t">形象</text>
-    <text class="s">不想要照片时，用几何形象代替</text>
-  </view>
-
-  <view class="card">
-    <view class="field">
-      <text class="f-label">显示方式</text>
-      <view class="seg">
-        <view class="seg-item {{avatarType === 'photo' ? 'on' : ''}}" data-v="photo" bindtap="onAvatarType">用照片</view>
-        <view class="seg-item {{avatarType === 'figure' ? 'on' : ''}}" data-v="figure" bindtap="onAvatarType">用形象</view>
-      </view>
-    </view>
-
-    <view class="field">
-      <text class="f-label">预览</text>
-      <view class="fig-wrap">
-        <cat-figure color="{{figure.color}}" accessory="{{figure.accessory}}" size="168rpx" />
-      </view>
-    </view>
-
-    <view class="field">
-      <text class="f-label">主色</text>
-      <view class="sw-row">
-        <view
-          class="swatch swatch--{{item.key}} {{figure.color === item.key ? 'on' : ''}}"
-          wx:for="{{figureColors}}"
-          wx:key="key"
-          data-k="{{item.key}}"
-          bindtap="onPickColor"
-        ></view>
-      </view>
-    </view>
-
-    <view class="field last">
-      <text class="f-label">配饰</text>
-      <view class="seg">
-        <view
-          class="seg-item {{figure.accessory === a.key ? 'on' : ''}}"
-          wx:for="{{figureAccessories}}"
-          wx:for-item="a"
-          wx:key="key"
-          data-k="{{a.key}}"
-          bindtap="onPickAcc"
-        >{{a.label}}</view>
-      </view>
-    </view>
-  </view>
-
   <view class="save-btn {{submitting ? 'is-busy' : ''}}" bindtap="onSave">{{submitting ? '保存中…' : '保存档案'}}</view>
   <view class="del-btn" wx:if="{{isEdit}}" bindtap="onDelete">删除这只猫</view>
 

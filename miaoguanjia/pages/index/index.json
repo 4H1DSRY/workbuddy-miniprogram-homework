@@ -2,8 +2,5 @@
   "navigationBarTitleText": "喵管家",
   "enablePullDownRefresh": true,
   "backgroundTextStyle": "dark",
-  "backgroundColor": "#FAF8F4",
-  "usingComponents": {
-    "cat-figure": "/components/cat-figure/cat-figure"
-  }
+  "backgroundColor": "#FAF8F4"
 }

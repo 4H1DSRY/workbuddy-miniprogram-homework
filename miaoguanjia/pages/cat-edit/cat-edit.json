@@ -1,8 +1,5 @@
 {
   "navigationBarTitleText": "猫咪档案",
   "backgroundTextStyle": "dark",
-  "backgroundColor": "#FAF8F4",
-  "usingComponents": {
-    "cat-figure": "/components/cat-figure/cat-figure"
-  }
+  "backgroundColor": "#FAF8F4"
 }

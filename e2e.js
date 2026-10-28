@@ -305,27 +305,30 @@ ok('J3 给出了提示', toasts.length > toastsBefore, toasts.slice(toastsBefore
 ok('J4 请求了返回', stack.length <= 1, stack.length)
 stack.length = 0
 
-console.log('\n【K】档案页选「用形象」→ 首页是否切过去')
+console.log('\n【K】档案页只剩照片，没有形象设置')
 store.resetAll()
 const c1 = store.getCats()[0]
 const edit = pushUrl('/pages/cat-edit/cat-edit?id=' + c1.id)
 eq('K1 进入编辑态', edit.data.isEdit, true)
-eq('K2 默认仍是照片模式', edit.data.avatarType, 'photo')
-edit.onAvatarType({ currentTarget: { dataset: { v: 'figure' } } })
-edit.onPickColor({ currentTarget: { dataset: { k: 'vermilion' } } })
-edit.onPickAcc({ currentTarget: { dataset: { k: 'scarf' } } })
+ok('K2 页面不加载形象配色表', typeof edit.data.figureColors === 'undefined', typeof edit.data.figureColors)
+ok('K3 页面不加载显示方式', typeof edit.data.avatarType === 'undefined', typeof edit.data.avatarType)
+ok(
+  'K4 换形象的方法已移除',
+  typeof edit.onAvatarType === 'undefined' && typeof edit.onPickColor === 'undefined' && typeof edit.onPickAcc === 'undefined',
+  typeof edit.onAvatarType
+)
+const avatarBefore = store.getCat(c1.id).avatar
 edit.onSave()
-eq('K3 显示方式已落库', store.getCat(c1.id).avatarType, 'figure')
-eq('K4 主色已落库', store.getCat(c1.id).figure.color, 'vermilion')
-eq('K5 配饰已落库', store.getCat(c1.id).figure.accessory, 'scarf')
+eq('K5 保存后头像不变', store.getCat(c1.id).avatar, avatarBefore)
+ok('K6 保存后不写形象字段', store.getCat(c1.id).avatarType === undefined && store.getCat(c1.id).figure === undefined, JSON.stringify(store.getCat(c1.id)))
 
 stack.length = 0
 const home = pushUrl('/pages/index/index')
-eq('K6 首页取到形象模式', home.data.cat.avatarType, 'figure')
-eq('K7 首页取到主色', home.data.cat.figure.color, 'vermilion')
-/* 形象槽位原先挂了 bindtap：点一下缩一下，但不触发任何功能。
+ok('K7 首页只取照片', typeof home.data.cat.avatarType === 'undefined', typeof home.data.cat.avatarType)
+ok('K8 首页照片地址非空', !!home.data.cat.avatar, home.data.cat.avatar)
+/* 照片槽位原先挂过 bindtap：点一下缩一下，但不触发任何功能。
    「看不出能点 + 点了没反应」比纯静态图更糟，已移除。这条断言防止它被加回来。 */
-ok('K8 形象槽位不再挂假点击', typeof home.onFigureTap === 'undefined', typeof home.onFigureTap)
+ok('K9 照片槽位不挂假点击', typeof home.onFigureTap === 'undefined' && typeof home.onPhotoTap === 'undefined', typeof home.onPhotoTap)
 stack.length = 0
 
 console.log('\n【L】新增一只猫 → 首页自动切过去')
@@ -340,7 +343,7 @@ eq('L2 全局当前猫切到新猫', appInst.globalData.currentCatId, newCat.id)
 stack.length = 0
 const home3 = pushUrl('/pages/index/index')
 eq('L3 首页显示新猫', home3.data.cat.name, '端到端')
-eq('L4 新猫默认仍用照片', home3.data.cat.avatarType, 'photo')
+eq('L4 新猫同样只有照片', typeof home3.data.cat.avatarType, 'undefined')
 stack.length = 0
 
 console.log('\n【O】首页「症状」入口 → 提交 → 完成回首页')

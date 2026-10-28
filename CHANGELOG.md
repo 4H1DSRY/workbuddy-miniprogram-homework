@@ -5,6 +5,20 @@
 
 ## [Unreleased]
 
+### 移除 · 形象系统，头像一律用照片
+
+几何猫是「用户不传照片时给个替身」的过渡方案。真实照片进到位之后，替身的价值就没了：
+一只 CSS 画的猫再准，也不如自己拍的一张，而它占着档案页一整组表单、首页一条渲染分支。
+
+- 删 `components/cat-figure/` 整个组件，两个页面的 `usingComponents` 随之清空
+- 档案页删「形象」分组（显示方式 / 预览 / 主色 / 配饰），`cat-edit.js` 删 4 个字段与
+  3 个方法，保存时不再写 `figure` / `avatarType`
+- 首页删 `wx:if` 分支，只留 `<image mode="aspectFit">`
+- `store.js` 删 `FIGURE_COLORS` / `FIGURE_ACCESSORIES` / `DEFAULT_FIGURE`；
+  `decorate()` 显式 `delete` 这两个字段，旧存档里的残留不会再流到界面与导出
+- 测试：形象段 11 条断言换成 6 条「已移除」断言（`simulate.js` 132 → **127**），
+  e2e K 组改为「档案页只剩照片」（73 → **74**）
+
 ### 修复 · 心情行最右一格只剩三条边
 
 五个方格用 `border: 1rpx` 画描边。1rpx 在 750rpx 基准下是半个 pt，@3x 屏上是
