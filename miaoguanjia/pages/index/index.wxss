@@ -169,16 +169,19 @@
   color: var(--c-vermilion);
   margin-left: 20rpx;
   letter-spacing: 0.02em;
+  /* 「↑」不是数字字形，落进备用字体后整行的 ascent 比纯数字高一点，
+     基线对齐时这段会比左边的 KG 抬高约 1.4rpx（实测 KG 底 703、0.04 底 702）。
+     用相对定位补回来，底边才齐——不改 line-height，那会把整段下推更多。 */
+  position: relative;
+  top: 1rpx;
 }
 
 .delta.down {
   color: var(--c-ink-3);
 }
 
-/* 标签在左、环在右，底边对齐：文字盒落在环的最后 34rpx 高度带里，
-   此时圆弧左缘已经收到 x≈3rpx，最后一个字正好咬住圆弧——
-   「左下角紧贴」是这么量出来的，不是压上去的。
-   底对齐后文字盒内还有约 5rpx 的字形留白，所以字形看起来贴住环底而不压色。 */
+/* 标签在左、环在右，底边对齐：文字盒落进环的最后 34rpx 高度带，
+   视觉上就落在圆的左下角。文字与弧线之间由 .ring-cap 的 margin-right 控制。 */
 .ring-wrap {
   display: flex;
   align-items: flex-end;
@@ -214,9 +217,9 @@
   font-size: 24rpx;
   color: var(--c-ink-3);
   letter-spacing: 0.08em;
-  /* 与圆弧留出约 10rpx：底对齐时弧线已经收到最近，再贴上去就挤成一团了。
-     负值只是抵掉末字的 letter-spacing 尾距（1.9rpx），净距仍是 8rpx。 */
-  margin-right: 8rpx;
+  /* 与圆弧留 18rpx。10rpx 时末字和弧线还是黏在一起——圆弧在这个高度已经收到
+     最窄处，任何一点间隙都会被读成「碰到了」。 */
+  margin-right: 18rpx;
 }
 
 /* ---- 三条刻度 ---- */
