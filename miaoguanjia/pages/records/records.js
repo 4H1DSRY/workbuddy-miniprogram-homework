@@ -3,12 +3,17 @@ const theme = require('../../utils/theme.js')
 const PALETTE = theme.PALETTE
 const app = getApp()
 
+/* 前四项各对应一个类型（feed / water / weight），最后一项是兜底。
+   兜底原本叫「护理」，改成「其他」：宠物语境里的「护理」指洗澡、梳毛、
+   剪指甲、清耳朵，而这组装的是逗猫（陪玩）+ 疫苗 + 驱虫（医疗事件）——
+   名字指向的正好是它没有的东西。三者凑不出一个更窄的词（「健康」盖不住
+   逗猫，「互动」盖不住疫苗），所以按兜底的本义命名。 */
 const FILTERS = [
   { key: 'all', label: '全部' },
   { key: 'feed', label: '喂食' },
   { key: 'water', label: '饮水' },
   { key: 'weight', label: '体重' },
-  { key: 'other', label: '护理' }
+  { key: 'other', label: '其他' }
 ]
 
 const OTHER_TYPES = ['play', 'vaccine', 'deworm']
@@ -52,7 +57,7 @@ Page({
 
     /* 心情自评不进流水：其余每一条都是「发生了一次的事」（投食 40g、称重 4.62kg），
        自评是「这一天大概什么样」，性质不同。混进来会让「累计记录」变成
-       「我点过几次格子」，也会让护理筛选里冒出一条没有数量的条目。 */
+       「我点过几次格子」，也会让「其他」筛选里冒出一条没有数量的条目。 */
     const all = store.getRecords(catId).filter(function (r) {
       return r.type !== 'mood'
     })

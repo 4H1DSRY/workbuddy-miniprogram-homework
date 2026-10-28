@@ -319,7 +319,15 @@ ok('drawChart 在无 canvas 时安全退出', true)
 rec.onFilter({ currentTarget: { dataset: { key: 'feed' } } })
 ok('筛选「喂食」后全是喂食记录', rec.data.groups.every((g) => g.items.every((i) => i.label === '投食')), rec.data.groups.length)
 rec.onFilter({ currentTarget: { dataset: { key: 'other' } } })
-ok('筛选「护理」只含护理类', rec.data.groups.every((g) => g.items.every((i) => ['逗猫', '疫苗', '驱虫'].indexOf(i.label) >= 0)), true)
+const otherCount = rec.data.groups.reduce((n, g) => n + g.items.length, 0)
+eq('兜底筛选的标签是「其他」', rec.data.filters[4].label, '其他')
+/* 只写 every() 有个陷阱：筛出空数组时 every 返回 true，断言照样绿。
+   必须同时要求非空，否则「筛选一根线接错、什么都筛不出来」也能通过。 */
+ok(
+  '筛选「其他」非空且只含逗猫/疫苗/驱虫',
+  otherCount > 0 && rec.data.groups.every((g) => g.items.every((i) => ['逗猫', '疫苗', '驱虫'].indexOf(i.label) >= 0)),
+  otherCount + ' 条'
+)
 rec.onFilter({ currentTarget: { dataset: { key: 'all' } } })
 rec.onSwitchCat({ currentTarget: { dataset: { id: store.getCats()[0].id } } })
 eq('记录页切猫生效', rec.data.catId, store.getCats()[0].id)
