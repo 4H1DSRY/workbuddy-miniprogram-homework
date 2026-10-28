@@ -158,7 +158,11 @@
 }
 
 .unit {
-  font-size: 24rpx;
+  /* 22rpx 而不是 24：宋体的大写字母（cap height）比数字高约 10%，
+     同字号下 KG 会比右边的 0.04 高出一截，底边齐了、顶边仍不齐。
+     收到 22rpx 后两者字面等高，底边由基线锚定，位置不变。
+     这是视觉对齐的补偿，没有新增字号层级。 */
+  font-size: 22rpx;
   color: var(--c-ink-3);
   letter-spacing: 0.06em;
   margin-left: 10rpx;
