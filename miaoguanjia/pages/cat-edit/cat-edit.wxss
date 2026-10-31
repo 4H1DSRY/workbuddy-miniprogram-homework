@@ -182,3 +182,21 @@
   color: var(--c-ink-3);
   margin-top: 30rpx;
 }
+
+/* 推算出来的值：和输入框同一行同一基线，但不用输入框的字色，
+   一眼能看出它读不了、也改不了。 */
+.f-ro {
+  font-size: 28rpx;
+  color: var(--c-ink-2);
+  letter-spacing: 0.02em;
+}
+
+/* 公式说明。放在卡片外面，不占字段行：它是「为什么是这个数」，
+   不是填表时要做的一个决定。 */
+.form-hint {
+  margin-top: 24rpx;
+  padding: 0 6rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--c-ink-4);
+}

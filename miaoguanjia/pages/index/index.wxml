@@ -156,29 +156,40 @@
 
     <view class="sheet-opts">
       <view
-        class="opt {{sheet.value === item ? 'on' : ''}}"
+        class="opt {{sheet.custom ? '' : (sheet.value === item ? 'on' : '')}}"
         wx:for="{{sheet.presets}}"
         wx:key="*this"
         data-v="{{item}}"
         hover-class="opt-hover"
         bindtap="onPreset"
       ><text class="opt-n">{{item}}</text></view>
+      <!-- 档位之外的那一格。默认档位是「大多数人给的量」，不是「这只猫的量」：
+           换一袋粮、开一个罐头，克数就不在表里了，得能自己填。 -->
+      <view
+        class="opt opt-custom {{sheet.custom ? 'on' : ''}}"
+        hover-class="opt-hover"
+        bindtap="onCustom"
+      ><text class="opt-n">自定义</text></view>
     </view>
 
-    <view class="sheet-row">
+    <view class="sheet-row {{sheet.custom ? 'on' : ''}}">
+      <text class="sheet-row-label">自定义</text>
       <input
         class="sheet-input"
         type="number"
         value="{{sheet.value}}"
-        placeholder="或直接填"
+        focus="{{sheet.focus}}"
+        placeholder="填数量"
         placeholder-class="sheet-ph"
         bindinput="onAmountInput"
+        bindblur="onAmountBlur"
         adjust-position="{{true}}"
       />
       <text class="sheet-unit">{{sheet.unit}}</text>
     </view>
 
     <text class="sheet-tip {{sheet.tip.cls}}">{{sheet.tip.text}}</text>
+    <text class="sheet-source">{{sheet.source}}</text>
 
     <view class="sheet-btn" hover-class="sheet-btn-hover" bindtap="onSheetConfirm">
       <text class="sheet-btn-txt">记录</text>

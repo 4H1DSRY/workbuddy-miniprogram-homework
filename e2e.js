@@ -335,7 +335,6 @@ console.log('\n【L】新增一只猫 → 首页自动切过去')
 const add = pushUrl('/pages/cat-edit/cat-edit')
 add.onName({ detail: { value: '端到端' } })
 add.onWeight({ detail: { value: '4.1' } })
-add.onTarget({ detail: { value: '180' } })
 add.onSave()
 const newCat = store.getCats().slice(-1)[0]
 eq('L1 新猫已落库', newCat.name, '端到端')

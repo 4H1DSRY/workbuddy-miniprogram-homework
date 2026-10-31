@@ -74,18 +74,13 @@
       </view>
     </view>
 
-    <view class="field {{errorField === 'foodTarget' ? 'field--error' : ''}}" id="f-foodTarget">
-      <text class="f-label">每日进食目标</text>
+    <!-- 参考量不再手填，改为跟着体重实时推算。
+         做成输入框等于允许填一个和公式打架的数：改完体重它不会跟着变，
+         首页的完成度就会拿一个过期的分母算百分比。 -->
+    <view class="field">
+      <text class="f-label">每日参考量</text>
       <view class="f-unit-wrap">
-        <input
-          class="f-input right"
-          type="number"
-          value="{{form.foodTarget}}"
-          bindinput="onTarget"
-          placeholder="180"
-          placeholder-class="ph"
-        />
-        <text class="f-unit">g</text>
+        <text class="f-ro">{{targetText}}</text>
       </view>
     </view>
 
@@ -101,6 +96,8 @@
       />
     </view>
   </view>
+
+  <view class="form-hint">进食按体重推算（绝育成猫维持量 ÷ 1.3 kcal/g 的粮），饮水 50 ml/kg。换粮、换罐头后实际克数会变，在首页记录时用「自定义」填真实值。</view>
 
   <view class="save-btn {{submitting ? 'is-busy' : ''}}" bindtap="onSave">{{submitting ? '保存中…' : '保存档案'}}</view>
   <view class="del-btn" wx:if="{{isEdit}}" bindtap="onDelete">删除这只猫</view>

@@ -8,6 +8,15 @@ function two(n) {
   return n < 10 ? '0' + n : '' + n
 }
 
+/* 参考量由体重现算，页面上只展示不输入。没填体重时给一句占位，
+   而不是先显示一个 200 g 让人以为那是这只猫的数。 */
+function targetTextOf(weight) {
+  const w = parseFloat(weight)
+  if (!w || w <= 0) return '填体重后自动算'
+  const cat = { weight: w }
+  return store.foodTargetOf(cat) + ' g · ' + store.waterTargetOf(cat) + ' ml'
+}
+
 Page({
   data: {
     isEdit: false,
@@ -18,13 +27,13 @@ Page({
     breeds: BREEDS,
     breedIndex: 0,
     todayStr: '',
+    targetText: '填体重后自动算',
     form: {
       name: '',
       breed: BREEDS[0],
       gender: 'male',
       birthday: '',
       weight: '',
-      foodTarget: 180,
       note: '',
       avatar: '/images/cats/default.jpg'
     }
@@ -46,13 +55,13 @@ Page({
           id: id,
           todayStr: todayStr,
           breedIndex: breedIndex,
+          targetText: targetTextOf(cat.weight),
           form: {
             name: cat.name,
             breed: cat.breed,
             gender: cat.gender,
             birthday: cat.birthday,
             weight: String(cat.weight),
-            foodTarget: cat.foodTarget,
             note: cat.note || '',
             avatar: cat.avatar
           }
@@ -64,13 +73,13 @@ Page({
     wx.setNavigationBarTitle({ title: '添加猫咪' })
     this.setData({
       todayStr: todayStr,
+      targetText: '填体重后自动算',
       form: {
         name: '',
         breed: BREEDS[0],
         gender: 'male',
         birthday: todayStr,
         weight: '',
-        foodTarget: 180,
         note: '',
         avatar: '/images/cats/default.jpg'
       }
@@ -94,13 +103,8 @@ Page({
   },
 
   onWeight(e) {
-    this.setData({ 'form.weight': e.detail.value })
+    this.setData({ 'form.weight': e.detail.value, targetText: targetTextOf(e.detail.value) })
     this.clearError('weight')
-  },
-
-  onTarget(e) {
-    this.setData({ 'form.foodTarget': e.detail.value })
-    this.clearError('foodTarget')
   },
 
   onBreed(e) {

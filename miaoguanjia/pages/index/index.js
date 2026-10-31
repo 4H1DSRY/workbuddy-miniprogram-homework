@@ -17,8 +17,12 @@ const EMPTY_SHEET = {
   unit: '',
   presets: [],
   value: '',
+  /* 自定义态：手填的数不在档位表里时自动亮起，也可以点档位行末那一格进来 */
+  custom: false,
+  focus: false,
   before: 0,
   target: 0,
+  source: '',
   tip: { text: '', cls: '' }
 }
 
@@ -31,7 +35,7 @@ Page({
     trend: { delta: 0, text: '暂无对比' },
     pct: {
       foodAbs: 0, waterAbs: 0, playAbs: 0,
-      foodTarget: 200, waterTarget: 260, playTarget: 30,
+      foodTarget: 0, waterTarget: 0, playTarget: 30,
       food: 0, water: 0, play: 0
     },
     care: 0,
@@ -160,11 +164,27 @@ Page({
         unit: store.intakeUnit(type),
         presets: presets,
         value: value,
+        custom: false,
+        focus: false,
         before: imp ? imp.before : 0,
         target: imp ? imp.target : 0,
+        source: this.sourceOf(type),
         tip: this.tipOf(type, value)
       }
     })
+  },
+
+  /**
+   * 参考量的出处，写在面板里。
+   * 原先这两个数是手填的，界面没有解释的义务；现在改成了推断，
+   * 不写清「按多重、按什么系数」就是在让用户相信一个看不见的数。
+   */
+  sourceOf(type) {
+    const w = Number(this.data.cat.weight) || 0
+    if (type === 'feed') return '按 ' + w + ' kg 推算的进食参考量'
+    if (type === 'water') return '按 ' + w + ' kg × 50 ml/kg 推算'
+    if (type === 'play') return '每日 ' + store.PLAY_TARGET + ' 分钟，与体重无关'
+    return ''
   },
 
   /**
@@ -191,21 +211,53 @@ Page({
   },
 
   onPreset(e) {
-    this.updateAmount(e.currentTarget.dataset.v)
+    this.updateAmount(e.currentTarget.dataset.v, false)
   },
 
   onAmountInput(e) {
     this.updateAmount(e.detail.value)
   },
 
-  /* 只留数字，最多四位：input type=number 在部分安卓机仍能敲进小数点与减号 */
-  updateAmount(raw) {
+  /**
+   * 档位行末那一格「自定义」。
+   *
+   * 它和五个档位是同一组单选：点进来先清空，光标落进输入框。
+   * 不清空的话，用户点「自定义」看到 40、删两次再打，比直接打多两步；
+   * 而「我就是要填一个不在档位里的数」是点它唯一的理由。
+   */
+  onCustom() {
+    const s = this.data.sheet
+    if (!s.open) return
+    this.setData({
+      sheet: Object.assign({}, s, {
+        custom: true,
+        focus: true,
+        value: '',
+        tip: { text: '', cls: '' }
+      })
+    })
+  },
+
+  /* 键盘收起后把 focus 放下，否则第二次点「自定义」不会再触发聚焦 */
+  onAmountBlur() {
+    if (this.data.sheet.focus) this.setData({ 'sheet.focus': false })
+  },
+
+  /* 只留数字，最多四位：input type=number 在部分安卓机仍能敲进小数点与减号。
+     手填的数只要不落在档位表里，就算「自定义」，那一格跟着亮起来——
+     同一组单选不能出现「档位没选中、自定义也没选中」的空档。
+     focus 只在「点档位」时显式传 false，好让键盘收起；打字时不碰它。 */
+  updateAmount(raw, focus) {
     const s = this.data.sheet
     if (!s.open) return
     const clean = String(raw).replace(/[^\d]/g, '').slice(0, 4)
-    this.setData({
-      sheet: Object.assign({}, s, { value: clean, tip: this.tipOf(s.type, clean) })
-    })
+    const next = {
+      value: clean,
+      custom: s.presets.indexOf(clean) < 0,
+      tip: this.tipOf(s.type, clean)
+    }
+    if (typeof focus === 'boolean') next.focus = focus
+    this.setData({ sheet: Object.assign({}, s, next) })
   },
 
   onSheetClose() {
@@ -213,7 +265,7 @@ Page({
   },
 
   closeSheet() {
-    this.setData({ sheet: Object.assign({}, this.data.sheet, { open: false }) })
+    this.setData({ sheet: Object.assign({}, this.data.sheet, { open: false, focus: false }) })
   },
 
   /**

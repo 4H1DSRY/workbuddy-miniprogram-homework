@@ -531,7 +531,8 @@
   letter-spacing: 0.02em;
 }
 
-/* 五档等分：750 - 96(内边距) - 48(四处间隔) = 606，每格约 121rpx。
+/* 档位行等分：750 - 96(内边距) - 间隔×5 = 594，投食六格每格 99rpx、
+   喂水五格每格约 119rpx。格数随动作变，所以只给 flex: 1，不写死宽度。
    高度直接给 88rpx，它就是热区，不靠伪元素撑——这一条不需要压回原行高。 */
 .sheet-opts {
   display: flex;
@@ -558,6 +559,13 @@
   letter-spacing: 0.02em;
 }
 
+/* 「自定义」是三个字，在 99rpx 的格子里按 28rpx 会顶到边框，
+   降一档字号并收紧字距；视觉上仍与数字档位同高，不显得弱。 */
+.opt-custom .opt-n {
+  font-size: 24rpx;
+  letter-spacing: 0;
+}
+
 /* 选中反白：这一格是「已填进去的当前值」，与输入框里的数字是同一个事实 */
 .opt.on {
   background: var(--c-ink);
@@ -572,12 +580,26 @@
   background: var(--c-rule-soft);
 }
 
+/* 输入行就是「自定义」那一格的展开体：选中时下划线转墨，
+   让人看出「上面点亮的那格，编辑的是这一行」。 */
 .sheet-row {
   display: flex;
   align-items: center;
   height: 88rpx;
   margin-top: 20rpx;
   border-bottom: 1rpx solid var(--c-rule);
+}
+
+.sheet-row.on {
+  border-bottom-color: var(--c-ink);
+}
+
+.sheet-row-label {
+  flex-shrink: 0;
+  width: 96rpx;
+  font-size: 24rpx;
+  color: var(--c-ink-3);
+  letter-spacing: 0.02em;
 }
 
 .sheet-input {
@@ -614,6 +636,16 @@
 
 .sheet-tip.note {
   color: var(--c-ink-2);
+}
+
+/* 参考量的出处。比预告再小一档、再淡一档：
+   它是「这个数从哪来」的背景，不是此刻要做的决定。 */
+.sheet-source {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--c-ink-4);
+  letter-spacing: 0.02em;
 }
 
 .sheet-btn {

@@ -155,6 +155,47 @@ ok('groupByDay 分组非空且首组为今天', groups.length > 0 && groups[0].l
 const st = store.stats()
 ok('stats 三项齐全', st.cats === 3 && st.records > 0 && st.days > 0, st)
 
+/* 参考量改由体重推断之后，最该锁的是「它真的在按体重算」。
+   旧实现里进食是建档时手填的、饮水是「进食 + 60」，改体重两个都不动；
+   下面这几条在旧实现上会全红。 */
+eq('进食参考量：4.62 kg → 200 g', store.foodTargetOf({ weight: 4.62 }), 200)
+eq('进食参考量：3.18 kg → 150 g', store.foodTargetOf({ weight: 3.18 }), 150)
+eq('进食参考量：5.04 kg → 220 g', store.foodTargetOf({ weight: 5.04 }), 220)
+eq('饮水参考量：4.62 kg → 230 ml', store.waterTargetOf({ weight: 4.62 }), 230)
+eq('饮水参考量：3.18 kg → 160 ml', store.waterTargetOf({ weight: 3.18 }), 160)
+eq('饮水参考量：5.04 kg → 250 ml', store.waterTargetOf({ weight: 5.04 }), 250)
+
+ok('两个参考量都随体重单调上升', (function () {
+  return [2, 3, 4, 5, 6].every(function (w, i, arr) {
+    if (i === 0) return true
+    return store.foodTargetOf({ weight: w }) > store.foodTargetOf({ weight: arr[i - 1] }) &&
+      store.waterTargetOf({ weight: w }) > store.waterTargetOf({ weight: arr[i - 1] })
+  })
+})(), [2, 4, 6].map(function (w) { return store.foodTargetOf({ weight: w }) }))
+
+/* 公式本身的边界：饮水落在 NRC 的 44–66 ml/kg 里，进食落在
+   1.2×RER ÷ 1.3 kcal/g 的 ±10% 里。数字可以调，但一旦调出参考区间，
+   说明有人凭手感改了系数，这里会拦下。 */
+ok('饮水参考量落在 44–66 ml/kg 区间', store.getCats().every(function (c) {
+  const per = store.waterTargetOf(c) / c.weight
+  return per >= 44 && per <= 66
+}), store.getCats().map(function (c) { return (store.waterTargetOf(c) / c.weight).toFixed(1) }))
+
+ok('进食参考量与 1.2×RER ÷ 1.3 kcal/g 相差不到 10%', store.getCats().every(function (c) {
+  const ideal = 1.2 * 70 * Math.pow(c.weight, 0.75) / 1.3
+  return Math.abs(store.foodTargetOf(c) - ideal) / ideal < 0.1
+}), store.getCats().map(function (c) { return store.foodTargetOf(c) }))
+
+eq('体重缺失时进食退回 200 g', store.foodTargetOf({}), 200)
+eq('体重缺失时饮水退回 250 ml', store.waterTargetOf({}), 250)
+
+ok('档案里不再保留手填的进食目标',
+  store.getCats().every(function (c) { return !('foodTarget' in c) }),
+  store.getCats().map(function (c) { return Object.keys(c).join(',') }))
+
+eq('旧存档带来的 foodTarget 会被装饰层剔掉',
+  store.decorate({ id: 'x', name: '旧', weight: 3, foodTarget: 999 }).foodTarget, undefined)
+
 /* ---------------- 3. 首页 ---------------- */
 const idx = loadPage('pages/index/index.js')
 idx.onLoad()
@@ -248,6 +289,32 @@ idx.onFeed()
 idx.onAmountInput({ detail: { value: '7' } })
 idx.onSheetConfirm()
 eq('自定义 7g 也能落库', idx.data.pct.foodAbs, beforeFood + 37)
+
+/* 档位行末那一格「自定义」：它和五个档位是同一组单选。
+   手填的数只要不在档位表里，那一格就该亮；选回档位就该灭——
+   两个都不亮是「没得选」，两个都亮是「选了两个」。 */
+idx.onFeed()
+eq('面板默认停在档位而非自定义', idx.data.sheet.custom, false)
+ok('面板写明参考量按体重推算', idx.data.sheet.source.indexOf('4.62') >= 0, idx.data.sheet.source)
+idx.onCustom()
+eq('点「自定义」进入自定义态', idx.data.sheet.custom, true)
+eq('点「自定义」清空旧数值', idx.data.sheet.value, '')
+eq('点「自定义」把光标交给输入框', idx.data.sheet.focus, true)
+idx.onAmountBlur()
+eq('输入框失焦后放下 focus', idx.data.sheet.focus, false)
+idx.onAmountInput({ detail: { value: '35' } })
+eq('手填 35 不在档位表里 → 仍算自定义', idx.data.sheet.custom, true)
+const foodBeforeCustom = idx.data.pct.foodAbs
+idx.onSheetConfirm()
+eq('自定义 35 g 按填的数落库', idx.data.pct.foodAbs, foodBeforeCustom + 35)
+
+idx.onFeed()
+idx.onCustom()
+idx.onPreset({ currentTarget: { dataset: { v: '20' } } })
+eq('选回档位后退出自定义态', idx.data.sheet.custom, false)
+eq('选回档位后数值同步', idx.data.sheet.value, '20')
+idx.onSheetClose()
+eq('关掉面板后不再留着自定义态', idx.data.sheet.open, false)
 eq('0 被拦下不写记录', store.validateAmount('feed', '0').ok, false)
 eq('超过单次上限被拦下', store.validateAmount('feed', '999').ok, false)
 eq('空值被拦下', store.validateAmount('water', '').ok, false)
@@ -352,7 +419,8 @@ edit.onLoad({})
 eq('新增页默认非编辑态', edit.data.isEdit, false)
 edit.onName({ detail: { value: '  测试猫  ' } })
 edit.onWeight({ detail: { value: '3.2' } })
-edit.onTarget({ detail: { value: '150' } })
+eq('新增页参考量随体重实时推算', edit.data.targetText,
+  store.foodTargetOf({ weight: 3.2 }) + ' g · ' + store.waterTargetOf({ weight: 3.2 }) + ' ml')
 edit.onBreed({ detail: { value: '2' } })
 edit.onGender({ currentTarget: { dataset: { g: 'female' } } })
 edit.onBirthday({ detail: { value: '2024-05-01' } })
@@ -371,6 +439,8 @@ const edit2 = loadPage('pages/cat-edit/cat-edit.js')
 edit2.onLoad({ id: added.id })
 eq('编辑态标题正确', edit2.data.isEdit, true)
 edit2.onWeight({ detail: { value: '3.8' } })
+eq('改体重后参考量跟着变（不是建档时算一次就定死）', edit2.data.targetText,
+  store.foodTargetOf({ weight: 3.8 }) + ' g · ' + store.waterTargetOf({ weight: 3.8 }) + ' ml')
 edit2.onSave()
 eq('编辑后体重已更新', store.getCat(added.id).weight, 3.8)
 
@@ -385,7 +455,7 @@ store.resetAll()
 eq('重置后恢复 3 只猫', store.getCats().length, 3)
 
 /* ---------------- 8. 数据层校验规则（validateCat） ---------------- */
-const baseForm = { name: '测试', breed: '橘猫', gender: 'male', birthday: '2024-01-01', weight: '4.2', foodTarget: 180, note: '', avatar: '' }
+const baseForm = { name: '测试', breed: '橘猫', gender: 'male', birthday: '2024-01-01', weight: '4.2', note: '', avatar: '' }
 
 eq('校验：合法表单通过', store.validateCat(baseForm).ok, true)
 
@@ -398,20 +468,21 @@ eq('校验：体重 31 被拒', store.validateCat(Object.assign({}, baseForm, { 
 eq('校验：体重落在 weight 字段', store.validateCat(Object.assign({}, baseForm, { weight: '-1' })).field, 'weight')
 eq('校验：体重上限 30 通过', store.validateCat(Object.assign({}, baseForm, { weight: '30' })).ok, true)
 
-eq('校验：目标 19 被拒', store.validateCat(Object.assign({}, baseForm, { foodTarget: 19 })).ok, false)
-eq('校验：目标 601 被拒', store.validateCat(Object.assign({}, baseForm, { foodTarget: 601 })).ok, false)
-eq('校验：目标落在 foodTarget 字段', store.validateCat(Object.assign({}, baseForm, { foodTarget: 0 })).field, 'foodTarget')
+/* 进食目标不再是表单字段：旧表单里即使带着一个数，也不该进档案，
+   否则「体重推出来的目标」和「写死在档案里的目标」会同时存在。 */
+eq('校验：不填目标也能通过', store.validateCat(baseForm).ok, true)
+eq('校验：表单里的 foodTarget 不写进档案',
+  'foodTarget' in store.validateCat(Object.assign({}, baseForm, { foodTarget: 999 })).value, false)
 
-const normalized = store.validateCat(Object.assign({}, baseForm, { name: '  奶糖  ', weight: '4.239', foodTarget: '180' }))
+const normalized = store.validateCat(Object.assign({}, baseForm, { name: '  奶糖  ', weight: '4.239' }))
 eq('校验：名字首尾空格被修剪', normalized.value.name, '奶糖')
 eq('校验：体重归一化到两位小数', normalized.value.weight, 4.24)
-eq('校验：目标被转成数字', normalized.value.foodTarget, 180)
 
 eq('页面保存走数据层校验：空名字不落库', (function () {
   const before = store.getCats().length
   const p = loadPage('pages/cat-edit/cat-edit.js')
   p.onLoad({})
-  p.setData({ 'form.weight': '4.0', 'form.foodTarget': 180 })
+  p.setData({ 'form.weight': '4.0' })
   p.onSave()
   return store.getCats().length === before
 })(), true)
@@ -420,7 +491,7 @@ eq('校验失败：错误落到 name 字段并请求滚动定位', (function () 
   global.__lastScroll = null
   const p = loadPage('pages/cat-edit/cat-edit.js')
   p.onLoad({})
-  p.setData({ 'form.weight': '4.0', 'form.foodTarget': 180 })
+  p.setData({ 'form.weight': '4.0' })
   p.onSave()
   return p.data.errorField === 'name' && p.data.errorMsg !== '' && global.__lastScroll === '#f-name'
 })(), true)
@@ -428,7 +499,7 @@ eq('校验失败：错误落到 name 字段并请求滚动定位', (function () 
 eq('校验失败后改该字段会自动清错', (function () {
   const p = loadPage('pages/cat-edit/cat-edit.js')
   p.onLoad({})
-  p.setData({ 'form.weight': '4.0', 'form.foodTarget': 180 })
+  p.setData({ 'form.weight': '4.0' })
   p.onSave()
   p.onName({ detail: { value: '奶糖' } })
   return p.data.errorField === ''
@@ -497,7 +568,7 @@ ok('旧数据的形象模式不再透出', typeof legacyFig.avatarType === 'unde
 ok('旧数据的形象配色不再透出', typeof legacyFig.figure === 'undefined', legacyFig.figure)
 
 const beforeCats = store.getCats().length
-const photoCat = store.addCat({ name: '照片测试', weight: 4, foodTarget: 180 })
+const photoCat = store.addCat({ name: '照片测试', weight: 4 })
 eq('新增猫咪数量 +1', store.getCats().length, beforeCats + 1)
 ok(
   '新增猫咪不写形象字段',

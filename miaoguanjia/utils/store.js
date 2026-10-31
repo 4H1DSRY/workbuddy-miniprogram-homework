@@ -10,11 +10,50 @@ const SYMPTOM_KEY = 'mgj_symptoms'
 const SETTINGS_KEY = 'mgj_settings'
 const SEED_KEY = 'mgj_seeded'
 /* 种子数据版本：改种子内容后 +1，旧缓存才会被覆盖 */
-const SEED_VERSION = 7
+const SEED_VERSION = 8
 
 /* 每日逗猫目标（分钟）。三条刻度里「逗猫」的目标就取这个数。
    写死而不再按体重推导：逗猫时长取决于人，与猫的大小无关。 */
 const PLAY_TARGET = 30
+
+/* ---------------------- 进食与饮水的参考量 ----------------------
+ * 两个数都不再由饲主填，全部从体重推。原先「每日进食目标」是建档时
+ * 手填的，而饮水是「进食目标 + 60」——后者跟体重没有关系，一只 3 kg
+ * 的猫和一只 5 kg 的猫会被推出同样的水。改成同一条推导链：
+ *
+ *   静息能量需求 RER = 70 × W^0.75        （kcal/天，NRC 2006）
+ *   绝育成猫维持量 DER = 1.2 × RER        （AAHA 2010 生命阶段系数）
+ *   每日克数 = DER ÷ 粮的能量密度
+ *   每日饮水 = W × 50                     （ml/kg，NRC 2006 给的是 44–66）
+ *
+ * 为什么系数是 1.3 kcal/g：干粮 3.5–4.5 kcal/g、主食罐 0.8–1.2 kcal/g，
+ * 同一只 4.6 kg 的猫按干粮算 66 g、按罐头算 265 g，差四倍。克数不可能
+ * 脱离粮型单独谈，1.3 是「以主食罐为主、掺少量干粮」的现实折中。
+ * 这也是为什么面板里必须留自定义输入：换粮就是换密度，公式只能给起点。
+ */
+const DER_FACTOR = 1.2
+const KCAL_PER_G = 1.3
+const WATER_ML_PER_KG = 50
+
+/** 取整到 10：参考量本来就是个估值，写成 203.6 g 是在假装精确 */
+function round10(n) {
+  return Math.round(Number(n) / 10) * 10
+}
+
+/** 每日进食参考量（g）。体重缺失时退回 200，与旧版默认值一致。 */
+function foodTargetOf(cat) {
+  const w = Number(cat && cat.weight)
+  if (!w || w <= 0) return 200
+  const der = DER_FACTOR * 70 * Math.pow(w, 0.75)
+  return clamp(round10(der / KCAL_PER_G), 40, 600)
+}
+
+/** 每日饮水参考量（ml）。 */
+function waterTargetOf(cat) {
+  const w = Number(cat && cat.weight)
+  if (!w || w <= 0) return 250
+  return clamp(round10(w * WATER_ML_PER_KG), 40, 1600)
+}
 
 /* 心情自评的 1-5 档。刻意不映射成百分比——
    它是「饲主看到的状态」，不是「系统测出来的指标」，两者不能换算。 */
@@ -100,9 +139,7 @@ function uid(prefix) {
 const CAT_LIMITS = {
   nameMax: 12,
   weightMin: 0.1,
-  weightMax: 30,
-  foodTargetMin: 20,
-  foodTargetMax: 600
+  weightMax: 30
 }
 
 /**
@@ -128,14 +165,9 @@ function validateCat(input) {
     }
   }
 
-  const target = parseInt(f.foodTarget, 10)
-  if (!target || target < CAT_LIMITS.foodTargetMin || target > CAT_LIMITS.foodTargetMax) {
-    return {
-      ok: false,
-      field: 'foodTarget',
-      msg: '每日目标请填 ' + CAT_LIMITS.foodTargetMin + '-' + CAT_LIMITS.foodTargetMax + ' g'
-    }
-  }
+  /* 这里不再校验「每日进食目标」：它已经不是用户填的字段，
+     而是由体重现算的派生值（见 foodTargetOf）。旧表单里带来的
+     foodTarget 一律忽略，不写进档案——留着就成了第二份真相。 */
 
   return {
     ok: true,
@@ -145,7 +177,6 @@ function validateCat(input) {
       gender: f.gender,
       birthday: f.birthday,
       weight: Number(weight.toFixed(2)),
-      foodTarget: target,
       note: String(f.note || '').trim(),
       avatar: f.avatar
     }
@@ -194,7 +225,6 @@ function buildSeed() {
       birthday: '2023-04-12',
       weight: 4.62,
       avatar: '/images/cats/cat1.jpg',
-      foodTarget: 200,
       note: '爱吃冻干，怕生'
     },
     {
@@ -205,7 +235,6 @@ function buildSeed() {
       birthday: '2024-01-08',
       weight: 3.18,
       avatar: '/images/cats/cat2.jpg',
-      foodTarget: 160,
       note: '半夜跑酷选手'
     },
     {
@@ -216,7 +245,6 @@ function buildSeed() {
       birthday: '2022-09-30',
       weight: 5.04,
       avatar: '/images/cats/cat3.jpg',
-      foodTarget: 220,
       note: '粘人，爱喝水'
     }
   ]
@@ -314,6 +342,9 @@ function decorate(cat) {
      这里显式删掉，免得它们从装饰结果里继续流到界面与导出。 */
   delete out.figure
   delete out.avatarType
+  /* 进食目标改成按体重现算之后，旧存档里的 foodTarget 就成了会跟公式
+     打架的第二份真相（改体重它不会跟着变）。同样在这里剔掉。 */
+  delete out.foodTarget
   return out
 }
 
@@ -344,7 +375,6 @@ function addCat(data) {
       birthday: dayKey(Date.now()),
       weight: 3,
       avatar: '/images/cats/default.jpg',
-      foodTarget: 180,
       note: ''
     },
     data || {}
@@ -731,18 +761,15 @@ function todayIntake(catId) {
   return { food: Math.round(food), water: Math.round(water), play: Math.round(play) }
 }
 
-/** 每日饮水目标：沿用「进食目标 + 60」的推导，全站只此一处 */
-function waterTargetOf(cat) {
-  const base = Number(cat && cat.foodTarget) || 200
-  return base + 60
-}
-
 /**
  * 今日三项完成度。
  *
  * 三项全部来自记录，没有一项是档案里的固定值：
  * 进食 / 饮水 / 逗猫 都能从今天写了什么推出来，所以「环」和三条「刻度」
  * 永远是同一份数据，不会出现「饱食度 68%」与「进食 45/200g」互相矛盾。
+ *
+ * 分母也不再是档案里的固定值：进食与饮水都由体重现算（foodTargetOf /
+ * waterTargetOf），改了体重，两条刻度的分母当天就跟着变。
  *
  * 原先第三项是 mood：建档时写死 82，逗猫 +14，永不衰减——一个只涨不跌的
  * 计数器，不是任何东西的度量，却占照顾分三分之一。现改为逗猫分钟数。
@@ -751,13 +778,13 @@ function intakePercent(catId) {
   const cat = getCat(catId)
   const zero = {
     foodAbs: 0, waterAbs: 0, playAbs: 0,
-    foodTarget: 200, waterTarget: 260, playTarget: PLAY_TARGET,
+    foodTarget: 0, waterTarget: 0, playTarget: PLAY_TARGET,
     food: 0, water: 0, play: 0
   }
   if (!cat) return zero
 
   const intake = todayIntake(catId)
-  const foodTarget = Number(cat.foodTarget) || 200
+  const foodTarget = foodTargetOf(cat)
   const waterTarget = waterTargetOf(cat)
 
   return {
@@ -802,9 +829,9 @@ function validateAmount(type, raw) {
 /**
  * 这一笔落下去，今天会到多少、有没有超过「参考量」。
  *
- * 用词是参考量而不是上限：foodTarget 由饲主自己填，waterTarget 又是
- * foodTarget + 60 推出来的粗估，两个都不精确。把一个不精确的数字
- * 当成红线去拦人，等于给估值班加了执法权。
+ * 用词是参考量而不是上限：进食量由体重和 1.3 kcal/g 的粮密度折算，
+ * 换一袋粮就该换一个数；饮水量取的是 44–66 ml/kg 区间的中位。
+ * 两个都是估值，把一个估值当成红线去拦人，等于给估值班加了执法权。
  *
  * @returns {null|{type,unit,before,after,target,excess,over,pct}}
  */
@@ -816,7 +843,7 @@ function overflowOf(catId, type, value) {
   let target = 0
   if (type === 'feed') {
     before = intake.food
-    target = Number(cat.foodTarget) || 200
+    target = foodTargetOf(cat)
   } else if (type === 'water') {
     before = intake.water
     target = waterTargetOf(cat)
@@ -1005,6 +1032,7 @@ module.exports = {
   PLAY_TARGET: PLAY_TARGET,
   MOOD_LABELS: MOOD_LABELS,
   waterTargetOf: waterTargetOf,
+  foodTargetOf: foodTargetOf,
   intakePercent: intakePercent,
   careScore: careScore,
   INTAKE_PRESETS: INTAKE_PRESETS,
