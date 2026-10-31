@@ -6,7 +6,7 @@
 
 - 代码根：`D:\Claw\workbuddy-course\homework-4`
 - 小程序包：`miaoguanjia/`（只有这个目录会上传）
-- 仓库：`github.com/4H1DSRY/workbuddy-miniprogram-homework`（private，SSH）
+- 仓库：`github.com/4H1DSRY/workbuddy-miniprogram-homework`（**public**，SSH）
 - 开发者工具：微信开发者工具，项目路径指向 `miaoguanjia/`，AppID 用 `touristappid`
 
 ## 工作流

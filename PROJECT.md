@@ -8,7 +8,7 @@
 | 定位 | 课程作业 → 持续迭代的作品集项目 |
 | 形态 | 微信原生小程序（WXML / WXSS / JS），零网络、零 npm 依赖 |
 | 代码规模 | 约 2830 行（4 页 + 数据层 + 主题层） |
-| 仓库 | github.com/4H1DSRY/workbuddy-miniprogram-homework（private） |
+| 仓库 | github.com/4H1DSRY/workbuddy-miniprogram-homework（public） |
 | 当前版本 | 0.1.0 |
 | 验收基线 | `docs/验收清单.md` 逐项证据 + 本文件第五节 |
 
